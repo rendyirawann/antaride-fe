@@ -103,6 +103,28 @@ Dengan port tetap, ketiganya bisa dibuka bersamaan dengan akun berbeda — dan i
 alur pengujian yang paling sering dipakai: pesan dari satu tab, terima dari tab
 lain.
 
+### Build APK untuk server
+
+Backend Antaride bisa berada di **subfolder**, misalnya
+`https://domain-anda.id/antaride/`. Alamatnya diberikan saat build:
+
+```bash
+export ANTARIDE_API_URL="https://domain-anda.id/antaride/api/v1"
+melos run apk:all
+```
+
+`ANTARIDE_API_URL` **harus memuat subfolder**. Kalau hilang, server menjawab 404
+HTML, `ApiClient` menguraikannya sebagai response yang bukan JSON, dan yang muncul
+di layar adalah "Terjadi gangguan. Coba lagi." pada **setiap** layar — tanpa satu
+pun petunjuk bahwa masalahnya alamat.
+
+Garis miring di akhir aman: Dio meruntuhkan garis miring ganda. Itu diverifikasi
+di `packages/antaride_api/test/base_url_test.dart`, bukan diasumsikan — perilaku
+penggabungan URL itu milik Dio, bukan kode kita, dan pernah berubah antar versi
+mayor.
+
+Panduan deploy backend-nya ada di `antaride-be/DEPLOY.md`.
+
 ### Android
 
 Emulator memakai `10.0.2.2` sebagai alias host, bukan `127.0.0.1` — yang di
@@ -138,7 +160,7 @@ melos run test:flutter    # hanya package yang bergantung pada Flutter
 melos run test:dart       # hanya package Dart murni (antaride_core)
 ```
 
-117 test, dan letaknya mengikuti tempat kesalahan paling mahal:
+123 test, dan letaknya mengikuti tempat kesalahan paling mahal:
 
 | Berkas | Jml | Isi |
 |---|---|---|
@@ -149,6 +171,7 @@ melos run test:dart       # hanya package Dart murni (antaride_core)
 | `apps/driver/test/driver_controller_test.dart` | 25 | Tawaran, order berjalan, kunci idempotency, siklus hidup tiket lokasi, dan keputusan foreground service |
 | `packages/antaride_maps/test/polyline_codec_test.dart` | 9 | Encode/decode polyline, diuji terhadap contoh acuan spesifikasi |
 | `apps/customer/test/order_flow_idempotency_test.dart` | 6 | Kunci idempotency dipakai ulang saat mencoba lagi |
+| `packages/antaride_api/test/base_url_test.dart` | 6 | Subfolder backend tidak hilang dari URL yang diminta |
 
 `antaride_core` memakai `package:test` dan `dart test`, bukan `flutter_test` —
 paket itu sengaja bebas Flutter, dan itulah yang menjaga janji tersebut tetap
@@ -591,7 +614,7 @@ tetap berbunyi begitu walaupun keduanya sudah disetujui.
 | **Pesan suara** | Belum ada sama sekali. Izin `RECORD_AUDIO` sudah dideklarasikan menunggu fitur ini — lihat peringatan di bagian izin perangkat. |
 | **Reverse geocoding** | Alamat diketik pengguna, bukan hasil pencarian. Koordinatnya yang dipakai driver. |
 | **Top up dompet** | Tidak ada tombolnya. Fase 1 belum punya payment gateway; saldo masuk dari promo dan penambahan manual admin. |
-| **Test widget** | Belum ada. Yang sudah ada 117 test untuk lapisan yang paling berkonsekuensi — kontrak API, uang, polyline, nomor HP, notifikasi, tiket lokasi, dan aturan idempotency. Test widget menyusul. |
+| **Test widget** | Belum ada. Yang sudah ada 123 test untuk lapisan yang paling berkonsekuensi — kontrak API, uang, polyline, nomor HP, notifikasi, tiket lokasi, dan aturan idempotency. Test widget menyusul. |
 | **Push notification** | Ditunda atas keputusan proyek. Yang menggantikannya: notifikasi **in-app** yang disimpan backend dan dibaca aplikasi saat dibuka — lihat di bawah. |
 
 ---
