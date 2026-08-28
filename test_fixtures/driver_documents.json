@@ -1,0 +1,71 @@
+{
+    "documents": [
+        {
+            "uuid": "01a04817-38f3-73aa-bed0-ea927e76039b",
+            "type": "ktp",
+            "label": "KTP",
+            "status": "approved",
+            "reject_reason": null,
+            "expires_at": null,
+            "needs_expiry": false,
+            "is_expired": false,
+            "preview_url": "http://127.0.0.1:8000/dokumen-kyc/driver/4/01a04817-38f3-73aa-bed0-ea927f4a587b.jpg?expires=1787916176&signature=d9dade4311c684dcbe078473a6efb87d279a11f9c18a9a130efb7e1a80bdc563",
+            "uploaded_at": "2026-08-28T11:17:56+00:00",
+            "reviewed_at": "2026-08-28T11:17:56+00:00"
+        },
+        {
+            "uuid": "01a04817-38fc-7235-8c06-341fd464e1af",
+            "type": "selfie",
+            "label": "Foto selfie",
+            "status": "pending",
+            "reject_reason": null,
+            "expires_at": null,
+            "needs_expiry": false,
+            "is_expired": false,
+            "preview_url": "http://127.0.0.1:8000/dokumen-kyc/driver/4/01a04817-38fc-7235-8c06-341fd5506743.jpg?expires=1787916176&signature=834c995981da17c5611d06f426cb32decbfe38d5ddfd4952f2cc70a0c3552c24",
+            "uploaded_at": "2026-08-28T11:17:56+00:00",
+            "reviewed_at": null
+        },
+        {
+            "uuid": "01a04817-38fa-7327-8810-b8ee59a40232",
+            "type": "sim",
+            "label": "SIM",
+            "status": "approved",
+            "reject_reason": null,
+            "expires_at": "2020-01-01",
+            "needs_expiry": true,
+            "is_expired": true,
+            "preview_url": "http://127.0.0.1:8000/dokumen-kyc/driver/4/01a04817-38fa-7327-8810-b8ee5a4829c1.jpg?expires=1787916176&signature=e66a2b78ef09cc30abcc08e3e82a0fd024f486fba9104ce85c1d1309072a2437",
+            "uploaded_at": "2026-08-28T11:17:56+00:00",
+            "reviewed_at": "2026-08-28T11:17:56+00:00"
+        },
+        {
+            "uuid": "01a04817-38fc-7235-8c06-341fd3b6d590",
+            "type": "stnk",
+            "label": "STNK",
+            "status": "rejected",
+            "reject_reason": "Foto terlalu gelap, nomor rangka tidak terbaca.",
+            "expires_at": null,
+            "needs_expiry": true,
+            "is_expired": false,
+            "preview_url": "http://127.0.0.1:8000/dokumen-kyc/driver/4/01a04817-38fc-7235-8c06-341fd3cb88f1.jpg?expires=1787916176&signature=0b4821f8e4b93c19905582f5054ce1f9f9886bae6b367c34e8c9b1438e40137d",
+            "uploaded_at": "2026-08-28T11:17:56+00:00",
+            "reviewed_at": "2026-08-28T11:17:56+00:00"
+        }
+    ],
+    "required": [
+        "ktp",
+        "sim",
+        "stnk",
+        "selfie"
+    ],
+    "missing": [
+        "sim",
+        "stnk",
+        "selfie"
+    ],
+    "expired": [
+        "sim"
+    ],
+    "can_go_online": false
+}

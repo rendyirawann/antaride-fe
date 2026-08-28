@@ -1,0 +1,44 @@
+[
+    {
+        "code": "DRV_PASSENGER_ABSENT",
+        "text": "Penumpang tidak ada di lokasi",
+        "lowers_score": false,
+        "may_charge_fee": false
+    },
+    {
+        "code": "DRV_ADDRESS_UNREACHABLE",
+        "text": "Alamat tidak bisa dijangkau",
+        "lowers_score": false,
+        "may_charge_fee": false
+    },
+    {
+        "code": "DRV_VEHICLE_PROBLEM",
+        "text": "Kendaraan bermasalah",
+        "lowers_score": true,
+        "may_charge_fee": false
+    },
+    {
+        "code": "DRV_PASSENGER_RUDE",
+        "text": "Penumpang tidak sopan",
+        "lowers_score": false,
+        "may_charge_fee": false
+    },
+    {
+        "code": "DRV_TOO_MANY_PASSENGERS",
+        "text": "Penumpang melebihi kapasitas",
+        "lowers_score": false,
+        "may_charge_fee": false
+    },
+    {
+        "code": "DRV_ITEM_NOT_ALLOWED",
+        "text": "Barang tidak boleh diangkut",
+        "lowers_score": false,
+        "may_charge_fee": false
+    },
+    {
+        "code": "DRV_OTHER",
+        "text": "Alasan lain",
+        "lowers_score": true,
+        "may_charge_fee": false
+    }
+]

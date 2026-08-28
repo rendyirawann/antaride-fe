@@ -1,0 +1,42 @@
+# Kamera, galeri, dan izin perangkat.
+#
+# ==============================================================================
+#  KENAPA PAKET TERSENDIRI
+# ==============================================================================
+#  Ketiga aplikasi mengambil foto, dan alurnya identik sampai ke detail yang
+#  paling mudah salah: periksa izin, minta kalau belum ada, tangani "ditolak
+#  permanen" dengan mengarahkan ke pengaturan, lalu kompres hasilnya.
+#
+#  Yang berbeda hanya APA yang difoto. Itu satu parameter, bukan satu
+#  implementasi.
+#
+#  Bukan di `antaride_ui`: paket itu design system yang tidak boleh tahu apa pun
+#  soal izin perangkat maupun plugin platform. Bukan di `antaride_api`: paket itu
+#  tidak punya widget dan tidak boleh punya.
+# ==============================================================================
+name: antaride_media
+description: Pengambilan foto (kamera/galeri) dan penanganan izin perangkat.
+version: 0.1.0
+publish_to: none
+
+resolution: workspace
+
+environment:
+  sdk: ^3.9.0
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+  antaride_core: ^0.1.0
+  antaride_ui: ^0.1.0
+  permission_handler: ^13.0.1
+  image_picker: ^1.2.3
+
+dev_dependencies:
+  flutter_lints: ^6.0.0
+  flutter_test:
+    sdk: flutter
+
+flutter:
+  uses-material-design: true

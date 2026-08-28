@@ -1,0 +1,30 @@
+# State autentikasi yang dipakai bersama tiga aplikasi.
+#
+# Tidak punya widget layar. Yang ada di sini hanya SessionController dan
+# turunannya — layar masuk milik masing-masing aplikasi berbeda (penumpang,
+# driver, merchant), tapi aturan sesinya identik.
+name: antaride_auth
+description: State autentikasi dan sesi Antaride.
+version: 0.1.0
+publish_to: none
+
+resolution: workspace
+
+environment:
+  sdk: ^3.9.0
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+  antaride_core: ^0.1.0
+  antaride_api: ^0.1.0
+
+  provider: ^6.1.2
+  uuid: ^4.5.1
+  shared_preferences: ^2.3.3
+
+dev_dependencies:
+  flutter_lints: ^6.0.0
+  flutter_test:
+    sdk: flutter

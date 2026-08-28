@@ -1,0 +1,39 @@
+# Peta dan lokasi.
+#
+# ==============================================================================
+#  KENAPA flutter_map (OSM), BUKAN Google Maps
+# ==============================================================================
+#  Backend sudah memakai OSRM dan OpenStreetMap untuk routing. Memakai Google
+#  Maps di aplikasi berarti dua sumber data geografis yang berbeda — dan
+#  gejalanya adalah rute yang ditampilkan di peta tidak sama dengan rute yang
+#  dipakai menghitung ongkos. Penumpang yang membandingkan keduanya akan
+#  menyimpulkan jaraknya dimanipulasi.
+#
+#  Alasan berikutnya: Google Maps SDK menuntut API key dengan penagihan aktif,
+#  per platform. Untuk Fase 1 di satu kota, itu biaya dan satu titik kegagalan
+#  tambahan yang tidak membeli apa pun.
+# ==============================================================================
+name: antaride_maps
+description: Peta, lokasi, dan polyline Antaride.
+version: 0.1.0
+publish_to: none
+
+resolution: workspace
+
+environment:
+  sdk: ^3.9.0
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+  antaride_core: ^0.1.0
+
+  flutter_map: ^7.0.2
+  latlong2: ^0.9.1
+  geolocator: ^13.0.2
+
+dev_dependencies:
+  flutter_lints: ^6.0.0
+  flutter_test:
+    sdk: flutter

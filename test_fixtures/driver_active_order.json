@@ -1,0 +1,54 @@
+{
+    "uuid": "01a04817-264c-7200-8cb8-d0f83d4edbce",
+    "order_number": "RD-20260828-682056",
+    "status": "accepted",
+    "status_label": "Driver ditemukan",
+    "service": {
+        "code": "ride_bike",
+        "name": "Antar Motor"
+    },
+    "payment_method": "cash",
+    "pickup": {
+        "address": "Jl. Putri Hijau No. 1, Medan",
+        "lat": 3.5952,
+        "lng": 98.6722,
+        "note": null
+    },
+    "destination": {
+        "address": "Sun Plaza, Jl. Zainul Arifin, Medan",
+        "lat": 3.5833,
+        "lng": 98.6742
+    },
+    "trip": {
+        "distance_m": 4000,
+        "duration_s": 720,
+        "route_polyline": null
+    },
+    "earning": {
+        "amount": 11900,
+        "currency": "IDR",
+        "formatted": "Rp 11.900"
+    },
+    "collect_from_passenger": {
+        "amount": 15000,
+        "currency": "IDR",
+        "formatted": "Rp 15.000"
+    },
+    "passenger": {
+        "name": "Saka Bakiadi Prakasa S.E.I",
+        "photo_url": null,
+        "phone": "0852-1461-459"
+    },
+    "timestamps": {
+        "matched_at": "2026-08-28T11:17:53+00:00",
+        "arrived_at": null,
+        "started_at": null,
+        "completed_at": null,
+        "cancelled_at": null
+    },
+    "allowed_transitions": [
+        "driver_arriving",
+        "cancelled"
+    ],
+    "needs_fare_review": false
+}

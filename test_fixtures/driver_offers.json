@@ -1,0 +1,28 @@
+[
+    {
+        "order_uuid": "01a04817-264c-7200-8cb8-d0f83d4edbce",
+        "service_code": "ride_bike",
+        "payment_method": "cash",
+        "pickup": {
+            "address": "Jl. Putri Hijau No. 1, Medan",
+            "lat": 3.5952,
+            "lng": 98.6722
+        },
+        "destination": {
+            "address": "Sun Plaza, Jl. Zainul Arifin, Medan",
+            "lat": 3.5833,
+            "lng": 98.6742
+        },
+        "trip": {
+            "distance_m": 4000,
+            "duration_s": 720
+        },
+        "driver_earning": {
+            "amount": 11900,
+            "currency": "IDR",
+            "formatted": "Rp 11.900"
+        },
+        "distance_to_pickup_m": 0,
+        "expires_at": "2026-08-28T11:18:06+00:00"
+    }
+]

@@ -1,0 +1,174 @@
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!--
+      Izin internet WAJIB di manifest main, bukan hanya debug. Template
+      `flutter create` menaruhnya hanya di debug dan profile — akibatnya build
+      RELEASE tidak punya izin internet sama sekali, dan setiap request API gagal
+      dengan galat jaringan yang tidak menyebut izin apa pun.
+    -->
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+
+    <!--
+      ==========================================================================
+       LOKASI DI APLIKASI MERCHANT: UNTUK MEMASTIKAN TITIK TOKO
+      ==========================================================================
+       Bukan untuk melacak apa pun. Yang dipakai satu kali: saat merchant
+       memeriksa apakah titik tokonya di peta benar-benar di depan pintunya.
+
+       Itu penting bagi driver, bukan bagi merchant: titik yang bergeser lima
+       puluh meter membuat driver berhenti di gedung sebelah, menelepon, dan
+       menunggu — pada setiap pesanan, sepanjang hari.
+
+       TIDAK ada ACCESS_BACKGROUND_LOCATION di sini. Aplikasi merchant tidak
+       punya satu pun alasan untuk mengetahui posisi siapa pun saat tidak
+       dibuka, dan izin itu akan menuntut justifikasi Play Store untuk fitur
+       yang tidak ada.
+      ==========================================================================
+    -->
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+
+    <!--
+      ==========================================================================
+       GPS SEBAGAI SYARAT PERANGKAT, BUKAN SEBAGAI IZIN
+      ==========================================================================
+       `android.hardware.location.gps` adalah FITUR PERANGKAT, bukan izin —
+       tidak ada yang perlu disetujui pengguna. Yang ditentukannya: apakah
+       aplikasi ini ditawarkan Play Store untuk perangkat tanpa chip GPS.
+
+       required="false": merchant memakai lokasi sekali, untuk memastikan titik
+       tokonya. Tanpa GPS dia tetap bisa menggeser penanda di peta secara
+       manual — dan untuk toko yang posisinya tidak pernah berubah, itu
+       sama baiknya.
+      ==========================================================================
+    -->
+    <uses-feature
+        android:name="android.hardware.location.gps"
+        android:required="false" />
+
+    <!--
+      ==========================================================================
+       KAMERA
+      ==========================================================================
+       Dipakai memfoto produk dan menu. Untuk warung dan toko kecil di Medan,
+       kamera HP adalah satu-satunya alat foto yang mereka punya — dan foto
+       produk adalah yang menentukan apakah pesanan masuk.
+
+       `<uses-feature android:required="false">` di bawah WAJIB ada, dan ini yang
+       paling sering terlewat: Play Store menyimpulkan syarat perangkat dari izin
+       yang dideklarasikan. Izin CAMERA tanpa `uses-feature required="false"`
+       membuat aplikasi ini TIDAK MUNCUL di Play Store untuk perangkat tanpa
+       kamera — dan tidak ada galat apa pun yang menjelaskannya, aplikasinya
+       hanya tidak ada di sana.
+      ==========================================================================
+    -->
+    <uses-permission android:name="android.permission.CAMERA" />
+    <uses-feature android:name="android.hardware.camera" android:required="false" />
+    <uses-feature android:name="android.hardware.camera.autofocus" android:required="false" />
+
+    <!--
+      ==========================================================================
+       GALERI: TIGA IZIN UNTUK SATU HAL, KARENA ANDROID MENGUBAHNYA DUA KALI
+      ==========================================================================
+       Foto produk sering sudah ada — dipakai di Instagram atau WhatsApp
+       Business. Memaksa memfoto ulang di dalam aplikasi berarti pekerjaan
+       yang sudah selesai harus diulang.
+
+       Android 12 dan sebelumnya   READ_EXTERNAL_STORAGE.
+       Android 13 (API 33)         READ_EXTERNAL_STORAGE DIABAIKAN sepenuhnya.
+                                   Penggantinya READ_MEDIA_IMAGES.
+       Android 14 (API 34)         menambah "pilih beberapa foto saja", lewat
+                                   READ_MEDIA_VISUAL_USER_SELECTED.
+
+       `maxSdkVersion="32"` pada yang pertama BUKAN kerapian. Tanpa itu, Play
+       Store menganggap aplikasi ini meminta akses seluruh penyimpanan di semua
+       versi Android, dan izin seluruh-penyimpanan menuntut deklarasi tambahan
+       beserta penjelasan tertulis. Dibatasi ke API 32, izin itu tidak lagi
+       dihitung untuk perangkat modern.
+
+       READ_MEDIA_VIDEO dan READ_MEDIA_AUDIO TIDAK dideklarasikan: yang dipilih
+       pengguna di aplikasi ini hanya gambar. Meminta akses video dan audio untuk
+       fitur yang hanya menerima gambar adalah izin yang tidak bisa dijelaskan
+       saat review.
+      ==========================================================================
+    -->
+    <uses-permission
+        android:name="android.permission.READ_EXTERNAL_STORAGE"
+        android:maxSdkVersion="32" />
+    <uses-permission android:name="android.permission.READ_MEDIA_IMAGES" />
+    <uses-permission android:name="android.permission.READ_MEDIA_VISUAL_USER_SELECTED" />
+
+    <!--
+      ==========================================================================
+       MIKROFON — DIDEKLARASIKAN, TAPI BELUM ADA FITURNYA
+      ==========================================================================
+       PERINGATAN YANG HARUS DIBACA SEBELUM RILIS KE PLAY STORE:
+
+       Sampai sekarang TIDAK ADA satu pun fitur di aplikasi ini yang merekam
+       audio. Izin ini dideklarasikan atas permintaan pemilik proyek, untuk
+       menyiapkan pesan suara antara penumpang dan driver.
+
+       Kebijakan Play Store menuntut setiap izin bisa dikaitkan dengan fungsi
+       yang benar-benar ada di aplikasi. Izin RECORD_AUDIO tanpa fitur perekaman
+       adalah alasan penolakan yang lazim — dan penolakannya terjadi pada
+       pengajuan, bukan pada build.
+
+       Jadi salah satu dari dua hal HARUS dikerjakan sebelum pengajuan pertama:
+       fitur pesan suaranya dibangun, atau tiga baris ini dibuang.
+      ==========================================================================
+    -->
+    <uses-permission android:name="android.permission.RECORD_AUDIO" />
+    <uses-feature android:name="android.hardware.microphone" android:required="false" />
+
+    <!--
+      TIDAK ADA izin lokasi di sini, dan itu benar: aplikasi merchant tidak
+      memakai peta sama sekali. Izin yang diminta tanpa dipakai adalah alasan
+      penolakan review, dan pengguna yang melihatnya di daftar izin wajar
+      bertanya kenapa aplikasi kasir butuh lokasinya.
+    -->
+
+    <application
+        android:label="Antaride Merchant"
+        android:name="${applicationName}"
+        android:icon="@mipmap/ic_launcher">
+        <activity
+            android:name=".MainActivity"
+            android:exported="true"
+            android:launchMode="singleTop"
+            android:taskAffinity=""
+            android:theme="@style/LaunchTheme"
+            android:configChanges="orientation|keyboardHidden|keyboard|screenSize|smallestScreenSize|locale|layoutDirection|fontScale|screenLayout|density|uiMode"
+            android:hardwareAccelerated="true"
+            android:windowSoftInputMode="adjustResize">
+            <!-- Specifies an Android theme to apply to this Activity as soon as
+                 the Android process has started. This theme is visible to the user
+                 while the Flutter UI initializes. After that, this theme continues
+                 to determine the Window background behind the Flutter UI. -->
+            <meta-data
+              android:name="io.flutter.embedding.android.NormalTheme"
+              android:resource="@style/NormalTheme"
+              />
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN"/>
+                <category android:name="android.intent.category.LAUNCHER"/>
+            </intent-filter>
+        </activity>
+        <!-- Don't delete the meta-data below.
+             This is used by the Flutter tool to generate GeneratedPluginRegistrant.java -->
+        <meta-data
+            android:name="flutterEmbedding"
+            android:value="2" />
+    </application>
+    <!-- Required to query activities that can process text, see:
+         https://developer.android.com/training/package-visibility and
+         https://developer.android.com/reference/android/content/Intent#ACTION_PROCESS_TEXT.
+
+         In particular, this is used by the Flutter engine in io.flutter.plugin.text.ProcessTextPlugin. -->
+    <queries>
+        <intent>
+            <action android:name="android.intent.action.PROCESS_TEXT"/>
+            <data android:mimeType="text/plain"/>
+        </intent>
+    </queries>
+</manifest>

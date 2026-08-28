@@ -1,0 +1,15 @@
+name: antaride_core
+description: Konfigurasi, penanganan galat, dan tipe uang bersama.
+version: 0.1.0
+publish_to: none
+
+environment:
+  sdk: ^3.9.0
+
+resolution: workspace
+
+dependencies: {}
+
+dev_dependencies:
+  test: ^1.25.0
+  lints: ^6.0.0

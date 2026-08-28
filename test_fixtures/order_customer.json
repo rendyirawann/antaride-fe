@@ -1,0 +1,76 @@
+{
+    "uuid": "01a04817-1b7f-7350-acca-7c2e33ac53ec",
+    "order_number": "RD-20260828-000001",
+    "status": "searching",
+    "status_label": "Mencari driver",
+    "service": {
+        "code": "ride_bike",
+        "name": "Antar Motor"
+    },
+    "payment": {
+        "method": "cash",
+        "status": "unpaid"
+    },
+    "pickup": {
+        "address": "Jl. Gatot Subroto No. 12, Medan",
+        "lat": 3.5952,
+        "lng": 98.6722,
+        "note": "Pagar hitam, sebelah warung"
+    },
+    "destination": {
+        "address": "Jl. Iskandar Muda No. 4, Medan",
+        "lat": 3.6,
+        "lng": 98.68
+    },
+    "trip": {
+        "distance_m": 8000,
+        "duration_s": 1200,
+        "actual_distance_m": null,
+        "route_polyline": "_p~iF~ps|U_ulLnnqC_mqNvxq`@"
+    },
+    "fare": {
+        "total": {
+            "amount": 21410,
+            "currency": "IDR",
+            "formatted": "Rp 21.410"
+        },
+        "lines": [
+            {
+                "label": "Tarif dasar",
+                "amount": 4000,
+                "formatted": "Rp 4.000"
+            },
+            {
+                "label": "Jarak",
+                "amount": 9100,
+                "formatted": "Rp 9.100"
+            },
+            {
+                "label": "Waktu",
+                "amount": 2600,
+                "formatted": "Rp 2.600"
+            },
+            {
+                "label": "Tarif sibuk",
+                "amount": 4710,
+                "formatted": "Rp 4.710"
+            },
+            {
+                "label": "Biaya aplikasi",
+                "amount": 1000,
+                "formatted": "Rp 1.000"
+            }
+        ]
+    },
+    "timestamps": {
+        "requested_at": "2026-08-28T11:17:49+00:00",
+        "matched_at": null,
+        "arrived_at": null,
+        "started_at": null,
+        "completed_at": null,
+        "cancelled_at": null
+    },
+    "cancellation": null,
+    "can_cancel": true,
+    "can_rate": false
+}

@@ -1,0 +1,282 @@
+# Root workspace Antaride.
+#
+# ==============================================================================
+#  KENAPA PUB WORKSPACE, BUKAN HANYA MELOS
+# ==============================================================================
+#  Flutter 3.22+ punya pub workspace bawaan (`resolution: workspace`). Dengan itu
+#  seluruh app dan package berbagi SATU `pubspec.lock` dan satu resolusi versi.
+#
+#  Manfaat nyatanya bukan kerapian: tanpa workspace, tiga aplikasi bisa memakai
+#  versi `dio` yang berbeda tanpa ada yang menyadarinya, dan bug yang muncul di
+#  satu aplikasi tidak bisa direproduksi di dua lainnya. Debugging itu memakan
+#  hari, dan penyebabnya tidak pernah terlihat di kode.
+#
+#  Melos tetap dipakai — untuk menjalankan perintah di seluruh package sekaligus
+#  (analyze, test, build_runner). Keduanya melengkapi, bukan menggantikan.
+# ==============================================================================
+name: antaride_workspace
+publish_to: none
+
+environment:
+  sdk: ^3.9.0
+
+# Satu daftar anggota. Menambah app atau package berarti menambah satu baris di
+# sini DAN `resolution: workspace` di pubspec-nya sendiri.
+workspace:
+  - apps/customer
+  - apps/driver
+  - apps/merchant
+  - packages/antaride_core
+  - packages/antaride_ui
+  - packages/antaride_api
+  - packages/antaride_auth
+  - packages/antaride_realtime
+  - packages/antaride_maps
+  - packages/antaride_notifications
+  - packages/antaride_media
+
+dev_dependencies:
+  melos: ^8.5.0
+
+# ==============================================================================
+#  KONFIGURASI MELOS ADA DI SINI, BUKAN DI melos.yaml
+# ==============================================================================
+#  Melos 8 membaca konfigurasinya dari `pubspec.yaml` untuk proyek yang memakai
+#  pub workspace, dan `melos.yaml` diabaikan sepenuhnya. Kegagalannya senyap dan
+#  menyesatkan: `melos run test` berbunyi "workspace has no scripts defined"
+#  padahal berkasnya ada dan isinya benar.
+#
+#  Daftar anggota juga tidak diulang di sini: `workspace:` di atas yang jadi
+#  sumber kebenarannya. Dua daftar yang harus sepakat akan menyimpang, dan yang
+#  menyimpang biasanya yang jarang dibaca.
+# ==============================================================================
+melos:
+  # ==========================================================================
+  #  SCRIPT MEMAKAI `exec:`, BUKAN `run: melos exec ...`
+  # ==========================================================================
+  #  Keduanya melakukan hal yang sama, tapi bentuk `run:` menjalankan `melos`
+  #  sebagai perintah shell — jadi dia menuntut `melos` ada di PATH.
+  #
+  #  Setelah `dart pub global activate melos`, direktori binary-nya
+  #  (`<pub-cache>/bin`) TIDAK otomatis masuk PATH di Windows; pub sendiri
+  #  memperingatkannya lalu melanjutkan. Akibatnya `melos run test` gagal dengan
+  #  "'melos' is not recognized as an internal or external command" — pesan yang
+  #  menunjuk ke PATH, bukan ke konfigurasi, dan mudah dibaca sebagai instalasi
+  #  yang rusak.
+  #
+  #  Bentuk `exec:` dijalankan melos di dalam prosesnya sendiri. Tidak ada PATH
+  #  yang perlu disiapkan, dan filter package-nya jadi eksplisit lewat
+  #  `packageFilters`.
+  # ==========================================================================
+  scripts:
+    analyze:
+      description: Analisis statis per package
+      exec: dart analyze --fatal-infos
+
+    analyze:all:
+      description: |
+        Analisis satu jalan untuk seluruh workspace.
+
+        Lebih cepat daripada `analyze` karena analyzer-nya dijalankan SEKALI dan
+        berbagi satu cache resolusi, bukan sekali per package. Untuk workspace
+        dengan sembilan anggota, bedanya sekitar satu banding lima.
+      run: dart analyze
+
+    # -------------------------------------------------------------------------
+    #  FORMAT MENUNJUK `lib` DAN `test`, BUKAN `.`
+    # -------------------------------------------------------------------------
+    #  `dart format .` di direktori aplikasi akan MASUK ke `build/`, dan di situ
+    #  dia berhenti dengan
+    #
+    #      PathNotFoundException: Directory listing failed
+    #
+    #  Penyebabnya artefak Gradle: cache Kotlin membuat jalur yang lebih panjang
+    #  daripada batas MAX_PATH Windows, jadi direktorinya ada tapi tidak bisa
+    #  dibuka lagi lewat API biasa. Itu masalah yang sama yang memaksa
+    #  `kotlin.incremental=false` di `android/gradle.properties`.
+    #
+    #  Akibatnya `melos run format` GAGAL di mesin yang pernah membangun APK,
+    #  dan berhasil di mesin yang belum. Kegagalan yang tergantung pada riwayat
+    #  build seperti itu paling sulit dipercaya.
+    #
+    #  `build/` juga tidak perlu diformat sama sekali — isinya kode hasil
+    #  generate yang tidak pernah dibaca manusia dan tidak pernah di-commit.
+    #
+    #  Dipecah dua langkah dengan alasan yang sama seperti `test`: tidak setiap
+    #  paket punya direktori `test`, dan `dart format` berhenti dengan galat pada
+    #  jalur yang tidak ada — bukan mengabaikannya.
+    # -------------------------------------------------------------------------
+    format:
+      description: Periksa format seluruh kode Dart, tanpa mengubah
+      steps:
+        - format:lib
+        - format:test
+
+    format:lib:
+      exec: dart format --set-exit-if-changed lib
+
+    format:test:
+      exec: dart format --set-exit-if-changed test
+      packageFilters:
+        dirExists: test
+
+    format:fix:
+      description: Format dan tulis perubahannya
+      steps:
+        - format:fix:lib
+        - format:fix:test
+
+    format:fix:lib:
+      exec: dart format lib
+
+    format:fix:test:
+      exec: dart format test
+      packageFilters:
+        dirExists: test
+
+    # -------------------------------------------------------------------------
+    #  TEST DIPECAH DUA, KARENA RUNNER-NYA MEMANG BERBEDA
+    # -------------------------------------------------------------------------
+    #  `antaride_core` sengaja TIDAK bergantung pada Flutter — seluruh isinya
+    #  Dart murni, dan docblock-nya menjanjikan bisa diuji tanpa Flutter. Paket
+    #  seperti itu memakai `package:test` dan dijalankan `dart test`.
+    #
+    #  Menjalankan `flutter test` padanya sebenarnya bekerja, karena flutter_test
+    #  ikut ter-resolve lewat workspace. Tapi analyzer menandainya
+    #  (`depend_on_referenced_packages`), dan yang lebih penting: itu membuat
+    #  janji "bisa diuji tanpa Flutter" jadi tidak benar tanpa ada yang
+    #  menyadarinya.
+    # -------------------------------------------------------------------------
+    test:
+      description: Jalankan seluruh test — package Flutter dan Dart murni
+      steps:
+        - test:flutter
+        - test:dart
+
+    test:flutter:
+      description: Test package yang bergantung pada Flutter
+      exec: flutter test
+      packageFilters:
+        dirExists: test
+        flutter: true
+
+    test:dart:
+      description: Test package Dart murni
+      exec: dart test
+      packageFilters:
+        dirExists: test
+        flutter: false
+
+    # -------------------------------------------------------------------------
+    #  Menjalankan aplikasi
+    # -------------------------------------------------------------------------
+    #
+    #  `--web-hostname=127.0.0.1` bukan localhost, dan itu bukan sekadar selera.
+    #
+    #  Di Windows, `localhost` bisa di-resolve ke ::1 (IPv6) sementara backend
+    #  Laravel mendengarkan di 127.0.0.1 (IPv4). Akibatnya: aplikasi web Flutter
+    #  jalan, halamannya terbuka, dan SETIAP request API gagal dengan connection
+    #  refused — tanpa petunjuk apa pun di layar bahwa penyebabnya resolusi nama.
+    #
+    #  Port berbeda per aplikasi juga bukan kerapian: `flutter_secure_storage` di
+    #  web memakai localStorage, yang terikat ke ORIGIN — dan origin ditentukan
+    #  port. Kalau ketiganya di port yang sama, token driver menimpa token
+    #  penumpang, dan menguji dua peran sekaligus jadi tidak mungkin.
+    #
+    #  Ketiga script di bawah memakai `exec` dengan `scope`, jadi melos yang
+    #  masuk ke direktori package-nya — tidak ada `cd` yang bisa salah relatif
+    #  terhadap direktori pemanggil.
+    #
+    run:customer:
+      description: Jalankan app customer di browser pada 127.0.0.1:5001
+      exec: flutter run -d chrome --web-hostname=127.0.0.1 --web-port=5001 --dart-define=API_BASE_URL=http://127.0.0.1:8000/api/v1 --dart-define=APP_ENV=local
+      packageFilters:
+        scope: antaride_customer
+
+    run:driver:
+      description: Jalankan app driver di browser pada 127.0.0.1:5002
+      exec: flutter run -d chrome --web-hostname=127.0.0.1 --web-port=5002 --dart-define=API_BASE_URL=http://127.0.0.1:8000/api/v1 --dart-define=APP_ENV=local
+      packageFilters:
+        scope: antaride_driver
+
+    run:merchant:
+      description: Jalankan app merchant di browser pada 127.0.0.1:5003
+      exec: flutter run -d chrome --web-hostname=127.0.0.1 --web-port=5003 --dart-define=API_BASE_URL=http://127.0.0.1:8000/api/v1 --dart-define=APP_ENV=local
+      packageFilters:
+        scope: antaride_merchant
+
+    # -------------------------------------------------------------------------
+    #  BUILD APK
+    # -------------------------------------------------------------------------
+    #
+    #  Alamat API DIBERIKAN lewat env `ANTARIDE_API_URL`, tidak ada bawaannya di
+    #  sini. Itu disengaja: bawaan `http://127.0.0.1:8000` akan menghasilkan APK
+    #  yang terpasang normal lalu gagal di SETIAP request — karena 127.0.0.1 di
+    #  dalam HP menunjuk ke HP itu sendiri, bukan ke komputer Anda.
+    #
+    #  Kegagalan itu tidak menyebut alamat sama sekali; yang muncul hanya
+    #  "tidak ada koneksi internet". Jadi lebih baik build-nya yang gagal, dengan
+    #  pesan yang menyebut apa yang kurang.
+    #
+    #  Pakai:
+    #
+    #    set ANTARIDE_API_URL=https://api.domain-anda.id/api/v1
+    #    melos run apk:customer
+    #
+    #  `--split-per-abi` memecah per arsitektur: arm64 (HP modern) sekitar 18 MB,
+    #  dibanding 40 MB kalau digabung. Untuk APK yang dibagikan lewat WhatsApp,
+    #  bedanya nyata. Yang dipakai hampir semua HP Android sekarang adalah
+    #  `app-arm64-v8a-release.apk`.
+    #
+    #  Kunci penandatanganan: lihat komentar di
+    #  `apps/customer/android/app/build.gradle.kts`. Tanpa `key.properties`,
+    #  APK-nya bertanda kunci DEBUG — bisa di-sideload, TIDAK bisa diunggah ke
+    #  Play Store.
+    #
+    apk:customer:
+      description: Build APK release penumpang (butuh env ANTARIDE_API_URL)
+      exec: flutter build apk --release --split-per-abi --dart-define=API_BASE_URL=$ANTARIDE_API_URL --dart-define=APP_ENV=production
+      packageFilters:
+        scope: antaride_customer
+
+    apk:driver:
+      description: Build APK release driver (butuh env ANTARIDE_API_URL)
+      exec: flutter build apk --release --split-per-abi --dart-define=API_BASE_URL=$ANTARIDE_API_URL --dart-define=APP_ENV=production
+      packageFilters:
+        scope: antaride_driver
+
+    apk:merchant:
+      description: Build APK release merchant (butuh env ANTARIDE_API_URL)
+      exec: flutter build apk --release --split-per-abi --dart-define=API_BASE_URL=$ANTARIDE_API_URL --dart-define=APP_ENV=production
+      packageFilters:
+        scope: antaride_merchant
+
+    apk:all:
+      description: Build APK release ketiga aplikasi
+      steps:
+        - apk:customer
+        - apk:driver
+        - apk:merchant
+
+    # -------------------------------------------------------------------------
+    #  TIDAK ADA `api:generate`, DAN ITU DISENGAJA
+    # -------------------------------------------------------------------------
+    #
+    #  Backend punya spesifikasi OpenAPI lengkap, dan `swagger_parser` bisa
+    #  menghasilkan model Dart darinya. Itu TIDAK dipakai — alasan lengkapnya ada
+    #  di docblock `packages/antaride_api/lib/src/models/order.dart`.
+    #
+    #  Ringkasnya: model hasil generate memetakan field API satu-satu, dan yang
+    #  hilang di situ justru yang paling dipakai layar — field turunan seperti
+    #  `canCancel`, `isActive`, dan `secondsUntilExpiry`. Kalau model-nya
+    #  di-generate, ketiganya berakhir tersebar di widget sebagai perbandingan
+    #  string status, dan salah satu widget akan melupakan satu status.
+    #
+    #  Yang menjaga kesesuaian dengan API bukan generator, tapi test kontrak di
+    #  `packages/antaride_api/test/contract_test.dart` — fixture-nya dihasilkan
+    #  backend, jadi perubahan bentuk response gagal di test, bukan di layar.
+    #
+    #  TIDAK ADA `run:web:all` juga. Bentuk sebelumnya memanggil `melos run` tiga
+    #  kali dengan `&` — yang menuntut melos di PATH DAN shell POSIX, dan tidak
+    #  bekerja di cmd.exe. Untuk menjalankan ketiganya, pakai tiga terminal, atau
+    #  profil di `.vscode/launch.json` yang memang dibuat untuk itu.

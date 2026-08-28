@@ -1,0 +1,38 @@
+# Koneksi realtime ke Centrifugo.
+#
+# ==============================================================================
+#  KENAPA PAKET TERSENDIRI, DAN KENAPA ISINYA ABSTRAKSI
+# ==============================================================================
+#  Centrifugo belum terpasang di lingkungan pengembangan sekarang. Kalau kode
+#  realtime tersebar di layar, seluruh aplikasi tidak bisa dijalankan sampai
+#  server itu ada.
+#
+#  Dengan abstraksi di sini, layar berlangganan pada `RealtimeClient` dan
+#  aplikasi menyuntikkan implementasi yang tersedia: WebSocket sungguhan kalau
+#  servernya hidup, atau `PollingRealtimeClient` yang menarik dari REST kalau
+#  belum. Layar tidak berubah sama sekali di antara keduanya.
+# ==============================================================================
+name: antaride_realtime
+description: Klien realtime Antaride (Centrifugo).
+version: 0.1.0
+publish_to: none
+
+resolution: workspace
+
+environment:
+  sdk: ^3.9.0
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+  antaride_core: ^0.1.0
+
+  # WebSocket lintas platform, termasuk web. Bagian dari paket resmi Dart, jadi
+  # tidak menambah risiko dependency pihak ketiga di jalur yang kritis.
+  web_socket_channel: ^3.0.1
+
+dev_dependencies:
+  flutter_lints: ^6.0.0
+  flutter_test:
+    sdk: flutter

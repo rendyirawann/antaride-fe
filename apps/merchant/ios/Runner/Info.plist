@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>CADisableMinimumFrameDurationOnPhone</key>
+	<true/>
+	<key>CFBundleDevelopmentRegion</key>
+	<string>$(DEVELOPMENT_LANGUAGE)</string>
+	<key>CFBundleDisplayName</key>
+	<string>Antaride Merchant</string>
+	<key>CFBundleExecutable</key>
+	<string>$(EXECUTABLE_NAME)</string>
+	<key>CFBundleIdentifier</key>
+	<string>$(PRODUCT_BUNDLE_IDENTIFIER)</string>
+	<key>CFBundleInfoDictionaryVersion</key>
+	<string>6.0</string>
+	<key>CFBundleName</key>
+	<string>Antaride Merchant</string>
+	<key>CFBundlePackageType</key>
+	<string>APPL</string>
+	<key>CFBundleShortVersionString</key>
+	<string>$(FLUTTER_BUILD_NAME)</string>
+	<key>CFBundleSignature</key>
+	<string>????</string>
+	<key>CFBundleVersion</key>
+	<string>$(FLUTTER_BUILD_NUMBER)</string>
+	<key>LSRequiresIPhoneOS</key>
+	<true/>
+	<key>UIApplicationSceneManifest</key>
+	<dict>
+		<key>UIApplicationSupportsMultipleScenes</key>
+		<false/>
+		<key>UISceneConfigurations</key>
+		<dict>
+			<key>UIWindowSceneSessionRoleApplication</key>
+			<array>
+				<dict>
+					<key>UISceneClassName</key>
+					<string>UIWindowScene</string>
+					<key>UISceneConfigurationName</key>
+					<string>flutter</string>
+					<key>UISceneDelegateClassName</key>
+					<string>$(PRODUCT_MODULE_NAME).SceneDelegate</string>
+					<key>UISceneStoryboardFile</key>
+					<string>Main</string>
+				</dict>
+			</array>
+		</dict>
+	</dict>
+	<key>UIApplicationSupportsIndirectInputEvents</key>
+	<true/>
+	<key>UILaunchStoryboardName</key>
+	<string>LaunchScreen</string>
+	<key>UIMainStoryboardFile</key>
+	<string>Main</string>
+	<key>UISupportedInterfaceOrientations</key>
+	<array>
+		<string>UIInterfaceOrientationPortrait</string>
+		<string>UIInterfaceOrientationLandscapeLeft</string>
+		<string>UIInterfaceOrientationLandscapeRight</string>
+	</array>
+	<key>UISupportedInterfaceOrientations~ipad</key>
+	<array>
+		<string>UIInterfaceOrientationPortrait</string>
+		<string>UIInterfaceOrientationPortraitUpsideDown</string>
+		<string>UIInterfaceOrientationLandscapeLeft</string>
+		<string>UIInterfaceOrientationLandscapeRight</string>
+	</array>
+	<!--
+	  ======================================================================
+	   KUNCI USAGE DESCRIPTION: YANG HILANG MENYEBABKAN CRASH, BUKAN DIALOG
+	  ======================================================================
+	   iOS mematikan proses SEKETIKA begitu API kamera, galeri, atau mikrofon
+	   dipanggil tanpa kunci yang cocok di berkas ini. Bukan dialog izin yang
+	   ditolak, bukan exception yang bisa ditangkap — aplikasinya hilang dari
+	   layar, dan log-nya hanya menyebut NSInvalidArgumentException.
+
+	   Itu sebabnya kunci di bawah ditulis walaupun sebagian fiturnya belum ada:
+	   kunci yang menyusul terlambat berarti crash di perangkat pengguna.
+
+	   Lapis kedua: App Store menolak kalimat yang tidak menjelaskan
+	   pemakaiannya. "Aplikasi ini butuh kamera" ditolak; yang menyebut untuk apa
+	   lolos. Kalimat di bawah menyebut apa yang didapat pengguna, bukan apa yang
+	   dibutuhkan aplikasi.
+
+	   Untuk mikrofon: kalimatnya menyatakan terus terang bahwa fiturnya belum
+	   aktif. Itu jauh lebih baik daripada kalimat yang menjanjikan fitur yang
+	   tidak ditemukan reviewer — dan reviewer memang mencarinya.
+	  ======================================================================
+	-->
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>Antaride Merchant memakai lokasi Anda satu kali, untuk memastikan titik toko di peta benar-benar berada di depan pintu Anda. Titik yang bergeser membuat driver berhenti di gedung sebelah pada setiap pesanan.</string>
+	<key>NSCameraUsageDescription</key>
+	<string>Antaride Merchant memakai kamera untuk memfoto produk dan menu Anda. Foto produk adalah yang paling menentukan apakah pesanan masuk.</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>Antaride Merchant membuka galeri agar Anda bisa memakai foto produk yang sudah ada, tanpa memfotonya ulang.</string>
+	<key>NSMicrophoneUsageDescription</key>
+	<string>Antaride Merchant akan memakai mikrofon untuk catatan suara pada pesanan. Fitur ini belum aktif, dan izinnya tidak akan diminta sampai fitur itu tersedia.</string>
+</dict>
+</plist>

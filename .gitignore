@@ -1,0 +1,94 @@
+# =============================================================================
+#  MATERI KUNCI — JANGAN PERNAH MASUK GIT
+# =============================================================================
+#  Keystore rilis tidak bisa diganti setelah aplikasi terbit di Play Store.
+#  Kunci yang bocor berarti orang lain bisa menerbitkan pembaruan yang perangkat
+#  pengguna terima sebagai pembaruan sah dari Anda — dan tidak ada cara
+#  mencabutnya selain menarik aplikasinya.
+#
+#  Dan sekali masuk git, dia ada di riwayat selamanya. Menghapusnya di commit
+#  berikutnya tidak menghapusnya dari riwayat.
+# =============================================================================
+**/android/key.properties
+**/android/keystore.properties
+*.jks
+*.keystore
+*.p12
+*.pepk
+
+# Sertifikat dan profil iOS
+*.mobileprovision
+*.cer
+*.certSigningRequest
+ios/Runner/GoogleService-Info.plist
+android/app/google-services.json
+**/android/app/google-services.json
+
+# =============================================================================
+#  BUILD & CACHE
+# =============================================================================
+.dart_tool/
+.packages
+build/
+**/build/
+.flutter-plugins
+.flutter-plugins-dependencies
+.pub-cache/
+.pub/
+
+# =============================================================================
+#  PUBSPEC.LOCK: DIKOMIT, DAN ITU KEPUTUSAN YANG DISENGAJA
+# =============================================================================
+#  Pub workspace menghasilkan SATU `pubspec.lock` di akar. Berkas itu DIKOMIT —
+#  tidak ada di daftar abaikan ini.
+#
+#  Alasannya: tanpa lock yang dikomit, dua pengembang bisa mendapat versi paket
+#  yang berbeda dari rentang `^` yang sama, dan bug yang muncul di satu komputer
+#  tidak bisa direproduksi di komputer lain. Untuk aplikasi (bukan pustaka yang
+#  dipublikasikan), lock yang dikomit adalah praktik yang benar.
+#
+#  Lock milik package anggota TIDAK ada — workspace yang menanganinya.
+# =============================================================================
+
+# =============================================================================
+#  IDE
+# =============================================================================
+.idea/
+*.iml
+*.iws
+.vscode/*
+!.vscode/launch.json
+.DS_Store
+
+# Android Studio / Gradle lokal
+**/android/local.properties
+**/android/.gradle/
+**/android/captures/
+**/android/.cxx/
+
+# iOS / macOS lokal
+**/ios/Pods/
+**/ios/.symlinks/
+**/ios/Flutter/Flutter.framework
+**/ios/Flutter/Flutter.podspec
+**/ios/Flutter/Generated.xcconfig
+**/ios/Flutter/flutter_export_environment.sh
+**/ios/Runner/GeneratedPluginRegistrant.*
+**/ios/**/*.mode1v3
+**/ios/**/*.mode2v3
+**/ios/**/*.perspectivev3
+**/ios/**/xcuserdata/
+
+# =============================================================================
+#  FIXTURE KONTRAK: DIKOMIT
+# =============================================================================
+#  `test_fixtures/` DIKOMIT dan sengaja tidak diabaikan.
+#
+#  Berkas di dalamnya dihasilkan backend, dan test Flutter memerlukannya. Kalau
+#  diabaikan, `melos run test` gagal di komputer yang belum pernah menjalankan
+#  suite backend — dengan pesan yang menunjuk ke repo lain.
+#
+#  Konsekuensinya: menjalankan suite backend akan mengubah berkas ini dan
+#  memunculkan diff. Itu memang tandanya bentuk response berubah, dan diff itu
+#  yang harus dibaca.
+# =============================================================================

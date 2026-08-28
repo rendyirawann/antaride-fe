@@ -1,0 +1,140 @@
+{
+  // ==========================================================================
+  //  KENAPA 127.0.0.1, BUKAN localhost
+  // ==========================================================================
+  //  Di Windows, `localhost` bisa di-resolve ke ::1 (IPv6) sementara backend
+  //  Laravel mendengarkan di 127.0.0.1 (IPv4). Akibatnya: halaman Flutter
+  //  terbuka normal, dan SETIAP request API gagal dengan connection refused —
+  //  tanpa satu pun petunjuk di layar bahwa penyebabnya resolusi nama.
+  //
+  //  Memakai 127.0.0.1 di kedua sisi menghilangkan seluruh kelas masalah itu.
+  //  Itu juga yang jadi bawaan `AppConfig.apiBaseUrl`.
+  // ==========================================================================
+  //
+  // ==========================================================================
+  //  PORT BERBEDA PER APLIKASI, DAN ITU PENTING
+  // ==========================================================================
+  //  5001 customer, 5002 driver, 5003 merchant.
+  //
+  //  Alasannya bukan kerapian: `flutter_secure_storage` di web memakai
+  //  localStorage, yang terikat ke ORIGIN — dan origin ditentukan port. Kalau
+  //  ketiganya berjalan di port yang sama, token driver akan menimpa token
+  //  penumpang, dan menguji dua peran sekaligus jadi tidak mungkin.
+  //
+  //  Dengan port tetap per aplikasi, ketiganya bisa dibuka bersamaan dengan
+  //  akun berbeda — dan itu memang alur pengujian yang paling sering dipakai:
+  //  pesan dari satu tab, terima dari tab lain.
+  // ==========================================================================
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Customer · Chrome (127.0.0.1:5001)",
+      "request": "launch",
+      "type": "dart",
+      "program": "apps/customer/lib/main.dart",
+      "deviceId": "chrome",
+      "args": [
+        "--web-hostname=127.0.0.1",
+        "--web-port=5001",
+        "--dart-define=API_BASE_URL=http://127.0.0.1:8000/api/v1",
+        "--dart-define=APP_ENV=local"
+      ]
+    },
+    {
+      "name": "Customer · Brave (127.0.0.1:5001)",
+      "request": "launch",
+      "type": "dart",
+      "program": "apps/customer/lib/main.dart",
+      "deviceId": "chrome",
+      // `CHROME_EXECUTABLE` mengarahkan device `chrome` milik Flutter ke Brave.
+      // Brave berbasis Chromium, jadi hot reload dan DevTools bekerja sama saja.
+      //
+      // Kalau Brave dipasang per-user, jalurnya ada di
+      // %LOCALAPPDATA%\BraveSoftware\Brave-Browser\Application\brave.exe —
+      // sesuaikan baris di bawah kalau launch-nya gagal menemukan berkasnya.
+      "env": {
+        "CHROME_EXECUTABLE": "C:\\Program Files\\BraveSoftware\\Brave-Browser\\Application\\brave.exe"
+      },
+      "args": [
+        "--web-hostname=127.0.0.1",
+        "--web-port=5001",
+        "--dart-define=API_BASE_URL=http://127.0.0.1:8000/api/v1",
+        "--dart-define=APP_ENV=local"
+      ]
+    },
+    {
+      "name": "Driver · Chrome (127.0.0.1:5002)",
+      "request": "launch",
+      "type": "dart",
+      "program": "apps/driver/lib/main.dart",
+      "deviceId": "chrome",
+      "args": [
+        "--web-hostname=127.0.0.1",
+        "--web-port=5002",
+        "--dart-define=API_BASE_URL=http://127.0.0.1:8000/api/v1",
+        "--dart-define=APP_ENV=local"
+      ]
+    },
+    {
+      "name": "Driver · Brave (127.0.0.1:5002)",
+      "request": "launch",
+      "type": "dart",
+      "program": "apps/driver/lib/main.dart",
+      "deviceId": "chrome",
+      "env": {
+        "CHROME_EXECUTABLE": "C:\\Program Files\\BraveSoftware\\Brave-Browser\\Application\\brave.exe"
+      },
+      "args": [
+        "--web-hostname=127.0.0.1",
+        "--web-port=5002",
+        "--dart-define=API_BASE_URL=http://127.0.0.1:8000/api/v1",
+        "--dart-define=APP_ENV=local"
+      ]
+    },
+    {
+      "name": "Merchant · Chrome (127.0.0.1:5003)",
+      "request": "launch",
+      "type": "dart",
+      "program": "apps/merchant/lib/main.dart",
+      "deviceId": "chrome",
+      "args": [
+        "--web-hostname=127.0.0.1",
+        "--web-port=5003",
+        "--dart-define=API_BASE_URL=http://127.0.0.1:8000/api/v1",
+        "--dart-define=APP_ENV=local"
+      ]
+    },
+    {
+      "name": "Customer · Android",
+      "request": "launch",
+      "type": "dart",
+      "program": "apps/customer/lib/main.dart",
+      "args": [
+        // ==================================================================
+        //  10.0.2.2, BUKAN 127.0.0.1, DI EMULATOR ANDROID
+        // ==================================================================
+        //  Di dalam emulator, 127.0.0.1 menunjuk ke emulator itu sendiri —
+        //  bukan ke komputer yang menjalankannya. 10.0.2.2 adalah alias yang
+        //  disediakan emulator untuk host-nya.
+        //
+        //  Untuk PERANGKAT FISIK, ganti dengan IP komputer di jaringan yang
+        //  sama, misalnya http://192.168.1.7:8000/api/v1 — dan pastikan Laravel
+        //  dijalankan dengan `--host=0.0.0.0`, karena bawaannya hanya
+        //  mendengarkan 127.0.0.1.
+        // ==================================================================
+        "--dart-define=API_BASE_URL=http://10.0.2.2:8000/api/v1",
+        "--dart-define=APP_ENV=local"
+      ]
+    },
+    {
+      "name": "Driver · Android",
+      "request": "launch",
+      "type": "dart",
+      "program": "apps/driver/lib/main.dart",
+      "args": [
+        "--dart-define=API_BASE_URL=http://10.0.2.2:8000/api/v1",
+        "--dart-define=APP_ENV=local"
+      ]
+    }
+  ]
+}

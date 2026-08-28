@@ -1,0 +1,35 @@
+{
+    "driver": {
+        "name": "Teddy Harimurti Zulkarnain",
+        "status": "active",
+        "rating": {
+            "average": 4.75,
+            "count": 128
+        },
+        "acceptance_rate": 88.5,
+        "cancellation_rate": 3.2,
+        "completed_orders": 240
+    },
+    "online": false,
+    "session_started_at": null,
+    "location": null,
+    "wallet": {
+        "balance": {
+            "amount": 0,
+            "currency": "IDR",
+            "formatted": "Rp 0"
+        },
+        "can_take_cash_orders": false,
+        "cash_deposit_minimum": 20000
+    },
+    "active_order": null,
+    "today": {
+        "orders_completed": 0,
+        "earning": {
+            "amount": 0,
+            "currency": "IDR",
+            "formatted": "Rp 0"
+        },
+        "online_seconds": 0
+    }
+}

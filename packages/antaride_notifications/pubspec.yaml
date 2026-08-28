@@ -1,0 +1,60 @@
+# Notifikasi in-app.
+#
+# ==============================================================================
+#  KENAPA PAKET TERSENDIRI, BUKAN SATU LAYAR DI MASING-MASING APLIKASI
+# ==============================================================================
+#  Layar notifikasi penumpang dan driver identik: daftar terurut waktu, lencana
+#  belum-dibaca, tandai-semua-dibaca, tarik untuk menyegarkan. Yang berbeda hanya
+#  APA YANG TERJADI saat notifikasi ditekan — dan itu satu callback, bukan satu
+#  layar.
+#
+#  Kalau layarnya digandakan di dua aplikasi, keduanya akan menyimpang: perbaikan
+#  pada penanganan cursor di satu sisi tidak sampai ke sisi lain, dan bug yang
+#  sudah diperbaiki akan muncul lagi di aplikasi yang tidak ikut diperbaiki.
+#
+#  Bukan di `antaride_ui`, dan itu batas yang dijaga: `antaride_ui` adalah design
+#  system yang TIDAK tahu apa pun soal API. Paket ini tahu — dia memanggil
+#  repository. Menaruhnya di sana berarti design system ikut bergantung pada
+#  bentuk response backend, dan itu membuatnya tidak bisa dipakai untuk apa pun
+#  yang bukan Antaride.
+# ==============================================================================
+name: antaride_notifications
+description: Layar dan controller notifikasi in-app, dipakai aplikasi penumpang dan driver.
+version: 0.1.0
+publish_to: none
+
+resolution: workspace
+
+environment:
+  sdk: ^3.9.0
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+  antaride_core: ^0.1.0
+  antaride_api: ^0.1.0
+  antaride_ui: ^0.1.0
+
+  provider: ^6.1.2
+
+dev_dependencies:
+  flutter_lints: ^6.0.0
+  flutter_test:
+    sdk: flutter
+
+  # Hanya untuk test: adapter HTTP palsu di
+  # `test/notification_controller_test.dart`.
+  #
+  # Yang dipalsukan cuma lapisan jaringannya — `ApiClient`,
+  # `NotificationRepository`, dan controller-nya yang diuji adalah yang
+  # sungguhan, termasuk penyusunan query `as` dan `cursor`.
+  dio: ^5.7.0
+
+# Ikon Material dipakai layar notifikasi (lonceng, bendera, papan tugas).
+#
+# Tanpa baris ini, `flutter test` di paket ini memperingatkan bahwa
+# `easy_refresh` menuntutnya sementara pubspec utamanya tidak menyalakannya —
+# dan di build sungguhan ikonnya tidak ikut dibundel.
+flutter:
+  uses-material-design: true

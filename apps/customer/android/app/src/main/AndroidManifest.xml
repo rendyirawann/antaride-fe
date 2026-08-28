@@ -1,0 +1,185 @@
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!--
+      ==========================================================================
+       IZIN INTERNET WAJIB ADA DI MANIFEST *MAIN*, BUKAN HANYA DEBUG
+      ==========================================================================
+       Template `flutter create` menaruh izin ini HANYA di
+       `src/debug/AndroidManifest.xml` dan `src/profile/AndroidManifest.xml`,
+       karena hot reload membutuhkannya.
+
+       Akibatnya, build RELEASE tidak punya izin internet sama sekali. Aplikasinya
+       terpasang normal, terbuka normal, dan SETIAP request API gagal — dengan
+       galat jaringan yang tidak menyebut izin apa pun.
+
+       Ini kegagalan yang hampir selalu ditemukan setelah APK dibagikan ke orang
+       lain, karena build debug di komputer sendiri tidak pernah menunjukkannya.
+      ==========================================================================
+    -->
+    <uses-permission android:name="android.permission.INTERNET" />
+
+    <!--
+      Dipakai untuk membedakan "tidak ada koneksi" dari "server tidak menjawab".
+      Keduanya butuh pesan yang berbeda: yang pertama "periksa jaringan Anda",
+      yang kedua "coba lagi nanti".
+    -->
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+
+    <!--
+      ==========================================================================
+       LOKASI: HANYA SAAT APLIKASI DIPAKAI
+      ==========================================================================
+       Penumpang TIDAK memerlukan lokasi latar belakang — dia membuka aplikasi,
+       memilih titik jemput, lalu menutupnya.
+
+       `ACCESS_BACKGROUND_LOCATION` sengaja TIDAK diminta di sini. Izin itu wajib
+       dijelaskan ke Play Store dengan alasan yang bisa diperiksa, dan aplikasi
+       penumpang yang memintanya akan ditolak review — karena memang tidak ada
+       alasannya.
+
+       COARSE ikut diminta: perangkat yang menolak FINE masih bisa memberi
+       perkiraan lokasi, dan itu cukup untuk memusatkan peta di awal. Titik
+       jemputnya tetap dipilih pengguna dengan menggeser peta.
+      ==========================================================================
+    -->
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+
+    <!--
+      ==========================================================================
+       GPS SEBAGAI SYARAT PERANGKAT, BUKAN SEBAGAI IZIN
+      ==========================================================================
+       `android.hardware.location.gps` adalah FITUR PERANGKAT, bukan izin —
+       tidak ada yang perlu disetujui pengguna. Yang ditentukannya: apakah
+       aplikasi ini ditawarkan Play Store untuk perangkat tanpa chip GPS.
+
+       required="false" untuk aplikasi penumpang: lokasi di sini hanya
+       KEMUDAHAN. Penumpang yang tidak punya GPS tetap bisa memesan dengan
+       mengetik alamat, dan itu jalur yang memang sudah ada. Mengecualikan
+       perangkatnya dari Play Store berarti kehilangan pengguna yang
+       aplikasinya sebenarnya berfungsi penuh.
+      ==========================================================================
+    -->
+    <uses-feature
+        android:name="android.hardware.location.gps"
+        android:required="false" />
+
+    <!--
+      ==========================================================================
+       KAMERA
+      ==========================================================================
+       Dipakai penumpang mengambil foto profil. Bukan fitur besar, tapi foto
+       profil adalah cara driver mengenali orang yang dia jemput di
+       kerumunan — dan itu berarti waktu tunggu yang lebih pendek untuk
+       keduanya.
+
+       `<uses-feature android:required="false">` di bawah WAJIB ada, dan ini yang
+       paling sering terlewat: Play Store menyimpulkan syarat perangkat dari izin
+       yang dideklarasikan. Izin CAMERA tanpa `uses-feature required="false"`
+       membuat aplikasi ini TIDAK MUNCUL di Play Store untuk perangkat tanpa
+       kamera — dan tidak ada galat apa pun yang menjelaskannya, aplikasinya
+       hanya tidak ada di sana.
+      ==========================================================================
+    -->
+    <uses-permission android:name="android.permission.CAMERA" />
+    <uses-feature android:name="android.hardware.camera" android:required="false" />
+    <uses-feature android:name="android.hardware.camera.autofocus" android:required="false" />
+
+    <!--
+      ==========================================================================
+       GALERI: TIGA IZIN UNTUK SATU HAL, KARENA ANDROID MENGUBAHNYA DUA KALI
+      ==========================================================================
+       Dipakai memilih foto profil dari galeri, sebagai alternatif kamera.
+       Sebagian besar orang sudah punya fotonya.
+
+       Android 12 dan sebelumnya   READ_EXTERNAL_STORAGE.
+       Android 13 (API 33)         READ_EXTERNAL_STORAGE DIABAIKAN sepenuhnya.
+                                   Penggantinya READ_MEDIA_IMAGES.
+       Android 14 (API 34)         menambah "pilih beberapa foto saja", lewat
+                                   READ_MEDIA_VISUAL_USER_SELECTED.
+
+       `maxSdkVersion="32"` pada yang pertama BUKAN kerapian. Tanpa itu, Play
+       Store menganggap aplikasi ini meminta akses seluruh penyimpanan di semua
+       versi Android, dan izin seluruh-penyimpanan menuntut deklarasi tambahan
+       beserta penjelasan tertulis. Dibatasi ke API 32, izin itu tidak lagi
+       dihitung untuk perangkat modern.
+
+       READ_MEDIA_VIDEO dan READ_MEDIA_AUDIO TIDAK dideklarasikan: yang dipilih
+       pengguna di aplikasi ini hanya gambar. Meminta akses video dan audio untuk
+       fitur yang hanya menerima gambar adalah izin yang tidak bisa dijelaskan
+       saat review.
+      ==========================================================================
+    -->
+    <uses-permission
+        android:name="android.permission.READ_EXTERNAL_STORAGE"
+        android:maxSdkVersion="32" />
+    <uses-permission android:name="android.permission.READ_MEDIA_IMAGES" />
+    <uses-permission android:name="android.permission.READ_MEDIA_VISUAL_USER_SELECTED" />
+
+    <!--
+      ==========================================================================
+       MIKROFON — DIDEKLARASIKAN, TAPI BELUM ADA FITURNYA
+      ==========================================================================
+       PERINGATAN YANG HARUS DIBACA SEBELUM RILIS KE PLAY STORE:
+
+       Sampai sekarang TIDAK ADA satu pun fitur di aplikasi ini yang merekam
+       audio. Izin ini dideklarasikan atas permintaan pemilik proyek, untuk
+       menyiapkan pesan suara antara penumpang dan driver.
+
+       Kebijakan Play Store menuntut setiap izin bisa dikaitkan dengan fungsi
+       yang benar-benar ada di aplikasi. Izin RECORD_AUDIO tanpa fitur perekaman
+       adalah alasan penolakan yang lazim — dan penolakannya terjadi pada
+       pengajuan, bukan pada build.
+
+       Jadi salah satu dari dua hal HARUS dikerjakan sebelum pengajuan pertama:
+       fitur pesan suaranya dibangun, atau tiga baris ini dibuang.
+      ==========================================================================
+    -->
+    <uses-permission android:name="android.permission.RECORD_AUDIO" />
+    <uses-feature android:name="android.hardware.microphone" android:required="false" />
+
+    <application
+        android:label="Antaride"
+        android:name="${applicationName}"
+        android:icon="@mipmap/ic_launcher">
+        <activity
+            android:name=".MainActivity"
+            android:exported="true"
+            android:launchMode="singleTop"
+            android:taskAffinity=""
+            android:theme="@style/LaunchTheme"
+            android:configChanges="orientation|keyboardHidden|keyboard|screenSize|smallestScreenSize|locale|layoutDirection|fontScale|screenLayout|density|uiMode"
+            android:hardwareAccelerated="true"
+            android:windowSoftInputMode="adjustResize">
+            <!-- Specifies an Android theme to apply to this Activity as soon as
+                 the Android process has started. This theme is visible to the user
+                 while the Flutter UI initializes. After that, this theme continues
+                 to determine the Window background behind the Flutter UI. -->
+            <meta-data
+              android:name="io.flutter.embedding.android.NormalTheme"
+              android:resource="@style/NormalTheme"
+              />
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN"/>
+                <category android:name="android.intent.category.LAUNCHER"/>
+            </intent-filter>
+        </activity>
+        <!-- Don't delete the meta-data below.
+             This is used by the Flutter tool to generate GeneratedPluginRegistrant.java -->
+        <meta-data
+            android:name="flutterEmbedding"
+            android:value="2" />
+    </application>
+    <!-- Required to query activities that can process text, see:
+         https://developer.android.com/training/package-visibility and
+         https://developer.android.com/reference/android/content/Intent#ACTION_PROCESS_TEXT.
+
+         In order to get text processing actions, the app needs to be able to query
+         the installed packages. -->
+    <queries>
+        <intent>
+            <action android:name="android.intent.action.PROCESS_TEXT"/>
+            <data android:mimeType="text/plain"/>
+        </intent>
+    </queries>
+</manifest>

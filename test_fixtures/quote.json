@@ -1,0 +1,72 @@
+{
+    "quote_id": "01a04817-1a5a-728b-bed2-534d6bbdc636",
+    "expires_at": "2026-08-28T11:22:48+00:00",
+    "expires_in_seconds": 299,
+    "zone": "Medan Kota",
+    "route": {
+        "distance_m": 8000,
+        "distance_km": 8,
+        "duration_s": 1200,
+        "duration_minutes": 20,
+        "polyline": "_p~iF~ps|U_ulLnnqC_mqNvxq`@"
+    },
+    "services": [
+        {
+            "service_code": "ride_bike",
+            "service_name": "Antar Motor",
+            "fare": {
+                "base_fare": 4000,
+                "distance_fare": 9100,
+                "time_fare": 2600,
+                "surge_multiplier": "1.30",
+                "surge_amount": 4710,
+                "regulatory_adjustment": 0,
+                "platform_fee": 1000,
+                "service_fee": 0,
+                "discount_amount": 0,
+                "total_fare": 21410,
+                "driver_earning": 17349,
+                "commission_amount": 3061,
+                "total_formatted": "Rp 21.410",
+                "lines": [
+                    {
+                        "label": "Tarif dasar",
+                        "amount": 4000,
+                        "formatted": "Rp 4.000"
+                    },
+                    {
+                        "label": "Biaya jarak",
+                        "amount": 9100,
+                        "formatted": "Rp 9.100"
+                    },
+                    {
+                        "label": "Biaya waktu",
+                        "amount": 2600,
+                        "formatted": "Rp 2.600"
+                    },
+                    {
+                        "label": "Jam sibuk",
+                        "amount": 4710,
+                        "formatted": "Rp 4.710"
+                    },
+                    {
+                        "label": "Biaya layanan",
+                        "amount": 1000,
+                        "formatted": "Rp 1.000"
+                    }
+                ],
+                "has_surge": true
+            },
+            "surge": {
+                "multiplier": "1.30",
+                "active": true,
+                "explanation": "Sedang jam sibuk"
+            },
+            "pickup_eta_minutes": null,
+            "trip_duration_minutes": 20,
+            "available_drivers": 0,
+            "orderable": false
+        }
+    ],
+    "promos": []
+}

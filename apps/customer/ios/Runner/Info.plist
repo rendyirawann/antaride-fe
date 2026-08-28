@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>CADisableMinimumFrameDurationOnPhone</key>
+	<true/>
+	<key>CFBundleDevelopmentRegion</key>
+	<string>$(DEVELOPMENT_LANGUAGE)</string>
+	<key>CFBundleDisplayName</key>
+	<string>Antaride</string>
+	<key>CFBundleExecutable</key>
+	<string>$(EXECUTABLE_NAME)</string>
+	<key>CFBundleIdentifier</key>
+	<string>$(PRODUCT_BUNDLE_IDENTIFIER)</string>
+	<key>CFBundleInfoDictionaryVersion</key>
+	<string>6.0</string>
+	<key>CFBundleName</key>
+	<string>Antaride</string>
+	<key>CFBundlePackageType</key>
+	<string>APPL</string>
+	<key>CFBundleShortVersionString</key>
+	<string>$(FLUTTER_BUILD_NAME)</string>
+	<key>CFBundleSignature</key>
+	<string>????</string>
+	<key>CFBundleVersion</key>
+	<string>$(FLUTTER_BUILD_NUMBER)</string>
+	<key>LSRequiresIPhoneOS</key>
+	<true/>
+	<key>UIApplicationSceneManifest</key>
+	<dict>
+		<key>UIApplicationSupportsMultipleScenes</key>
+		<false/>
+		<key>UISceneConfigurations</key>
+		<dict>
+			<key>UIWindowSceneSessionRoleApplication</key>
+			<array>
+				<dict>
+					<key>UISceneClassName</key>
+					<string>UIWindowScene</string>
+					<key>UISceneConfigurationName</key>
+					<string>flutter</string>
+					<key>UISceneDelegateClassName</key>
+					<string>$(PRODUCT_MODULE_NAME).SceneDelegate</string>
+					<key>UISceneStoryboardFile</key>
+					<string>Main</string>
+				</dict>
+			</array>
+		</dict>
+	</dict>
+	<key>UIApplicationSupportsIndirectInputEvents</key>
+	<true/>
+	<key>UILaunchStoryboardName</key>
+	<string>LaunchScreen</string>
+	<key>UIMainStoryboardFile</key>
+	<string>Main</string>
+	<key>UISupportedInterfaceOrientations</key>
+	<array>
+		<string>UIInterfaceOrientationPortrait</string>
+		<string>UIInterfaceOrientationLandscapeLeft</string>
+		<string>UIInterfaceOrientationLandscapeRight</string>
+	</array>
+	<key>UISupportedInterfaceOrientations~ipad</key>
+	<array>
+		<string>UIInterfaceOrientationPortrait</string>
+		<string>UIInterfaceOrientationPortraitUpsideDown</string>
+		<string>UIInterfaceOrientationLandscapeLeft</string>
+		<string>UIInterfaceOrientationLandscapeRight</string>
+	</array>
+	<!--
+	  ======================================================================
+	   DESKRIPSI IZIN LOKASI WAJIB ADA, ATAU APLIKASI CRASH
+	  ======================================================================
+	   iOS MENGHENTIKAN aplikasi — bukan menolak izinnya, tapi crash — kalau
+	   permintaan lokasi datang tanpa kunci deskripsi yang sesuai di Info.plist.
+	   Dan crash-nya terjadi tepat saat pengguna menekan "izinkan", jadi di
+	   simulator yang izinnya sudah diberikan sebelumnya, masalahnya tidak
+	   pernah terlihat.
+
+	   Teksnya dibaca pengguna di dialog izin, jadi harus menyebutkan APA yang
+	   didapat dia — bukan apa yang dibutuhkan aplikasi. "Untuk fungsi peta"
+	   tidak memberi alasan untuk menyetujui.
+	  ======================================================================
+	-->
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>Antaride memakai lokasi Anda untuk memusatkan peta di posisi sekarang, supaya Anda tidak perlu mencari titik penjemputan dari nol.</string>
+	<!--
+	  ======================================================================
+	   KUNCI USAGE DESCRIPTION: YANG HILANG MENYEBABKAN CRASH, BUKAN DIALOG
+	  ======================================================================
+	   iOS mematikan proses SEKETIKA begitu API kamera, galeri, atau mikrofon
+	   dipanggil tanpa kunci yang cocok di berkas ini. Bukan dialog izin yang
+	   ditolak, bukan exception yang bisa ditangkap — aplikasinya hilang dari
+	   layar, dan log-nya hanya menyebut NSInvalidArgumentException.
+
+	   Itu sebabnya kunci di bawah ditulis walaupun sebagian fiturnya belum ada:
+	   kunci yang menyusul terlambat berarti crash di perangkat pengguna.
+
+	   Lapis kedua: App Store menolak kalimat yang tidak menjelaskan
+	   pemakaiannya. "Aplikasi ini butuh kamera" ditolak; yang menyebut untuk apa
+	   lolos. Kalimat di bawah menyebut apa yang didapat pengguna, bukan apa yang
+	   dibutuhkan aplikasi.
+
+	   Untuk mikrofon: kalimatnya menyatakan terus terang bahwa fiturnya belum
+	   aktif. Itu jauh lebih baik daripada kalimat yang menjanjikan fitur yang
+	   tidak ditemukan reviewer — dan reviewer memang mencarinya.
+	  ======================================================================
+	-->
+	<key>NSCameraUsageDescription</key>
+	<string>Antaride memakai kamera untuk mengambil foto profil Anda. Foto itu yang membantu driver mengenali Anda di kerumunan, sehingga waktu tunggu di titik penjemputan lebih pendek.</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>Antaride membuka galeri agar Anda bisa memilih foto profil yang sudah ada, tanpa harus memfoto ulang.</string>
+	<key>NSMicrophoneUsageDescription</key>
+	<string>Antaride akan memakai mikrofon untuk pesan suara kepada driver. Fitur ini belum aktif, dan izinnya tidak akan diminta sampai fitur itu tersedia.</string>
+</dict>
+</plist>

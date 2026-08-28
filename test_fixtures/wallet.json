@@ -1,0 +1,19 @@
+{
+    "balance": {
+        "amount": 0,
+        "currency": "IDR",
+        "formatted": "Rp 0"
+    },
+    "held": {
+        "amount": 0,
+        "currency": "IDR",
+        "formatted": "Rp 0"
+    },
+    "total": {
+        "amount": 0,
+        "currency": "IDR",
+        "formatted": "Rp 0"
+    },
+    "is_frozen": false,
+    "frozen_reason": null
+}

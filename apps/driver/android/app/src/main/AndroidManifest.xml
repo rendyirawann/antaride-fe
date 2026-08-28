@@ -1,0 +1,275 @@
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!--
+      Izin internet WAJIB di manifest main, bukan hanya debug. Template
+      `flutter create` menaruhnya hanya di debug dan profile — akibatnya build
+      RELEASE tidak punya izin internet sama sekali, dan setiap request API gagal
+      dengan galat jaringan yang tidak menyebut izin apa pun.
+    -->
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+
+    <!--
+      ==========================================================================
+       LOKASI LATAR BELAKANG: HANYA DI APLIKASI DRIVER, DAN INI KONSEKUENSINYA
+      ==========================================================================
+       Driver mengirim posisi selama bekerja walaupun layarnya mati. Tanpa itu dia
+       hilang dari indeks ketersediaan dan berhenti mendapat tawaran — dan dia
+       tidak akan tahu sebabnya.
+
+       Yang harus disiapkan sebelum rilis ke Play Store, dan bukan hal kecil:
+
+         * Google MENUNTUT justifikasi tertulis untuk izin ini, beserta VIDEO
+           yang memperagakan alurnya di dalam aplikasi. Pengajuan tanpa video
+           ditolak.
+         * Aplikasi harus meminta izin BERTAHAP: "saat dipakai" lebih dulu, lalu
+           latar belakang terpisah setelah driver menekan "Mulai bekerja".
+           Meminta keduanya sekaligus di layar pertama ditolak review.
+         * Harus ada foreground service dengan notifikasi yang terlihat selama
+           posisi dikirim. Android 10+ menghentikan pembacaan lokasi latar
+           belakang tanpa itu.
+
+       Foreground service-nya SUDAH ada — lihat deklarasi `<service>` di bawah,
+       dan `apps/driver/lib/features/location/foreground_location_service.dart`.
+
+       Kenapa izin ini TETAP dideklarasikan padahal foreground service-nya ada:
+
+         Foreground service yang dimulai saat aplikasi TERLIHAT boleh membaca
+         lokasi tanpa ACCESS_BACKGROUND_LOCATION — Android menganggap aplikasi
+         itu masih di depan selama service-nya hidup. Sampai di situ, izin ini
+         tidak perlu.
+
+         Tapi service-nya disetel `allowAutoRestart`, dan service yang di-restart
+         SISTEM dimulai saat aplikasi TIDAK terlihat. Tanpa izin ini, pembacaan
+         lokasinya ditolak — dan gejalanya buruk: notifikasi tetap tampil dan
+         menyatakan service berjalan, sementara tidak ada satu pun posisi yang
+         terkirim.
+
+         Membuang izin ini akan menghapus kewajiban justifikasi Play Store, dan
+         itu godaan yang nyata. Yang ditukar: driver yang HP-nya membunuh proses
+         aplikasi di tengah shift berhenti mendapat order tanpa tahu sebabnya.
+      ==========================================================================
+    -->
+    <uses-permission android:name="android.permission.ACCESS_BACKGROUND_LOCATION" />
+
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_LOCATION" />
+
+    <!--
+      ==========================================================================
+       POST_NOTIFICATIONS: BUKAN UNTUK MEMBERI KABAR, TAPI SYARAT SERVICE-NYA
+      ==========================================================================
+       Push notification ditunda di proyek ini, jadi izin ini terlihat tidak
+       diperlukan. Yang membutuhkannya adalah foreground service: Android
+       MEWAJIBKAN service seperti itu menampilkan notifikasi yang terlihat, dan
+       sejak Android 13 notifikasi menuntut izin runtime.
+
+       Tanpa izin ini, `startService` gagal — dan yang tersisa hanya pengiriman
+       posisi selama aplikasi terbuka. Aplikasi memberi tahu driver kalau itu
+       terjadi; lihat `DriverController.onlyPingsWhileOpen`.
+
+       WAKE_LOCK datang dari manifest paket `flutter_foreground_task` lewat
+       manifest merger, jadi tidak diulang di sini.
+      ==========================================================================
+    -->
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+
+    <!--
+      ==========================================================================
+       GPS SEBAGAI SYARAT PERANGKAT, BUKAN SEBAGAI IZIN
+      ==========================================================================
+       `android.hardware.location.gps` adalah FITUR PERANGKAT, bukan izin —
+       tidak ada yang perlu disetujui pengguna. Yang ditentukannya: apakah
+       aplikasi ini ditawarkan Play Store untuk perangkat tanpa chip GPS.
+
+       required="true" untuk aplikasi driver, dan ini satu-satunya tempat di
+       seluruh proyek yang memakai nilai itu.
+
+       Alasannya: aplikasi driver TIDAK BISA bekerja tanpa GPS. Seluruh
+       fungsinya — masuk indeks ketersediaan, dicocokkan dengan order,
+       menunjukkan posisi ke penumpang — bergantung pada posisi yang
+       nyata. Tidak ada jalur "ketik alamat saja" seperti di aplikasi
+       penumpang.
+
+       Perangkat tanpa GPS yang memasangnya akan mendapati aplikasi yang
+       tidak bisa online sama sekali. Lebih baik dia tidak ditawarkan sejak
+       awal daripada diunduh lalu tidak berfungsi.
+      ==========================================================================
+    -->
+    <uses-feature
+        android:name="android.hardware.location.gps"
+        android:required="true" />
+
+    <!--
+      ==========================================================================
+       KAMERA
+      ==========================================================================
+       Dua pemakaian, dan keduanya nyata:
+
+         Dokumen        KTP, SIM, dan STNK difoto saat pendaftaran. Kolomnya
+                        sudah ada di `driver_documents.file_path`.
+
+         Bukti antar    foto titipan yang sudah diserahkan, untuk layanan
+                        kirim barang. Kolomnya `orders.proof_photo_path`.
+                        Ini yang menyelesaikan sengketa "barang saya tidak
+                        pernah datang" — tanpa foto, tidak ada dasar untuk
+                        memutuskan siapa yang benar.
+
+       `<uses-feature android:required="false">` di bawah WAJIB ada, dan ini yang
+       paling sering terlewat: Play Store menyimpulkan syarat perangkat dari izin
+       yang dideklarasikan. Izin CAMERA tanpa `uses-feature required="false"`
+       membuat aplikasi ini TIDAK MUNCUL di Play Store untuk perangkat tanpa
+       kamera — dan tidak ada galat apa pun yang menjelaskannya, aplikasinya
+       hanya tidak ada di sana.
+      ==========================================================================
+    -->
+    <uses-permission android:name="android.permission.CAMERA" />
+    <uses-feature android:name="android.hardware.camera" android:required="false" />
+    <uses-feature android:name="android.hardware.camera.autofocus" android:required="false" />
+
+    <!--
+      ==========================================================================
+       GALERI: TIGA IZIN UNTUK SATU HAL, KARENA ANDROID MENGUBAHNYA DUA KALI
+      ==========================================================================
+       Dokumen sering sudah difoto sebelumnya, atau discan di tempat lain.
+       Memaksa driver memfotonya ulang di dalam aplikasi berarti pendaftaran
+       yang lebih panjang tanpa alasan.
+
+       Foto bukti antar TIDAK boleh dari galeri — harus diambil langsung.
+       Itu ditegakkan di kode, bukan di manifest: izin yang sama melayani
+       kedua hal, dan yang membedakan aturannya adalah layar yang memanggil.
+
+       Android 12 dan sebelumnya   READ_EXTERNAL_STORAGE.
+       Android 13 (API 33)         READ_EXTERNAL_STORAGE DIABAIKAN sepenuhnya.
+                                   Penggantinya READ_MEDIA_IMAGES.
+       Android 14 (API 34)         menambah "pilih beberapa foto saja", lewat
+                                   READ_MEDIA_VISUAL_USER_SELECTED.
+
+       `maxSdkVersion="32"` pada yang pertama BUKAN kerapian. Tanpa itu, Play
+       Store menganggap aplikasi ini meminta akses seluruh penyimpanan di semua
+       versi Android, dan izin seluruh-penyimpanan menuntut deklarasi tambahan
+       beserta penjelasan tertulis. Dibatasi ke API 32, izin itu tidak lagi
+       dihitung untuk perangkat modern.
+
+       READ_MEDIA_VIDEO dan READ_MEDIA_AUDIO TIDAK dideklarasikan: yang dipilih
+       pengguna di aplikasi ini hanya gambar. Meminta akses video dan audio untuk
+       fitur yang hanya menerima gambar adalah izin yang tidak bisa dijelaskan
+       saat review.
+      ==========================================================================
+    -->
+    <uses-permission
+        android:name="android.permission.READ_EXTERNAL_STORAGE"
+        android:maxSdkVersion="32" />
+    <uses-permission android:name="android.permission.READ_MEDIA_IMAGES" />
+    <uses-permission android:name="android.permission.READ_MEDIA_VISUAL_USER_SELECTED" />
+
+    <!--
+      ==========================================================================
+       MIKROFON — DIDEKLARASIKAN, TAPI BELUM ADA FITURNYA
+      ==========================================================================
+       PERINGATAN YANG HARUS DIBACA SEBELUM RILIS KE PLAY STORE:
+
+       Sampai sekarang TIDAK ADA satu pun fitur di aplikasi ini yang merekam
+       audio. Izin ini dideklarasikan atas permintaan pemilik proyek, untuk
+       menyiapkan pesan suara antara penumpang dan driver.
+
+       Kebijakan Play Store menuntut setiap izin bisa dikaitkan dengan fungsi
+       yang benar-benar ada di aplikasi. Izin RECORD_AUDIO tanpa fitur perekaman
+       adalah alasan penolakan yang lazim — dan penolakannya terjadi pada
+       pengajuan, bukan pada build.
+
+       Jadi salah satu dari dua hal HARUS dikerjakan sebelum pengajuan pertama:
+       fitur pesan suaranya dibangun, atau tiga baris ini dibuang.
+      ==========================================================================
+    -->
+    <uses-permission android:name="android.permission.RECORD_AUDIO" />
+    <uses-feature android:name="android.hardware.microphone" android:required="false" />
+
+    <application
+        android:label="Antaride Driver"
+        android:name="${applicationName}"
+        android:icon="@mipmap/ic_launcher">
+
+        <!--
+          `screenOrientation="portrait"`: aplikasi driver dipakai di dudukan HP
+          di kendaraan, dan rotasi otomatis saat menikung membuat layar berputar
+          tepat ketika driver sedang membacanya.
+        -->
+        <activity
+            android:name=".MainActivity"
+            android:exported="true"
+            android:launchMode="singleTop"
+            android:taskAffinity=""
+            android:theme="@style/LaunchTheme"
+            android:configChanges="orientation|keyboardHidden|keyboard|screenSize|smallestScreenSize|locale|layoutDirection|fontScale|screenLayout|density|uiMode"
+            android:hardwareAccelerated="true"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="adjustResize">
+            <meta-data
+              android:name="io.flutter.embedding.android.NormalTheme"
+              android:resource="@style/NormalTheme"
+              />
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN"/>
+                <category android:name="android.intent.category.LAUNCHER"/>
+            </intent-filter>
+        </activity>
+        <!--
+          ======================================================================
+           FOREGROUND SERVICE PENGIRIM POSISI
+          ======================================================================
+           NAMA KELASNYA TIDAK BOLEH DIUBAH. Dia milik paket
+           `flutter_foreground_task`, dan Android mencarinya lewat nama ini.
+
+           `foregroundServiceType="location"` WAJIB sejak Android 14. Tanpa itu
+           `startForeground` melempar `MissingForegroundServiceTypeException`, dan
+           yang terlihat di aplikasi hanya "posisi hanya terkirim selama aplikasi
+           terbuka" — tanpa menyebut manifest.
+
+           `location`, bukan `dataSync`: yang dilakukan service ini membaca GPS.
+           Tipe yang tidak cocok dengan pekerjaannya bisa lolos di perangkat uji
+           lalu ditolak review Play Store.
+
+           TIDAK memakai `android:stopWithTask="true"`. Justru sebaliknya yang
+           dibutuhkan: driver yang menutup aplikasi dari daftar aplikasi terbaru
+           harus TETAP mengirim posisi selama dia belum menekan offline. Service
+           yang mati bersama task berarti dia hilang dari indeks ketersediaan
+           tanpa pernah menyatakan berhenti bekerja.
+          ======================================================================
+        -->
+        <service
+            android:name="com.pravera.flutter_foreground_task.service.ForegroundService"
+            android:foregroundServiceType="location"
+            android:exported="false" />
+
+        <!-- Don't delete the meta-data below.
+             This is used by the Flutter tool to generate GeneratedPluginRegistrant.java -->
+        <meta-data
+            android:name="flutterEmbedding"
+            android:value="2" />
+    </application>
+
+    <!--
+      Satu blok `queries`, bukan dua.
+      Manifest merger menggabungkan beberapa blok, tapi menyatukannya di sini
+      membuat isinya bisa dibaca sekaligus.
+
+      `DIAL`, bukan izin `CALL_PHONE`: driver menelepon penumpang lewat intent
+      yang MEMBUKA aplikasi telepon dengan nomor sudah terisi, dan driver yang
+      menekan panggil. `CALL_PHONE` memungkinkan aplikasi menelepon tanpa
+      persetujuan, dan Play Store memeriksanya ketat — sementara hasilnya bagi
+      driver sama saja.
+    -->
+    <queries>
+        <intent>
+            <action android:name="android.intent.action.DIAL" />
+        </intent>
+        <intent>
+            <action android:name="android.intent.action.PROCESS_TEXT"/>
+            <data android:mimeType="text/plain"/>
+        </intent>
+    </queries>
+</manifest>

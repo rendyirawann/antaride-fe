@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>CADisableMinimumFrameDurationOnPhone</key>
+	<true/>
+	<key>CFBundleDevelopmentRegion</key>
+	<string>$(DEVELOPMENT_LANGUAGE)</string>
+	<key>CFBundleDisplayName</key>
+	<string>Antaride Driver</string>
+	<key>CFBundleExecutable</key>
+	<string>$(EXECUTABLE_NAME)</string>
+	<key>CFBundleIdentifier</key>
+	<string>$(PRODUCT_BUNDLE_IDENTIFIER)</string>
+	<key>CFBundleInfoDictionaryVersion</key>
+	<string>6.0</string>
+	<key>CFBundleName</key>
+	<string>Antaride Driver</string>
+	<key>CFBundlePackageType</key>
+	<string>APPL</string>
+	<key>CFBundleShortVersionString</key>
+	<string>$(FLUTTER_BUILD_NAME)</string>
+	<key>CFBundleSignature</key>
+	<string>????</string>
+	<key>CFBundleVersion</key>
+	<string>$(FLUTTER_BUILD_NUMBER)</string>
+	<key>LSRequiresIPhoneOS</key>
+	<true/>
+	<key>UIApplicationSceneManifest</key>
+	<dict>
+		<key>UIApplicationSupportsMultipleScenes</key>
+		<false/>
+		<key>UISceneConfigurations</key>
+		<dict>
+			<key>UIWindowSceneSessionRoleApplication</key>
+			<array>
+				<dict>
+					<key>UISceneClassName</key>
+					<string>UIWindowScene</string>
+					<key>UISceneConfigurationName</key>
+					<string>flutter</string>
+					<key>UISceneDelegateClassName</key>
+					<string>$(PRODUCT_MODULE_NAME).SceneDelegate</string>
+					<key>UISceneStoryboardFile</key>
+					<string>Main</string>
+				</dict>
+			</array>
+		</dict>
+	</dict>
+	<key>UIApplicationSupportsIndirectInputEvents</key>
+	<true/>
+	<key>UILaunchStoryboardName</key>
+	<string>LaunchScreen</string>
+	<key>UIMainStoryboardFile</key>
+	<string>Main</string>
+	<key>UISupportedInterfaceOrientations</key>
+	<array>
+		<string>UIInterfaceOrientationPortrait</string>
+		<string>UIInterfaceOrientationLandscapeLeft</string>
+		<string>UIInterfaceOrientationLandscapeRight</string>
+	</array>
+	<key>UISupportedInterfaceOrientations~ipad</key>
+	<array>
+		<string>UIInterfaceOrientationPortrait</string>
+		<string>UIInterfaceOrientationPortraitUpsideDown</string>
+		<string>UIInterfaceOrientationLandscapeLeft</string>
+		<string>UIInterfaceOrientationLandscapeRight</string>
+	</array>
+	<!--
+	  ======================================================================
+	   DUA KUNCI, DAN KEDUANYA DIPERLUKAN DI APLIKASI DRIVER
+	  ======================================================================
+	   `WhenInUse`  saat aplikasi terbuka
+	   `Always`     selama driver bekerja, termasuk saat layarnya mati
+
+	   iOS menampilkan dialog BERTAHAP: "saat dipakai" dulu, lalu menawarkan
+	   "selalu" beberapa saat kemudian. Aplikasi tidak bisa memaksa keduanya
+	   sekaligus, dan mencoba melakukannya membuat dialog kedua tidak pernah
+	   muncul.
+
+	   Teks `Always` harus menyebutkan KONSEKUENSI kalau ditolak — driver yang
+	   menolaknya akan berhenti mendapat tawaran saat layarnya mati, dan tanpa
+	   penjelasan di sini dia tidak akan pernah menghubungkan keduanya.
+	  ======================================================================
+	-->
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>Antaride Driver memakai lokasi Anda untuk mencarikan order terdekat dan menunjukkan posisi Anda ke penumpang.</string>
+	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
+	<string>Antaride Driver perlu lokasi Anda selama bekerja, termasuk saat layar mati. Tanpa izin ini, Anda akan berhenti menerima tawaran order begitu layar HP dimatikan.</string>
+	<key>UIBackgroundModes</key>
+	<array>
+		<string>location</string>
+	</array>
+	<!--
+	  ======================================================================
+	   KUNCI USAGE DESCRIPTION: YANG HILANG MENYEBABKAN CRASH, BUKAN DIALOG
+	  ======================================================================
+	   iOS mematikan proses SEKETIKA begitu API kamera, galeri, atau mikrofon
+	   dipanggil tanpa kunci yang cocok di berkas ini. Bukan dialog izin yang
+	   ditolak, bukan exception yang bisa ditangkap — aplikasinya hilang dari
+	   layar, dan log-nya hanya menyebut NSInvalidArgumentException.
+
+	   Itu sebabnya kunci di bawah ditulis walaupun sebagian fiturnya belum ada:
+	   kunci yang menyusul terlambat berarti crash di perangkat pengguna.
+
+	   Lapis kedua: App Store menolak kalimat yang tidak menjelaskan
+	   pemakaiannya. "Aplikasi ini butuh kamera" ditolak; yang menyebut untuk apa
+	   lolos. Kalimat di bawah menyebut apa yang didapat pengguna, bukan apa yang
+	   dibutuhkan aplikasi.
+
+	   Untuk mikrofon: kalimatnya menyatakan terus terang bahwa fiturnya belum
+	   aktif. Itu jauh lebih baik daripada kalimat yang menjanjikan fitur yang
+	   tidak ditemukan reviewer — dan reviewer memang mencarinya.
+	  ======================================================================
+	-->
+	<key>NSCameraUsageDescription</key>
+	<string>Antaride Driver memakai kamera untuk dua hal: memfoto dokumen Anda (KTP, SIM, STNK) saat pendaftaran, dan memfoto bukti barang yang sudah diserahkan pada layanan kirim. Foto bukti itu yang melindungi Anda kalau penerima mengaku barangnya tidak pernah datang.</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>Antaride Driver membuka galeri agar Anda bisa memilih foto dokumen yang sudah Anda ambil sebelumnya, tanpa harus memfotonya ulang.</string>
+	<key>NSMicrophoneUsageDescription</key>
+	<string>Antaride Driver akan memakai mikrofon untuk pesan suara kepada penumpang. Fitur ini belum aktif, dan izinnya tidak akan diminta sampai fitur itu tersedia.</string>
+</dict>
+</plist>
