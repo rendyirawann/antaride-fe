@@ -36,6 +36,9 @@ dependencies:
   provider: ^6.1.2
 
 dev_dependencies:
+  # Hanya untuk membangun ApiClient di test — lihat `_SesiUji`.
+  dio: ^5.7.0
+
   flutter_lints: ^6.0.0
   flutter_test:
     sdk: flutter

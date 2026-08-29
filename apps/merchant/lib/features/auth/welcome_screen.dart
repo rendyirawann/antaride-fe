@@ -66,7 +66,8 @@ class MerchantWelcomeScreen extends StatelessWidget {
 
       onLogin: () => Navigator.of(context).push(
         MaterialPageRoute<void>(
-          builder: (BuildContext _) => const MerchantLoginScreen(),
+          builder: (BuildContext _) =>
+              TutupSaatMasuk(child: const MerchantLoginScreen()),
         ),
       ),
 

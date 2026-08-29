@@ -72,7 +72,8 @@ class DriverWelcomeScreen extends StatelessWidget {
 
       onLogin: () => Navigator.of(context).push(
         MaterialPageRoute<void>(
-          builder: (BuildContext _) => const DriverLoginScreen(),
+          builder: (BuildContext _) =>
+              TutupSaatMasuk(child: const DriverLoginScreen()),
         ),
       ),
 

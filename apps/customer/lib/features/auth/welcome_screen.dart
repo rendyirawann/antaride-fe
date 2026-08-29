@@ -59,7 +59,8 @@ class CustomerWelcomeScreen extends StatelessWidget {
   void _buka(BuildContext context, {required bool daftar}) {
     Navigator.of(context).push(
       MaterialPageRoute<void>(
-        builder: (BuildContext _) => PhoneScreen(mendaftar: daftar),
+        builder: (BuildContext _) =>
+            TutupSaatMasuk(child: PhoneScreen(mendaftar: daftar)),
       ),
     );
   }
