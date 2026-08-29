@@ -465,30 +465,81 @@ void main() {
     /// ========================================================================
     ///  `created_at` HARUS DIURAI SEBAGAI WAKTU BERZONA
     /// ========================================================================
-    ///  Backend mengirimnya ISO 8601 dengan offset (`+00:00`). Kalau penanda
-    ///  zonanya hilang atau diabaikan, Dart menguraikannya sebagai waktu LOKAL —
-    ///  dan di WIB (UTC+7) notifikasi yang baru dibuat akan tampil sebagai
-    ///  "7 jam lalu".
+    ///  Backend mengirimnya ISO 8601 dengan offset. Kalau penanda zonanya
+    ///  diabaikan, Dart menguraikannya sebagai waktu LOKAL — dan di WIB (UTC+7)
+    ///  notifikasi yang baru dibuat akan tampil sebagai "7 jam lalu".
     ///
-    ///  Yang diuji: selisih dengan sekarang masuk akal. Bukan nilai persisnya,
-    ///  karena fixture-nya bertambah umur setiap hari.
+    ///  ------------------------------------------------------------------------
+    ///  DIPERIKSA LANGSUNG, BUKAN LEWAT "UMURNYA MASUK AKAL"
+    ///  ------------------------------------------------------------------------
+    ///  Versi pertama test ini membandingkan `createdAt` dengan `DateTime.now()`
+    ///  dan menuntut selisihnya di bawah enam jam. Itu bukti TIDAK LANGSUNG, dan
+    ///  dia rusak sendiri: fixture yang berumur sehari gagal karena umurnya,
+    ///  bukan karena parsingnya — dengan pesan yang menuduh penanda zona.
+    ///
+    ///  Yang diperiksa sekarang: momen hasil parsing sama persis dengan momen
+    ///  yang dinyatakan string aslinya. Tidak bergantung pada jam berapa
+    ///  sekarang, dan tidak bergantung pada kapan fixture dibuat.
     /// ========================================================================
     test('created_at diurai berzona, bukan sebagai waktu lokal', () {
+      final Map<String, dynamic> mentah =
+          (badan['data'] as List<dynamic>).first as Map<String, dynamic>;
+
+      final String asli = mentah['created_at'] as String;
+
       final AppNotification notif = urai(badan).notifications.first;
 
       expect(notif.createdAt, isNotNull);
 
-      final Duration umur = DateTime.now().difference(notif.createdAt!);
+      expect(
+        notif.createdAt!.toUtc(),
+        DateTime.parse(asli).toUtc(),
+        reason:
+            'Momen hasil parsing berbeda dari yang dinyatakan "$asli". Penanda '
+            'zona diabaikan, jadi setiap notifikasi tampil bergeser sebesar '
+            'offset zona perangkat.',
+      );
+    });
+
+    /// Offset zona benar-benar menggeser momennya.
+    ///
+    /// ------------------------------------------------------------------------
+    ///  MEMBANDINGKAN DUA OFFSET, BUKAN MEMERIKSA SATU NILAI
+    /// ------------------------------------------------------------------------
+    ///  Versi pertama test ini memakai satu nilai `+07:00` dan menuntut hasilnya
+    ///  jam 1 UTC. Dia LOLOS SECARA KEBETULAN di mesin WIB: kalau offsetnya
+    ///  diabaikan, jam dinding 08:41 diurai sebagai waktu lokal WIB — yang juga
+    ///  menghasilkan 01:41 UTC.
+    ///
+    ///  Test yang hanya benar di zona pengembangnya lebih buruk daripada tidak
+    ///  ada: dia memberi rasa aman, lalu gagal di CI yang berjalan UTC.
+    ///
+    ///  Yang diperiksa sekarang: SELISIH antara dua jam dinding yang sama dengan
+    ///  offset berbeda. Kalau offsetnya dihormati, selisihnya persis tujuh jam.
+    ///  Kalau diabaikan, keduanya diurai identik dan selisihnya nol — apa pun
+    ///  zona mesin yang menjalankannya.
+    test('offset zona menggeser momennya, bukan diabaikan', () {
+      DateTime pada(String createdAt) =>
+          AppNotification.fromJson(<String, dynamic>{
+            'uuid': '01a04787-0000-7000-8000-000000000000',
+            'type': 'announcement',
+            'title': 'Uji zona',
+            'body': 'Uji zona',
+            'is_read': false,
+            'created_at': createdAt,
+          }).createdAt!.toUtc();
+
+      // Jam dinding yang SAMA, offset berbeda tujuh jam.
+      final DateTime wib = pada('2026-08-28T08:41:25+07:00');
+      final DateTime utc = pada('2026-08-28T08:41:25+00:00');
 
       expect(
-        umur.inHours.abs(),
-        lessThan(6),
+        utc.difference(wib),
+        const Duration(hours: 7),
         reason:
-            'Selisihnya ${umur.inHours} jam. Kalau mendekati 7, penanda zona '
-            'pada `created_at` diabaikan dan waktunya diurai sebagai waktu '
-            'lokal — setiap notifikasi akan tampil tertunda tujuh jam.\n\n'
-            'Fixture yang sudah lama juga bisa menyebabkannya. Perbarui dengan:\n'
-            '  cd antaride-be && php artisan test tests/Feature/Api/ContractFixtureTest.php',
+            'Selisihnya ${utc.difference(wib).inHours} jam, seharusnya 7. Nol '
+            'berarti offset zona diabaikan sepenuhnya — dan setiap notifikasi '
+            'akan tampil bergeser sebesar offset perangkat.',
       );
     });
 

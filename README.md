@@ -103,19 +103,60 @@ Dengan port tetap, ketiganya bisa dibuka bersamaan dengan akun berbeda — dan i
 alur pengujian yang paling sering dipakai: pesan dari satu tab, terima dari tab
 lain.
 
-### Build APK untuk server
+### Build APK untuk dibagikan
 
-Backend Antaride bisa berada di **subfolder**, misalnya
-`https://domain-anda.id/antaride/`. Alamatnya diberikan saat build:
+Satu perintah, tiga APK universal, langsung tersalin ke Desktop:
 
 ```bash
-export ANTARIDE_API_URL="https://domain-anda.id/antaride/api/v1"
+melos run apk:universal:all
+```
+
+Hasilnya di `Desktop/Antaride-APK/`:
+
+```
+Antaride-APK/
+├── BACA-DULU.txt                   # cara pasang, izin, server yang dihubungi
+├── antaride-penumpang-v1.0.0.apk   # 56 MB
+├── antaride-driver-v1.0.0.apk      # 57 MB
+└── antaride-merchant-v1.0.0.apk    # 53 MB
+```
+
+**Universal, bukan split-per-abi.** Satu berkas memuat kode native untuk
+`arm64-v8a`, `armeabi-v7a`, dan `x86_64` sekaligus — bisa dipasang di HP Android
+mana pun tanpa penerimanya perlu tahu arsitektur HP-nya.
+
+Bedanya nyata saat membagikan lewat WhatsApp: APK yang salah arsitektur gagal
+pasang dengan pesan Android yang **tidak menyebut arsitektur sama sekali** —
+yang muncul hanya "Aplikasi tidak terpasang", dan penerimanya tidak punya cara
+mengetahui sebabnya.
+
+| | `apk:*` | `apk:universal:*` |
+|---|---|---|
+| Berkas per aplikasi | 3 (satu per arsitektur) | 1 |
+| Ukuran (arm64 / universal) | 23 MB | ~55 MB |
+| Penerima harus tahu arsitektur | ya | tidak |
+| Cocok untuk | pengujian internal | dibagikan ke penguji |
+
+Untuk Play Store: **jangan pakai keduanya.** Play Store menerima App Bundle
+(`flutter build appbundle`), dan Google yang memecahnya per perangkat.
+
+#### Alamat API tertanam di dalam APK
+
+`apk:universal:*` menanam `https://beoulve-dev.biz.id/antaride-be/api/v1`.
+`--dart-define` menjadi konstanta saat kompilasi — **bukan** konfigurasi yang
+bisa diubah setelahnya. Mengganti server berarti build ulang dan membagikan APK
+baru; tidak ada berkas pengaturan di dalam HP yang bisa disunting.
+
+Untuk server lain, pakai varian split yang membaca env:
+
+```bash
+export ANTARIDE_API_URL="https://domain-lain.id/antaride/api/v1"
 melos run apk:all
 ```
 
-`ANTARIDE_API_URL` **harus memuat subfolder**. Kalau hilang, server menjawab 404
-HTML, `ApiClient` menguraikannya sebagai response yang bukan JSON, dan yang muncul
-di layar adalah "Terjadi gangguan. Coba lagi." pada **setiap** layar — tanpa satu
+Alamatnya **harus memuat subfolder**. Kalau hilang, server menjawab 404 HTML,
+`ApiClient` menguraikannya sebagai response yang bukan JSON, dan yang muncul di
+layar adalah "Terjadi gangguan. Coba lagi." pada **setiap** layar — tanpa satu
 pun petunjuk bahwa masalahnya alamat.
 
 Garis miring di akhir aman: Dio meruntuhkan garis miring ganda. Itu diverifikasi
@@ -141,7 +182,7 @@ melos run analyze:all    # analisis satu jalan untuk seluruh workspace
 melos run format         # periksa format, tanpa mengubah
 melos run format:fix     # dart format lib/ dan test/ seluruh package
 melos run test           # test di package yang punya test
-melos run apk:all        # rilis APK ketiga aplikasi
+melos run apk:universal:all  # APK universal ketiga aplikasi → Desktop
 ```
 
 `format` menunjuk `lib` dan `test`, bukan `.`. Alasannya: `dart format .` masuk

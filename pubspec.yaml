@@ -251,6 +251,93 @@ melos:
       packageFilters:
         scope: antaride_merchant
 
+    # -------------------------------------------------------------------------
+    #  APK UNIVERSAL — SATU BERKAS UNTUK SEMUA PERANGKAT ANDROID
+    # -------------------------------------------------------------------------
+    #
+    #      melos run apk:universal:all
+    #
+    #  Hasilnya `build/app/outputs/flutter-apk/app-release.apk` di masing-masing
+    #  aplikasi — SATU berkas yang memuat kode native untuk arm64-v8a,
+    #  armeabi-v7a, dan x86_64 sekaligus.
+    #
+    #  BEDANYA DENGAN `apk:*` DI ATAS, DAN KAPAN MEMILIH YANG MANA
+    #  -------------------------------------------------------------------------
+    #    apk:*              tiga berkas per aplikasi, satu per arsitektur.
+    #                       arm64 sekitar 23 MB. Lebih kecil, tapi yang menerima
+    #                       harus tahu HP-nya arm64 atau bukan — dan hampir tidak
+    #                       ada orang yang tahu.
+    #
+    #    apk:universal:*    satu berkas per aplikasi, sekitar 45 MB. Bisa dipasang
+    #                       di HP Android mana pun tanpa memilih apa-apa.
+    #
+    #  Untuk APK yang dibagikan lewat WhatsApp kepada penguji, universal yang
+    #  benar. Berkas yang salah arsitektur gagal pasang dengan pesan Android yang
+    #  tidak menyebut arsitektur sama sekali — yang muncul hanya "Aplikasi tidak
+    #  terpasang", dan penerimanya tidak punya cara mengetahui sebabnya.
+    #
+    #  Untuk Play Store: JANGAN pakai keduanya. Play Store menerima App Bundle
+    #  (`flutter build appbundle`), dan Google yang memecahnya per perangkat.
+    #
+    #  ALAMAT API-NYA TERTANAM DI DALAM APK
+    #  -------------------------------------------------------------------------
+    #  `--dart-define` menjadi konstanta saat kompilasi, bukan konfigurasi yang
+    #  bisa diubah setelahnya. Mengganti server berarti BUILD ULANG dan
+    #  membagikan APK baru — tidak ada berkas pengaturan di dalam HP yang bisa
+    #  disunting.
+    #
+    #  Alamatnya ditulis di sini, bukan diambil dari env seperti `apk:*`, supaya
+    #  satu perintah cukup dan hasilnya sama di komputer siapa pun. Untuk server
+    #  lain, salin barisnya dan ganti alamatnya.
+    #
+    #  HARUS memuat subfolder `/antaride-be` dan berakhir `/api/v1`. Subfolder
+    #  yang hilang membuat server menjawab 404 HTML, dan yang muncul di layar
+    #  adalah "Terjadi gangguan. Coba lagi." pada SETIAP layar — tanpa satu pun
+    #  petunjuk bahwa masalahnya alamat. Dijaga
+    #  `packages/antaride_api/test/base_url_test.dart`.
+    # -------------------------------------------------------------------------
+
+    apk:universal:customer:
+      description: APK universal penumpang (semua arsitektur Android)
+      exec: flutter build apk --release --dart-define=API_BASE_URL=https://beoulve-dev.biz.id/antaride-be/api/v1 --dart-define=APP_ENV=production
+      packageFilters:
+        scope: antaride_customer
+
+    apk:universal:driver:
+      description: APK universal driver (semua arsitektur Android)
+      exec: flutter build apk --release --dart-define=API_BASE_URL=https://beoulve-dev.biz.id/antaride-be/api/v1 --dart-define=APP_ENV=production
+      packageFilters:
+        scope: antaride_driver
+
+    apk:universal:merchant:
+      description: APK universal merchant (semua arsitektur Android)
+      exec: flutter build apk --release --dart-define=API_BASE_URL=https://beoulve-dev.biz.id/antaride-be/api/v1 --dart-define=APP_ENV=production
+      packageFilters:
+        scope: antaride_merchant
+
+    apk:universal:all:
+      description: APK universal ketiga aplikasi, lalu disalin ke Desktop
+      steps:
+        - apk:universal:customer
+        - apk:universal:driver
+        - apk:universal:merchant
+        - apk:kumpulkan
+
+    # -------------------------------------------------------------------------
+    #  Kumpulkan hasilnya ke satu tempat
+    # -------------------------------------------------------------------------
+    #  Tanpa langkah ini, ketiga APK tersebar di tiga direktori `build/` yang
+    #  jalurnya panjang dan namanya SAMA (`app-release.apk`). Yang terjadi saat
+    #  membagikannya: tiga berkas bernama sama di folder unduhan penerima, dan
+    #  tidak ada cara membedakan mana yang driver.
+    #
+    #  Skripnya di `tool/kumpulkan_apk.dart` — Dart, bukan shell, supaya perintah
+    #  yang sama jalan di Windows dan Linux. Melos menjalankan `exec` lewat shell
+    #  bawaan sistem, dan `cp` tidak ada di cmd.exe.
+    apk:kumpulkan:
+      description: Salin APK universal ke Desktop dengan nama yang jelas
+      run: dart run tool/kumpulkan_apk.dart
+
     apk:all:
       description: Build APK release ketiga aplikasi
       steps:
