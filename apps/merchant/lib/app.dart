@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:provider/single_child_widget.dart';
 
-import 'features/auth/merchant_login_screen.dart';
+import 'features/auth/welcome_screen.dart';
 import 'features/home/merchant_shell.dart';
 
 /// Akar aplikasi merchant.
@@ -47,7 +47,7 @@ class _Gerbang extends StatelessWidget {
       SessionStage.unknown || SessionStage.loadingProfile => const Scaffold(
         body: ClayLoader(message: 'Menyiapkan Antaride Merchant…'),
       ),
-      SessionStage.signedOut => const MerchantLoginScreen(),
+      SessionStage.signedOut => const MerchantWelcomeScreen(),
       SessionStage.signedIn => const MerchantShell(),
     };
   }

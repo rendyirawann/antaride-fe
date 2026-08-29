@@ -19,6 +19,7 @@ export 'src/client/location_pinger.dart';
 export 'src/client/token_store.dart';
 
 export 'src/models/app_notification.dart';
+export 'src/models/demo_account.dart';
 export 'src/models/driver_document.dart';
 export 'src/models/driver_order.dart';
 export 'src/models/order.dart';

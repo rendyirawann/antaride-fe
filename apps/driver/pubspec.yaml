@@ -26,6 +26,7 @@ dependencies:
   antaride_notifications: ^0.1.0
   antaride_media: ^0.1.0
   antaride_auth: ^0.1.0
+  antaride_onboarding: ^0.1.0
   antaride_realtime: ^0.1.0
   antaride_maps: ^0.1.0
 

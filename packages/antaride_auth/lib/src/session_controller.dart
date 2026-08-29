@@ -194,6 +194,59 @@ class SessionController extends ChangeNotifier {
   }
 
   /// Muat ulang profil, misalnya setelah diubah di layar edit.
+  // ---------------------------------------------------------------------------
+  //  Akun demo
+  // ---------------------------------------------------------------------------
+
+  /// Daftar akun demo untuk aplikasi ini.
+  ///
+  /// Tidak pernah gagal — lihat `AuthRepository.demoAccounts`. Layar masuk
+  /// memanggilnya sebelum pengguna melakukan apa pun, dan galat di sana muncul
+  /// sebagai pesan merah untuk sesuatu yang bukan masalahnya.
+  Future<DemoAccountList> demoAccounts(String role) {
+    return _auth.demoAccounts(role: role);
+  }
+
+  /// Masuk sebagai akun demo.
+  ///
+  /// ==========================================================================
+  ///  MELEWATI OTP, TAPI TIDAK MELEWATI APA PUN SETELAHNYA
+  /// ==========================================================================
+  ///  Yang dilewati hanya pembuktian nomor. Selebihnya persis sama dengan masuk
+  ///  biasa: token disimpan di tempat yang sama, `stage` berpindah ke
+  ///  `signedIn`, dan gerbang di akar aplikasi yang memindahkan layarnya.
+  ///
+  ///  Itu disengaja. Jalur demo yang menyimpan token di tempat berbeda — atau
+  ///  yang melompati gerbang — akan berperilaku lain dari jalur sungguhan, dan
+  ///  pengujian lewat akun demo tidak lagi menguji apa yang dipakai pengguna.
+  /// ==========================================================================
+  Future<bool> demoLogin(String uuid) async {
+    return _jalankan(() async {
+      final String deviceId = await DeviceIdentity.resolve();
+
+      final Result<AuthSession> hasil = await _auth.demoLogin(
+        uuid: uuid,
+        deviceId: deviceId,
+        platform: _platform,
+      );
+
+      return hasil.when(
+        ok: (AuthSession s) {
+          _user = s.user;
+          _challenge = null;
+          _stage = SessionStage.signedIn;
+
+          return true;
+        },
+        err: (ApiFailure f) {
+          _lastFailure = f;
+
+          return false;
+        },
+      );
+    });
+  }
+
   Future<void> refreshProfile() async {
     final Result<AuthUser> hasil = await _auth.me();
 

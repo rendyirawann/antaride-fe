@@ -1,0 +1,44 @@
+# Layar sambutan dan pilihan masuk/daftar.
+#
+# ==============================================================================
+#  KENAPA PAKET TERSENDIRI
+# ==============================================================================
+#  Ketiga aplikasi punya alur pembuka yang sama persis: sambutan, lalu pilihan
+#  Masuk atau Daftar, lalu nomor HP dan OTP. Yang berbeda hanya kalimatnya dan
+#  peran akun demonya.
+#
+#  Kalau layarnya digandakan di tiga aplikasi, ketiganya akan menyimpang —
+#  perbaikan pada penanganan galat di satu sisi tidak sampai ke dua sisi lain,
+#  dan bug yang sudah diperbaiki muncul lagi di aplikasi yang tidak ikut
+#  diperbaiki.
+#
+#  Bukan di `antaride_ui`: paket itu design system yang TIDAK tahu apa pun soal
+#  sesi maupun API. Paket ini memanggil `SessionController`.
+name: antaride_onboarding
+description: Layar sambutan, pilihan masuk/daftar, dan daftar akun demo.
+version: 0.1.0
+publish_to: none
+
+resolution: workspace
+
+environment:
+  sdk: ^3.9.0
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+  antaride_core: ^0.1.0
+  antaride_api: ^0.1.0
+  antaride_auth: ^0.1.0
+  antaride_ui: ^0.1.0
+
+  provider: ^6.1.2
+
+dev_dependencies:
+  flutter_lints: ^6.0.0
+  flutter_test:
+    sdk: flutter
+
+flutter:
+  uses-material-design: true

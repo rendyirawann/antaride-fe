@@ -1,6 +1,7 @@
 import 'package:antaride_core/antaride_core.dart';
 
 import '../client/api_client.dart';
+import '../models/demo_account.dart';
 import '../client/token_store.dart';
 import '../models/user.dart';
 
@@ -112,6 +113,62 @@ class AuthRepository {
   ///  Token yang tertinggal di sisi backend akan kadaluarsa sendiri, dan
   ///  `logout-all` dari perangkat lain tetap bisa mencabutnya.
   /// ==========================================================================
+  // ---------------------------------------------------------------------------
+  //  Akun demo
+  // ---------------------------------------------------------------------------
+
+  /// Daftar akun demo untuk satu aplikasi.
+  ///
+  /// ==========================================================================
+  ///  KEGAGALANNYA TIDAK PERNAH SAMPAI KE LAYAR
+  /// ==========================================================================
+  ///  Dipanggil di layar masuk, sebelum pengguna melakukan apa pun. Kalau
+  ///  request-nya gagal — server lama, jaringan putus, fiturnya dimatikan —
+  ///  yang benar adalah menyembunyikan bagian akun demo, bukan menampilkan
+  ///  pesan merah di layar pertama yang dia lihat.
+  ///
+  ///  Karena itu kembaliannya `DemoAccountList`, bukan `Result`: tidak ada
+  ///  keadaan gagal yang perlu ditangani pemanggil. Yang ada hanya "ada
+  ///  daftarnya" atau "tidak ada".
+  /// ==========================================================================
+  Future<DemoAccountList> demoAccounts({required String role}) async {
+    final Result<Map<String, dynamic>> hasil = await _client.get(
+      '/auth/demo/accounts',
+      query: <String, dynamic>{'role': role},
+    );
+
+    return hasil.when(
+      ok: (Map<String, dynamic> badan) => DemoAccountList.fromJson(
+        (badan['data'] as Map<String, dynamic>?) ?? const <String, dynamic>{},
+      ),
+      err: (ApiFailure _) => DemoAccountList.mati,
+    );
+  }
+
+  /// Masuk sebagai akun demo, tanpa OTP.
+  ///
+  /// Berbeda dari [demoAccounts], INI mengembalikan `Result`: pengguna sudah
+  /// menekan tombol dan sedang menunggu, jadi kegagalannya harus terlihat.
+  Future<Result<AuthSession>> demoLogin({
+    required String uuid,
+    String? deviceId,
+    String? platform,
+  }) async {
+    final Result<Map<String, dynamic>> hasil = await _client.post(
+      '/auth/demo/login',
+      body: <String, dynamic>{
+        'uuid': uuid,
+        'device_id': ?deviceId,
+        'platform': ?platform,
+      },
+    );
+
+    return hasil.map(
+      (Map<String, dynamic> badan) =>
+          AuthSession.fromJson(badan['data'] as Map<String, dynamic>),
+    );
+  }
+
   Future<Result<void>> logout() async {
     final Result<Map<String, dynamic>> hasil = await _client.post(
       '/auth/logout',

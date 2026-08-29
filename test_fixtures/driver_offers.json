@@ -1,6 +1,6 @@
 [
     {
-        "order_uuid": "01a04da6-cc9f-7346-ab50-8f0a2a5919fc",
+        "order_uuid": "01a04e33-acc5-73f7-851b-821bcc1a2885",
         "service_code": "ride_bike",
         "payment_method": "cash",
         "pickup": {
@@ -23,6 +23,6 @@
             "formatted": "Rp 11.900"
         },
         "distance_to_pickup_m": 0,
-        "expires_at": "2026-08-29T13:13:07+00:00"
+        "expires_at": "2026-08-29T15:46:59+00:00"
     }
 ]

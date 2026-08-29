@@ -34,6 +34,7 @@ workspace:
   - packages/antaride_maps
   - packages/antaride_notifications
   - packages/antaride_media
+  - packages/antaride_onboarding
 
 dev_dependencies:
   melos: ^8.5.0

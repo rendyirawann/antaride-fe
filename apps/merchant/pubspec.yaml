@@ -30,6 +30,7 @@ dependencies:
   antaride_ui: ^0.1.0
   antaride_api: ^0.1.0
   antaride_auth: ^0.1.0
+  antaride_onboarding: ^0.1.0
 
   cupertino_icons: ^1.0.8
   provider: ^6.1.2

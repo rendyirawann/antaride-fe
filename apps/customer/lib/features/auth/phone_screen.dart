@@ -1,5 +1,6 @@
 import 'package:antaride_auth/antaride_auth.dart';
 import 'package:antaride_core/antaride_core.dart';
+import 'package:antaride_onboarding/antaride_onboarding.dart';
 import 'package:antaride_ui/antaride_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -9,7 +10,21 @@ import 'otp_screen.dart';
 
 /// Layar pertama: masukkan nomor HP.
 class PhoneScreen extends StatefulWidget {
-  const PhoneScreen({super.key});
+  const PhoneScreen({super.key, this.mendaftar = false});
+
+  /// Dibuka lewat tombol "Daftar", bukan "Masuk".
+  ///
+  /// ==========================================================================
+  ///  YANG BERBEDA HANYA KALIMATNYA, DAN ITU DISENGAJA
+  /// ==========================================================================
+  ///  Autentikasi memakai OTP: yang dimasukkan pengguna nomor HP-nya, dan
+  ///  BACKEND yang menentukan apakah nomor itu sudah terdaftar. Tidak ada kata
+  ///  sandi, jadi tidak ada perbedaan teknis antara masuk dan mendaftar.
+  ///
+  ///  Dua layar terpisah akan menghasilkan dua salinan dari alur yang sama —
+  ///  dan perbaikan pada satu sisi tidak sampai ke sisi lain.
+  /// ==========================================================================
+  final bool mendaftar;
 
   @override
   State<PhoneScreen> createState() => _PhoneScreenState();
@@ -103,6 +118,19 @@ class _PhoneScreenState extends State<PhoneScreen> {
     );
 
     return Scaffold(
+      /*
+       * Bilah atas hanya berisi tombol kembali.
+       *
+       * Layar ini sekarang DIBUKA dari layar sambutan, bukan layar pertama
+       * aplikasi. Tanpa tombol kembali, orang yang menekan "Daftar" padahal
+       * sudah punya akun terjebak — satu-satunya jalan keluar menutup paksa
+       * aplikasinya.
+       */
+      appBar: AppBar(
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        scrolledUnderElevation: 0,
+      ),
       body: SafeArea(
         child: SingleChildScrollView(
           padding: const EdgeInsets.all(ClayTokens.space6),
@@ -126,7 +154,7 @@ class _PhoneScreenState extends State<PhoneScreen> {
               const SizedBox(height: ClayTokens.space8),
 
               Text(
-                'Masuk atau daftar',
+                widget.mendaftar ? 'Buat akun' : 'Masuk',
                 style: TextStyle(
                   fontFamily: 'PlusJakartaSans',
                   fontSize: 24,
@@ -141,11 +169,15 @@ class _PhoneScreenState extends State<PhoneScreen> {
               const SizedBox(height: ClayTokens.space2),
 
               Text(
-                // Menyebutkan bahwa satu alur menangani keduanya. Tanpa ini,
-                // pengguna baru akan mencari tombol "daftar" yang tidak ada,
-                // lalu menyimpulkan dia harus punya akun lebih dulu.
-                'Kami kirim kode ke nomor Anda. Nomor baru langsung dibuatkan '
-                'akun.',
+                // Kalimatnya mengikuti tombol yang ditekan di layar sambutan.
+                // Orang yang menekan "Daftar" perlu tahu bahwa dia akan
+                // menerima kode, bukan diminta membuat sandi; yang menekan
+                // "Masuk" tidak perlu penjelasan itu.
+                widget.mendaftar
+                    ? 'Masukkan nomor HP Anda. Kami kirim kode verifikasi — '
+                          'tidak perlu membuat kata sandi.'
+                    : 'Masukkan nomor HP yang terdaftar. Kami kirim kode '
+                          'verifikasi ke nomor itu.',
                 style: TextStyle(
                   fontFamily: 'PlusJakartaSans',
                   fontSize: 14,
@@ -190,6 +222,15 @@ class _PhoneScreenState extends State<PhoneScreen> {
                 isLoading: sibuk,
                 onPressed: sibuk ? null : _lanjut,
               ),
+
+              /*
+               * Daftar akun demo.
+               *
+               * Menyembunyikan dirinya sendiri kalau fiturnya dimatikan di
+               * server — lihat docblock `DemoAccountPicker`. Jadi aman
+               * dibiarkan di build produksi.
+               */
+              const DemoAccountPicker(role: 'customer'),
 
               const SizedBox(height: ClayTokens.space6),
 

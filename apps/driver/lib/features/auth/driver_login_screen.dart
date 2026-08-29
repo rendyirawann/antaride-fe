@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:antaride_api/antaride_api.dart';
 import 'package:antaride_auth/antaride_auth.dart';
 import 'package:antaride_core/antaride_core.dart';
+import 'package:antaride_onboarding/antaride_onboarding.dart';
 import 'package:antaride_ui/antaride_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -258,6 +259,15 @@ class _DriverLoginScreenState extends State<DriverLoginScreen> {
                     ? null
                     : (_tahapKode ? _verifikasi : _mintaKode),
               ),
+
+              /*
+               * Daftar akun demo.
+               *
+               * Menyembunyikan dirinya sendiri kalau fiturnya dimatikan di
+               * server — lihat docblock `DemoAccountPicker`. Jadi aman
+               * dibiarkan di build produksi.
+               */
+              const DemoAccountPicker(role: 'driver'),
 
               if (_tahapKode) ...<Widget>[
                 const SizedBox(height: ClayTokens.space4),

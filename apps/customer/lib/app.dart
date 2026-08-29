@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:provider/single_child_widget.dart';
 
-import 'features/auth/phone_screen.dart';
+import 'features/auth/welcome_screen.dart';
 import 'features/shell/app_shell.dart';
 import 'features/shell/splash_screen.dart';
 
@@ -97,7 +97,7 @@ class _Gerbang extends StatelessWidget {
 
     return switch (tahap) {
       SessionStage.unknown => const SplashScreen(),
-      SessionStage.signedOut => const PhoneScreen(),
+      SessionStage.signedOut => const CustomerWelcomeScreen(),
 
       // `loadingProfile` memakai splash yang sama, bukan layar kosong: pengguna
       // sudah punya token, jadi menampilkan layar masuk sesaat di sini akan

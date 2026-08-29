@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:provider/single_child_widget.dart';
 
-import 'features/auth/driver_login_screen.dart';
+import 'features/auth/welcome_screen.dart';
 import 'features/dashboard/driver_home_screen.dart';
 
 /// Akar aplikasi driver.
@@ -75,7 +75,7 @@ class _Gerbang extends StatelessWidget {
 
     return switch (tahap) {
       SessionStage.unknown || SessionStage.loadingProfile => const _Splash(),
-      SessionStage.signedOut => const DriverLoginScreen(),
+      SessionStage.signedOut => const DriverWelcomeScreen(),
       // `NotificationSync` menjaga angka lencana notifikasi tetap mutakhir saat
       // aplikasi kembali ke depan. Ditempatkan DI DALAM gerbang, bukan di
       // atasnya — alasannya di docblock `NotificationSync`.
