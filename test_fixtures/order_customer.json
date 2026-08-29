@@ -1,6 +1,6 @@
 {
-    "uuid": "01a0483f-59a0-724d-9799-626231f1f602",
-    "order_number": "RD-20260828-000001",
+    "uuid": "01a04da6-c1c6-736a-9fad-4e627283679c",
+    "order_number": "RD-20260829-000001",
     "status": "searching",
     "status_label": "Mencari driver",
     "service": {
@@ -30,9 +30,9 @@
     },
     "fare": {
         "total": {
-            "amount": 21410,
+            "amount": 16700,
             "currency": "IDR",
-            "formatted": "Rp 21.410"
+            "formatted": "Rp 16.700"
         },
         "lines": [
             {
@@ -51,11 +51,6 @@
                 "formatted": "Rp 2.600"
             },
             {
-                "label": "Tarif sibuk",
-                "amount": 4710,
-                "formatted": "Rp 4.710"
-            },
-            {
                 "label": "Biaya aplikasi",
                 "amount": 1000,
                 "formatted": "Rp 1.000"
@@ -63,7 +58,7 @@
         ]
     },
     "timestamps": {
-        "requested_at": "2026-08-28T12:01:46+00:00",
+        "requested_at": "2026-08-29T13:12:49+00:00",
         "matched_at": null,
         "arrived_at": null,
         "started_at": null,

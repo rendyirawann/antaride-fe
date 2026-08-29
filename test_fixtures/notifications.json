@@ -2,27 +2,27 @@
     "success": true,
     "data": [
         {
-            "uuid": "01a0483f-7607-71f7-b993-5df0258bf96b",
+            "uuid": "01a04da6-ddef-73e9-b52c-aa74a6202277",
             "type": "order.accepted",
             "title": "Driver menuju lokasi Anda",
             "body": "Budi Santoso akan tiba dalam beberapa menit.",
             "action": {
                 "screen": "order",
-                "order_uuid": "01a0483f-75fa-7329-94fa-50e5039a1fae"
+                "order_uuid": "01a04da6-dde6-72ef-b31d-d1aad7218df2"
             },
             "is_read": false,
             "read_at": null,
-            "created_at": "2026-08-28T12:01:53+00:00"
+            "created_at": "2026-08-29T13:12:56+00:00"
         },
         {
-            "uuid": "01a0483f-7601-7054-8063-1ac664991ff4",
+            "uuid": "01a04da6-ddeb-7264-851d-1b4147e6156b",
             "type": "announcement",
             "title": "Selamat datang di Antaride",
             "body": "Nikmati potongan ongkos untuk perjalanan pertama Anda.",
             "action": null,
             "is_read": true,
-            "read_at": "2026-08-28T12:01:53+00:00",
-            "created_at": "2026-08-28T12:01:53+00:00"
+            "read_at": "2026-08-29T13:12:56+00:00",
+            "created_at": "2026-08-29T13:12:56+00:00"
         }
     ],
     "meta": {
