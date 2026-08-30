@@ -25,34 +25,24 @@ class ProfileScreen extends StatelessWidget {
   const ProfileScreen({super.key});
 
   Future<void> _keluar(BuildContext context, {required bool semua}) async {
-    final bool? yakin = await showDialog<bool>(
-      context: context,
-      builder: (BuildContext dialog) => AlertDialog(
-        title: Text(semua ? 'Keluar dari semua perangkat?' : 'Keluar?'),
-        content: Text(
-          semua
-              // Menyebutkan konsekuensinya secara konkret. "Anda akan keluar
-              // dari semua sesi" tidak memberitahu bahwa HP lain ikut terkena —
-              // dan itu justru yang perlu diketahui.
-              ? 'Semua perangkat yang masuk dengan akun ini akan dikeluarkan, '
-                    'termasuk perangkat ini. Pakai ini kalau HP Anda hilang.'
-              : 'Anda perlu memasukkan kode OTP lagi untuk masuk.',
-        ),
-        actions: <Widget>[
-          TextButton(
-            onPressed: () => Navigator.of(dialog).pop(false),
-            child: const Text('Batal'),
-          ),
-          TextButton(
-            onPressed: () => Navigator.of(dialog).pop(true),
-            style: TextButton.styleFrom(foregroundColor: ClayTokens.danger),
-            child: const Text('Keluar'),
-          ),
-        ],
-      ),
+    // Wadahnya ClayConfirmDialog bersama, bukan AlertDialog per layar:
+    // dialog "Keluar?" yang sama pernah punya dua rupa di aplikasi ini.
+    // Kontraknya tetap bool — batal maupun tutup di luar mengembalikan false.
+    final bool yakin = await ClayConfirmDialog.tampilkan(
+      context,
+      icon: semua ? Icons.phonelink_erase_rounded : Icons.logout_rounded,
+      title: semua ? 'Keluar dari semua perangkat?' : 'Keluar?',
+      message: semua
+          // Menyebutkan konsekuensinya secara konkret. "Anda akan keluar
+          // dari semua sesi" tidak memberitahu bahwa HP lain ikut terkena —
+          // dan itu justru yang perlu diketahui.
+          ? 'Semua perangkat yang masuk dengan akun ini akan dikeluarkan, '
+                'termasuk perangkat ini. Pakai ini kalau HP Anda hilang.'
+          : 'Anda perlu memasukkan kode OTP lagi untuk masuk.',
+      confirmLabel: 'Keluar',
     );
 
-    if (yakin != true || !context.mounted) {
+    if (!yakin || !context.mounted) {
       return;
     }
 
@@ -63,29 +53,17 @@ class ProfileScreen extends StatelessWidget {
   }
 
   Future<void> _hapusAkun(BuildContext context) async {
-    final bool? yakin = await showDialog<bool>(
-      context: context,
-      builder: (BuildContext dialog) => AlertDialog(
-        title: const Text('Hapus akun?'),
-        content: const Text(
+    final bool yakin = await ClayConfirmDialog.tampilkan(
+      context,
+      icon: Icons.delete_forever_rounded,
+      title: 'Hapus akun?',
+      message:
           'Akun Anda akan dihapus setelah masa tenggang. Masuk kembali sebelum '
           'tenggangnya habis untuk membatalkan penghapusan.',
-        ),
-        actions: <Widget>[
-          TextButton(
-            onPressed: () => Navigator.of(dialog).pop(false),
-            child: const Text('Batal'),
-          ),
-          TextButton(
-            onPressed: () => Navigator.of(dialog).pop(true),
-            style: TextButton.styleFrom(foregroundColor: ClayTokens.danger),
-            child: const Text('Ajukan penghapusan'),
-          ),
-        ],
-      ),
+      confirmLabel: 'Ajukan penghapusan',
     );
 
-    if (yakin != true || !context.mounted) {
+    if (!yakin || !context.mounted) {
       return;
     }
 
@@ -102,18 +80,11 @@ class ProfileScreen extends StatelessWidget {
         // Pesannya dari BACKEND, sudah memuat jumlah harinya. Menulis angkanya
         // di aplikasi berarti menjanjikan tenggang yang bisa berbeda dari
         // kebijakan yang berlaku.
-        await showDialog<void>(
-          context: context,
-          builder: (BuildContext dialog) => AlertDialog(
-            title: const Text('Penghapusan diajukan'),
-            content: Text(d.message),
-            actions: <Widget>[
-              TextButton(
-                onPressed: () => Navigator.of(dialog).pop(),
-                child: const Text('Mengerti'),
-              ),
-            ],
-          ),
+        await ClayConfirmDialog.beritahu(
+          context,
+          icon: Icons.schedule_rounded,
+          title: 'Penghapusan diajukan',
+          message: d.message,
         );
 
       case Err<AccountDeletion>(failure: final ApiFailure f):

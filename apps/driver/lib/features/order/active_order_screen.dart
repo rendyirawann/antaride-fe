@@ -1088,29 +1088,23 @@ class _BilahAksi extends StatelessWidget {
     // penyelesaiannya, tapi bahwa uangnya sudah diterima — dan setelah order
     // ditutup, driver tidak punya cara menagih lagi.
     if (order.isCash) {
-      final bool? sudah = await showDialog<bool>(
-        context: context,
-        builder: (BuildContext dialog) => AlertDialog(
-          title: const Text('Uang sudah diterima?'),
-          content: Text(
+      // Bukan aksi berbahaya — yang dikonfirmasi penerimaan uang, jadi
+      // `destructive: false` dengan aksen aplikasi driver.
+      final bool sudah = await ClayConfirmDialog.tampilkan(
+        context,
+        icon: Icons.payments_rounded,
+        title: 'Uang sudah diterima?',
+        message:
             'Pastikan Anda sudah menerima '
             '${order.collectFromPassenger?.formatted ?? ''} dari penumpang. '
             'Setelah order ditutup, tagihan tidak bisa diajukan lagi.',
-          ),
-          actions: <Widget>[
-            TextButton(
-              onPressed: () => Navigator.of(dialog).pop(false),
-              child: const Text('Belum'),
-            ),
-            TextButton(
-              onPressed: () => Navigator.of(dialog).pop(true),
-              child: const Text('Sudah, selesaikan'),
-            ),
-          ],
-        ),
+        confirmLabel: 'Sudah, selesaikan',
+        cancelLabel: 'Belum',
+        accent: _aksenDriver,
+        destructive: false,
       );
 
-      if (sudah != true || !context.mounted) {
+      if (!sudah || !context.mounted) {
         return;
       }
     }

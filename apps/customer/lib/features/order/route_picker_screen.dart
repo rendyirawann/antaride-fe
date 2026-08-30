@@ -326,7 +326,7 @@ class _RoutePickerScreenState extends State<RoutePickerScreen> {
                     ? ClayTokens.surfaceRaisedDark
                     : ClayTokens.surfaceRaised,
                 borderRadius: const BorderRadius.vertical(
-                  top: Radius.circular(36),
+                  top: Radius.circular(ClayTokens.radiusLarge),
                 ),
                 boxShadow: ClayShadows.outer(ClayDepth.high, dark: gelap),
               ),

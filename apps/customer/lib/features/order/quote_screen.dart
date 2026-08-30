@@ -252,7 +252,7 @@ class _QuoteScreenState extends State<QuoteScreen> {
                           ? ClayTokens.surfaceDark
                           : ClayTokens.surface,
                       borderRadius: const BorderRadius.vertical(
-                        top: Radius.circular(36),
+                        top: Radius.circular(ClayTokens.radiusLarge),
                       ),
                       boxShadow: <BoxShadow>[
                         BoxShadow(

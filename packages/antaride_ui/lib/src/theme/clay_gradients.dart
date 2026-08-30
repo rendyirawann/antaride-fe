@@ -31,8 +31,16 @@ class ClayGradients {
   static LinearGradient hero(Color aksen) => LinearGradient(
     begin: Alignment.topLeft,
     end: Alignment.bottomRight,
-    colors: <Color>[aksen, Color.lerp(aksen, Colors.black, 0.32)!],
+    colors: <Color>[aksen, gelapkan(aksen)],
   );
+
+  /// Ujung gelap gradien hero, untuk yang membutuhkan WARNANYA saja.
+  ///
+  /// Dipakai tempat yang harus sepadan dengan hero tapi bukan bidang bergradien:
+  /// warna latar menu di balik sidebar, dan teks di atas lencana putih. Kalau
+  /// tempat-tempat itu menghitung lerp-nya sendiri, angka 0.32 tersebar ke
+  /// beberapa berkas dan akan menyimpang saat salah satunya disetel.
+  static Color gelapkan(Color aksen) => Color.lerp(aksen, Colors.black, 0.32)!;
 
   /// Gradien chip/tile kecil (40–44 px).
   ///

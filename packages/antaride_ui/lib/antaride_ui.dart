@@ -33,6 +33,7 @@ export 'src/theme/clay_tokens.dart';
 export 'src/widgets/clay_back_button.dart';
 export 'src/widgets/clay_bottom_sheet.dart';
 export 'src/widgets/clay_button.dart';
+export 'src/widgets/clay_confirm_dialog.dart';
 export 'src/widgets/clay_drawer_shell.dart';
 export 'src/widgets/clay_empty_state.dart';
 export 'src/widgets/clay_entrance.dart';

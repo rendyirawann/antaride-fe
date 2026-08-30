@@ -87,18 +87,42 @@ class _ClayButtonState extends State<ClayButton> {
                 Icon(widget.icon, size: 20, color: teks),
                 const SizedBox(width: ClayTokens.space2),
               ],
-              Text(
-                widget.label,
-                style: TextStyle(
-                  color: teks,
-                  fontSize: 15,
-                  fontWeight: FontWeight.w700,
+              /*
+               * Label MENGECIL saat sempit, bukan meluap.
+               *
+               * `Flexible` memberi Row izin memberi label lebih sempit daripada
+               * lebar alaminya; `FittedBox(scaleDown)` mengecilkan hurufnya
+               * alih-alih memotongnya. Tanpa keduanya, tombol di dalam Row yang
+               * sempit — bilah "Pesan sekarang" di layar konfirmasi, "Lewati"
+               * di kartu tawaran driver — meluap ke kanan dengan garis kuning
+               * hitam di build debug dan padding dalam yang hilang di rilis.
+               *
+               * Diukur pada HP 320 dp (masih umum di kelas entry Android di
+               * Medan): tanpa ini "Pesan sekarang" meluap 22 px, dan "Lewati"
+               * hanya bersisa 0,9 px — cukup untuk pecah begitu pengguna
+               * menaikkan ukuran teks sistem satu tingkat.
+               *
+               * scaleDown, bukan `contain`: label yang MEMBESAR di tombol lebar
+               * akan membuat tiap tombol punya ukuran huruf berbeda.
+               */
+              Flexible(
+                child: FittedBox(
+                  fit: BoxFit.scaleDown,
+                  child: Text(
+                    widget.label,
+                    maxLines: 1,
+                    style: TextStyle(
+                      color: teks,
+                      fontSize: 15,
+                      fontWeight: FontWeight.w700,
 
-                  // Tinggi baris 1.0 supaya teks benar-benar terpusat vertikal
-                  // di dalam tombol. Nilai bawaan menambah ruang di bawah huruf
-                  // dan membuat labelnya terlihat sedikit ke atas — kecil, tapi
-                  // terlihat pada tombol pendek.
-                  height: 1.0,
+                      // Tinggi baris 1.0 supaya teks benar-benar terpusat
+                      // vertikal di dalam tombol. Nilai bawaan menambah ruang di
+                      // bawah huruf dan membuat labelnya terlihat sedikit ke
+                      // atas — kecil, tapi terlihat pada tombol pendek.
+                      height: 1.0,
+                    ),
+                  ),
                 ),
               ),
             ],

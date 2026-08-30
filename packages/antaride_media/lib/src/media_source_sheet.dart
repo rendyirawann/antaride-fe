@@ -158,25 +158,30 @@ class MediaSourceSheet {
     String pesan,
     MediaPicker picker,
   ) async {
-    final bool? buka = await showDialog<bool>(
-      context: context,
-      builder: (BuildContext dialog) => AlertDialog(
-        title: const Text('Izin diperlukan'),
-        content: Text(pesan),
-        actions: <Widget>[
-          TextButton(
-            onPressed: () => Navigator.of(dialog).pop(false),
-            child: const Text('Nanti'),
-          ),
-          TextButton(
-            onPressed: () => Navigator.of(dialog).pop(true),
-            child: const Text('Buka Pengaturan'),
-          ),
-        ],
-      ),
+    /*
+     * Aksen `warning`, bukan aksen aplikasi.
+     *
+     * Paket ini dipakai ketiga aplikasi sekaligus — dan tidak menerima warna
+     * merek dari pemanggilnya. Memilih salah satu aksen aplikasi di sini berarti
+     * dialog hijau penumpang muncul di tengah aplikasi merchant yang amber.
+     *
+     * `warning` netral terhadap ketiganya dan tepat maknanya: ada yang
+     * menghalangi, tapi tidak ada yang rusak dan tidak ada yang hilang.
+     */
+    final bool buka = await ClayConfirmDialog.tampilkan(
+      context,
+      icon: Icons.lock_outline_rounded,
+      title: 'Izin diperlukan',
+      message: pesan,
+      confirmLabel: 'Buka Pengaturan',
+      cancelLabel: 'Nanti',
+      accent: ClayTokens.warning,
+
+      // Membuka pengaturan tidak menghapus apa pun.
+      destructive: false,
     );
 
-    if (buka == true) {
+    if (buka) {
       await picker.openSettings();
     }
   }

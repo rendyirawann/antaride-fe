@@ -101,29 +101,19 @@ class _ShellState extends State<_Shell> {
       return;
     }
 
-    final bool? yakin = await showDialog<bool>(
-      context: context,
-      builder: (BuildContext dialog) => AlertDialog(
-        title: const Text('Keluar?'),
-        content: const Text(
+    // Wadahnya ClayConfirmDialog bersama — kontraknya tetap bool, dan tutup
+    // di luar mengembalikan false, bukan persetujuan.
+    final bool yakin = await ClayConfirmDialog.tampilkan(
+      context,
+      icon: Icons.logout_rounded,
+      title: 'Keluar?',
+      message:
           'Anda akan otomatis offline dan perlu memasukkan kode OTP lagi untuk '
           'masuk.',
-        ),
-        actions: <Widget>[
-          TextButton(
-            onPressed: () => Navigator.of(dialog).pop(false),
-            child: const Text('Batal'),
-          ),
-          TextButton(
-            onPressed: () => Navigator.of(dialog).pop(true),
-            style: TextButton.styleFrom(foregroundColor: ClayTokens.danger),
-            child: const Text('Keluar'),
-          ),
-        ],
-      ),
+      confirmLabel: 'Keluar',
     );
 
-    if (yakin != true || !mounted) {
+    if (!yakin || !mounted) {
       return;
     }
 
@@ -148,6 +138,7 @@ class _ShellState extends State<_Shell> {
     );
 
     return ClayDrawerShell(
+      accent: _aksen,
       selectedIndex: _halaman,
       onSelect: (int i) => setState(() => _halaman = i),
 
@@ -355,26 +346,23 @@ class _DriverDashboardPageState extends State<DriverDashboardPage> {
     // snackbar. Snackbar hilang sendiri, dan pesan yang menuntut membuka
     // pengaturan sistem harus punya tombol yang membawa ke sana.
     if (lokasi != null) {
-      await showDialog<void>(
-        context: context,
-        builder: (BuildContext dialog) => AlertDialog(
-          title: const Text('Lokasi belum siap'),
-          content: Text(lokasi),
-          actions: <Widget>[
-            TextButton(
-              onPressed: () => Navigator.of(dialog).pop(),
-              child: const Text('Nanti'),
-            ),
-            TextButton(
-              onPressed: () {
-                Navigator.of(dialog).pop();
-                const LocationService().openSettings();
-              },
-              child: const Text('Buka pengaturan'),
-            ),
-          ],
-        ),
+      // Bukan aksi berbahaya: tombol utamanya membuka pengaturan, jadi
+      // `destructive: false` dengan aksen aplikasi driver. Pesannya datang dari
+      // controller apa adanya.
+      final bool buka = await ClayConfirmDialog.tampilkan(
+        context,
+        icon: Icons.location_off_rounded,
+        title: 'Lokasi belum siap',
+        message: lokasi,
+        confirmLabel: 'Buka pengaturan',
+        cancelLabel: 'Nanti',
+        accent: _aksen,
+        destructive: false,
       );
+
+      if (buka) {
+        const LocationService().openSettings();
+      }
 
       return;
     }

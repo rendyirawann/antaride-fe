@@ -637,7 +637,7 @@ class _KartuDokumen extends StatelessWidget {
               // dengan kartunya, bukan stiker yang ditempel.
               ClayIconChip(
                 icon: _ikonJenis[type] ?? Icons.description_rounded,
-                accent: _warna(d),
+                accent: _warna(d, gelap: gelap),
                 size: 46,
               ),
 
@@ -694,7 +694,7 @@ class _KartuDokumen extends StatelessWidget {
                 // Kalimat statusnya dari backend — di sini hanya digayakan.
                 label: d == null ? 'Belum diunggah' : d.statusLabel,
                 ikon: _ikon(d),
-                warna: _warna(d),
+                warna: _warna(d, gelap: gelap),
               ),
 
               if (d != null && d.expiresAt != null)
@@ -770,9 +770,15 @@ class _KartuDokumen extends StatelessWidget {
     return d.isApproved ? ClayTokens.success : null;
   }
 
-  static Color _warna(DriverDocument? d) {
+  /// Warna status dokumen.
+  ///
+  /// Butuh [gelap] HANYA untuk cabang "belum diunggah": abu-abu mode terang
+  /// (#98A2B3) di layar gelap hampir seterang teks sekunder biasa (#A0A8B8),
+  /// jadi isyarat "belum ada apa-apa di sini" hilang. Empat cabang lainnya
+  /// warna semantik (danger/success/warning) yang memang sama di kedua mode.
+  static Color _warna(DriverDocument? d, {required bool gelap}) {
     if (d == null) {
-      return ClayTokens.textTertiary;
+      return gelap ? ClayTokens.textTertiaryDark : ClayTokens.textTertiary;
     }
 
     if (d.isRejected || (d.isApproved && d.isExpired)) {

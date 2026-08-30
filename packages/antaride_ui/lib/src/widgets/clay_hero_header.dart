@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 import '../theme/clay_gradients.dart';
 import '../theme/clay_tokens.dart';
@@ -65,81 +66,112 @@ class ClayHeroHeader extends StatelessWidget {
 
     final bool adaBarisAtas = leading != null || trailing != null;
 
-    return ClipRRect(
-      borderRadius: const BorderRadius.vertical(bottom: Radius.circular(36)),
-      child: DecoratedBox(
-        decoration: BoxDecoration(gradient: ClayGradients.hero(accent)),
-        child: Stack(
-          children: <Widget>[
-            const Positioned(
-              top: -70,
-              right: -50,
-              child: _Lingkaran(diameter: 220, alpha: 0.08),
-            ),
-            const Positioned(
-              bottom: -90,
-              left: -70,
-              child: _Lingkaran(diameter: 240, alpha: 0.06),
-            ),
-
-            Padding(
-              padding: EdgeInsets.fromLTRB(
-                ClayTokens.space6,
-                atas + (compact ? ClayTokens.space4 : ClayTokens.space8),
-                ClayTokens.space6,
-                compact ? ClayTokens.space5 : ClayTokens.space8,
+    /*
+     * ==========================================================================
+     *  IKON STATUS BAR DIPUTIHKAN DI SINI, SEKALI UNTUK SEMUA HERO
+     * ==========================================================================
+     *  `ClayTheme` menyetel `appBarTheme.systemOverlayStyle` ke ikon GELAP untuk
+     *  mode terang — benar untuk AppBar berlatar pucat, salah untuk hero yang
+     *  seluruhnya warna aksen pekat dengan teks putih.
+     *
+     *  Yang membuatnya tidak terlihat saat pengembangan: gaya status bar itu
+     *  GLOBAL dan LENGKET. Flutter hanya memanggil `SystemChrome` saat menemukan
+     *  anotasi di titik status bar; kalau layar yang aktif tidak punya anotasi,
+     *  gaya dari layar SEBELUMNYA tetap berlaku. Jadi hero tanpa anotasi terlihat
+     *  benar saat dibuka dari splash (yang memutihkannya), lalu berubah gelap
+     *  setelah pengguna mampir ke halaman ber-AppBar dan kembali — jam dan
+     *  baterai jadi gelap di atas gradien pekat.
+     *
+     *  Dipasang di komponennya, bukan di tiap layar: enam layar sudah lupa
+     *  memasangnya sendiri, dan layar ketujuh yang ditulis besok akan lupa juga.
+     *
+     *  Aman untuk hero yang TIDAK menembus status bar: Flutter mengambil
+     *  anotasi hanya di titik status bar, jadi hero yang duduk di tengah halaman
+     *  tidak pernah terdaftar.
+     * ==========================================================================
+     */
+    return AnnotatedRegion<SystemUiOverlayStyle>(
+      value: const SystemUiOverlayStyle(
+        statusBarColor: Colors.transparent,
+        statusBarIconBrightness: Brightness.light,
+        statusBarBrightness: Brightness.dark,
+      ),
+      child: ClipRRect(
+        borderRadius: const BorderRadius.vertical(bottom: Radius.circular(36)),
+        child: DecoratedBox(
+          decoration: BoxDecoration(gradient: ClayGradients.hero(accent)),
+          child: Stack(
+            children: <Widget>[
+              const Positioned(
+                top: -70,
+                right: -50,
+                child: _Lingkaran(diameter: 220, alpha: 0.08),
               ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: <Widget>[
-                  if (adaBarisAtas) ...<Widget>[
-                    Row(
-                      children: <Widget>[?leading, const Spacer(), ?trailing],
-                    ),
-                    SizedBox(
-                      height: compact ? ClayTokens.space4 : ClayTokens.space5,
-                    ),
-                  ],
+              const Positioned(
+                bottom: -90,
+                left: -70,
+                child: _Lingkaran(diameter: 240, alpha: 0.06),
+              ),
 
-                  Text(
-                    title,
-                    style: TextStyle(
-                      fontFamily: 'PlusJakartaSans',
-                      fontSize: compact ? 20 : 30,
-                      fontWeight: FontWeight.w800,
-                      letterSpacing: compact ? -0.4 : -0.6,
-                      height: 1.1,
-                      color: Colors.white,
-                    ),
-                  ),
+              Padding(
+                padding: EdgeInsets.fromLTRB(
+                  ClayTokens.space6,
+                  atas + (compact ? ClayTokens.space4 : ClayTokens.space8),
+                  ClayTokens.space6,
+                  compact ? ClayTokens.space5 : ClayTokens.space8,
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: <Widget>[
+                    if (adaBarisAtas) ...<Widget>[
+                      Row(
+                        children: <Widget>[?leading, const Spacer(), ?trailing],
+                      ),
+                      SizedBox(
+                        height: compact ? ClayTokens.space4 : ClayTokens.space5,
+                      ),
+                    ],
 
-                  if (subtitle != null) ...<Widget>[
-                    SizedBox(
-                      height: compact ? ClayTokens.space1 : ClayTokens.space3,
-                    ),
                     Text(
-                      subtitle!,
+                      title,
                       style: TextStyle(
                         fontFamily: 'PlusJakartaSans',
-                        fontSize: compact ? 12.5 : 14,
-                        height: 1.55,
-
-                        // Putih diredupkan, bukan abu-abu: abu-abu di atas
-                        // gradien berwarna terlihat kotor, putih transparan
-                        // ikut warna aksennya.
-                        color: Colors.white.withValues(alpha: 0.88),
+                        fontSize: compact ? 20 : 30,
+                        fontWeight: FontWeight.w800,
+                        letterSpacing: compact ? -0.4 : -0.6,
+                        height: 1.1,
+                        color: Colors.white,
                       ),
                     ),
-                  ],
 
-                  if (bottom != null) ...<Widget>[
-                    const SizedBox(height: ClayTokens.space5),
-                    bottom!,
+                    if (subtitle != null) ...<Widget>[
+                      SizedBox(
+                        height: compact ? ClayTokens.space1 : ClayTokens.space3,
+                      ),
+                      Text(
+                        subtitle!,
+                        style: TextStyle(
+                          fontFamily: 'PlusJakartaSans',
+                          fontSize: compact ? 12.5 : 14,
+                          height: 1.55,
+
+                          // Putih diredupkan, bukan abu-abu: abu-abu di atas
+                          // gradien berwarna terlihat kotor, putih transparan
+                          // ikut warna aksennya.
+                          color: Colors.white.withValues(alpha: 0.88),
+                        ),
+                      ),
+                    ],
+
+                    if (bottom != null) ...<Widget>[
+                      const SizedBox(height: ClayTokens.space5),
+                      bottom!,
+                    ],
                   ],
-                ],
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );

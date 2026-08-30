@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_zoom_drawer/flutter_zoom_drawer.dart';
 
+import '../theme/clay_gradients.dart';
 import '../theme/clay_tokens.dart';
 
 /// Satu butir menu di sidebar.
@@ -62,7 +63,22 @@ class ClayDrawerShell extends StatefulWidget {
     this.onFooterTap,
     this.actions = const <Widget>[],
     this.fullBleedPages = const <int>{},
+    this.accent = ClayTokens.primary,
   });
+
+  /// Warna merek aplikasi ini.
+  ///
+  /// ==========================================================================
+  ///  SIDEBAR ADALAH SATU-SATUNYA BIDANG PENUH LAYAR BERWARNA MEREK
+  /// ==========================================================================
+  ///  Sebelum ada parameter ini, gradiennya dipatok hijau penumpang. Akibatnya
+  ///  di aplikasi merchant: hero-nya amber, lalu hamburger ditekan dan yang
+  ///  meluncur masuk adalah panel HIJAU — bidang terbesar di layar memakai
+  ///  warna aplikasi lain.
+  ///
+  ///  Bawaannya `primary` supaya aplikasi penumpang tidak perlu diubah.
+  /// ==========================================================================
+  final Color accent;
 
   final List<ClayDrawerItem> items;
   final int selectedIndex;
@@ -121,6 +137,7 @@ class _ClayDrawerShellState extends State<ClayDrawerShell> {
       controller: _drawer,
 
       menuScreen: _Sidebar(
+        accent: widget.accent,
         items: widget.items,
         selectedIndex: widget.selectedIndex,
         title: widget.title,
@@ -199,7 +216,7 @@ class _ClayDrawerShellState extends State<ClayDrawerShell> {
 
       menuBackgroundColor: gelap
           ? ClayTokens.surfaceSunkenDark
-          : ClayTokens.primaryDark,
+          : ClayGradients.gelapkan(widget.accent),
 
       // Menyentuh halaman utama menutup menu. Ini yang membuat gerakannya
       // terasa seperti menggeser kartu kembali, dan bukan seperti dialog yang
@@ -262,6 +279,7 @@ class ClayDrawerScope extends InheritedWidget {
 /// Isi sidebar.
 class _Sidebar extends StatelessWidget {
   const _Sidebar({
+    required this.accent,
     required this.items,
     required this.selectedIndex,
     required this.onSelect,
@@ -272,6 +290,7 @@ class _Sidebar extends StatelessWidget {
     this.onFooterTap,
   });
 
+  final Color accent;
   final List<ClayDrawerItem> items;
   final int selectedIndex;
   final void Function(int) onSelect;
@@ -306,7 +325,10 @@ class _Sidebar extends StatelessWidget {
                   ClayTokens.surfaceRaisedDark,
                   ClayTokens.surfaceSunkenDark,
                 ]
-              : <Color>[ClayTokens.primaryLight, ClayTokens.primaryDark],
+              // Aturan gradien v2 yang sama dengan hero: satu warna di-lerp ke
+              // hitam, bukan dua warna yang dipilih terpisah. Itu yang membuat
+              // sidebar dan hero di aplikasi mana pun terbaca satu keluarga.
+              : <Color>[accent, ClayGradients.gelapkan(accent)],
         ),
       ),
       child: SafeArea(
@@ -386,6 +408,7 @@ class _Sidebar extends StatelessWidget {
                   children: <Widget>[
                     for (int i = 0; i < items.length; i++)
                       _ButirMenu(
+                        accent: accent,
                         item: items[i],
                         selected: i == selectedIndex,
                         onTap: () => onSelect(i),
@@ -441,7 +464,11 @@ class _ButirMenu extends StatelessWidget {
     required this.item,
     required this.selected,
     required this.onTap,
+    required this.accent,
   });
+
+  /// Warna merek aplikasi — dipakai teks lencana di atas pil putih.
+  final Color accent;
 
   final ClayDrawerItem item;
   final bool selected;
@@ -516,11 +543,11 @@ class _ButirMenu extends StatelessWidget {
                 ),
                 child: Text(
                   '${item.badge}',
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontFamily: 'PlusJakartaSans',
                     fontSize: 11,
                     fontWeight: FontWeight.w800,
-                    color: ClayTokens.primaryDark,
+                    color: ClayGradients.gelapkan(accent),
                   ),
                 ),
               ),

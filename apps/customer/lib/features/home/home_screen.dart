@@ -436,6 +436,16 @@ class _KisiLayanan extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final bool gelap = Theme.of(context).brightness == Brightness.dark;
+
+    // Abu-abu "belum siap" HARUS ikut mode. Nilai mode terang (#98A2B3) di
+    // layar gelap justru hampir seterang teks sekunder biasa (#A0A8B8), jadi
+    // isyarat redupnya hilang — layanan yang belum ada terlihat sama tersedianya
+    // dengan yang aktif.
+    final Color abu = gelap
+        ? ClayTokens.textTertiaryDark
+        : ClayTokens.textTertiary;
+
     if (layanan.isEmpty) {
       return const ClayEmptyState(
         icon: Icons.inbox_rounded,
@@ -452,7 +462,19 @@ class _KisiLayanan extends StatelessWidget {
         crossAxisCount: 3,
         mainAxisSpacing: ClayTokens.space3,
         crossAxisSpacing: ClayTokens.space3,
-        childAspectRatio: 0.92,
+        /*
+         * Tinggi sel DIPATOK, bukan diturunkan dari rasio lebar.
+         *
+         * `childAspectRatio` menghitung tinggi dari lebar kolom, dan lebar itu
+         * mengecil di HP sempit — sementara isinya (chip 40 + jarak 8 + dua
+         * baris nama) tingginya TETAP. Di 320 dp rasio 0.92 menyisakan 7,2 px
+         * terlalu sedikit: tiap sel meluap, dan di build debug seluruh kisi
+         * bergaris kuning-hitam.
+         *
+         * 112 px memuat isi terburuknya (nama dua baris) di 320 dp sampai
+         * 393 dp, pada skala teks sistem 1.0 maupun 1.3.
+         */
+        mainAxisExtent: 112,
       ),
       itemCount: layanan.length,
       itemBuilder: (BuildContext context, int i) {
@@ -473,7 +495,7 @@ class _KisiLayanan extends StatelessWidget {
               // warnanya abu — bentuknya sama supaya kisinya tidak belang.
               ClayIconChip(
                 icon: _ikon[s.code] ?? Icons.category_rounded,
-                accent: siap ? ClayTokens.primary : ClayTokens.textTertiary,
+                accent: siap ? ClayTokens.primary : abu,
                 size: 40,
               ),
               const SizedBox(height: ClayTokens.space2),
@@ -487,7 +509,7 @@ class _KisiLayanan extends StatelessWidget {
                   fontSize: 11.5,
                   fontWeight: FontWeight.w600,
                   height: 1.25,
-                  color: siap ? null : ClayTokens.textTertiary,
+                  color: siap ? null : abu,
                 ),
               ),
             ],
