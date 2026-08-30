@@ -22,6 +22,20 @@ import '../order/tracking_screen.dart';
 ///  menampilkan penomoran halaman palsu di atas API yang tidak bisa
 ///  menyediakannya.
 /// ============================================================================
+///
+/// ============================================================================
+///  BAHASA V2 DI LAYAR INI: KARTU, BUKAN HERO
+/// ============================================================================
+///  Halaman ini hidup DI BAWAH AppBar milik shell tab, jadi hero gradien yang
+///  menembus status bar tidak mungkin di sini. Identitas v2 masuk lewat kartu:
+///  tiap order diberi [ClayIconChip] bergradien aksen sesuai jenis layanannya,
+///  sehingga daftar yang tadinya monoton abu punya titik fokus per baris.
+///
+///  Animasi masuk dipasang SEKALI di level layar ([ClayEntrance] membungkus
+///  seluruh daftar), bukan per kartu: item `ListView.builder` di-dispose saat
+///  keluar viewport, dan entrance per kartu akan diputar ulang setiap digulir
+///  balik — persis rasa "gelisah" yang dilarang docblock ClayEntrance.
+/// ============================================================================
 class HistoryScreen extends StatefulWidget {
   const HistoryScreen({super.key});
 
@@ -109,6 +123,8 @@ class _HistoryScreenState extends State<HistoryScreen> {
     if (!_pertamaSelesai && _memuat) {
       // Skeleton berbentuk kartu, bukan spinner: tingginya sama dengan kartu
       // sebenarnya, jadi daftarnya tidak melompat saat datanya datang.
+      // Kartu v2 (chip 42 + dua baris teks + baris status) tetap jatuh di
+      // kisaran tinggi yang sama, jadi angka 116 masih benar.
       return const Scaffold(body: ClaySkeletonList(itemHeight: 116));
     }
 
@@ -134,14 +150,17 @@ class _HistoryScreenState extends State<HistoryScreen> {
     }
 
     return Scaffold(
-      body: ClayRefresh(
-        onRefresh: () => _muat(ulangDariAwal: true),
-        onLoad: _muatLagi,
-        child: ListView.builder(
-          padding: const EdgeInsets.all(ClayTokens.space5),
-          itemCount: _orders.length,
-          itemBuilder: (BuildContext context, int i) =>
-              _KartuOrder(order: _orders[i]),
+      body: ClayEntrance(
+        index: 0,
+        child: ClayRefresh(
+          onRefresh: () => _muat(ulangDariAwal: true),
+          onLoad: _muatLagi,
+          child: ListView.builder(
+            padding: const EdgeInsets.all(ClayTokens.space5),
+            itemCount: _orders.length,
+            itemBuilder: (BuildContext context, int i) =>
+                _KartuOrder(order: _orders[i]),
+          ),
         ),
       ),
     );
@@ -153,8 +172,26 @@ class _KartuOrder extends StatelessWidget {
 
   final Order order;
 
+  /// Ikon per kode layanan.
+  ///
+  /// KENAPA disalin, bukan diimpor: pemetaan aslinya privat di
+  /// `home_screen.dart` (`_KisiLayanan._ikon`) dan `antaride_ui` belum punya
+  /// pemetaan layanan→ikon bersama. Duplikasi enam baris ini kandidat untuk
+  /// diangkat ke satu tempat — kalau beranda menambah layanan baru, tambahkan
+  /// juga di sini, atau kartunya jatuh ke ikon struk generik (bukan galat).
+  static const Map<String, IconData> _ikon = <String, IconData>{
+    'ride_bike': Icons.two_wheeler_rounded,
+    'ride_car': Icons.local_taxi_rounded,
+    'send': Icons.local_shipping_rounded,
+    'food': Icons.restaurant_rounded,
+    'mart': Icons.storefront_rounded,
+    'shop': Icons.shopping_bag_rounded,
+  };
+
   @override
   Widget build(BuildContext context) {
+    final bool gelap = Theme.of(context).brightness == Brightness.dark;
+
     return ClayCard(
       onTap: () => Navigator.of(context).push(
         MaterialPageRoute<void>(
@@ -165,19 +202,69 @@ class _KartuOrder extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
           Row(
+            crossAxisAlignment: CrossAxisAlignment.center,
             children: <Widget>[
-              ClayStatusBadge(
-                status: order.status,
-                label: order.statusLabel,
-                compact: true,
+              // Satu-satunya bidang beraksen pekat di kartu — penanda jenis
+              // layanan sekaligus identitas v2 di daftar yang serba pucat.
+              ClayIconChip(
+                icon: _ikon[order.serviceCode] ?? Icons.receipt_long_rounded,
+                accent: ClayTokens.primary,
               ),
-              const Spacer(),
-              Text(
-                _tanggal(),
-                style: const TextStyle(
-                  fontFamily: 'PlusJakartaSans',
-                  fontSize: 11,
-                  color: ClayTokens.textTertiary,
+
+              const SizedBox(width: ClayTokens.space3),
+
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: <Widget>[
+                    Row(
+                      children: <Widget>[
+                        Expanded(
+                          child: Text(
+                            order.serviceName ?? order.orderNumber,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: TextStyle(
+                              fontFamily: 'PlusJakartaSans',
+                              fontSize: 11.5,
+                              fontWeight: FontWeight.w700,
+                              color: gelap
+                                  ? ClayTokens.textSecondaryDark
+                                  : ClayTokens.textSecondary,
+                            ),
+                          ),
+                        ),
+                        const SizedBox(width: ClayTokens.space2),
+                        Text(
+                          _tanggal(),
+                          style: TextStyle(
+                            fontFamily: 'PlusJakartaSans',
+                            fontSize: 11,
+                            color: gelap
+                                ? ClayTokens.textTertiaryDark
+                                : ClayTokens.textTertiary,
+                          ),
+                        ),
+                      ],
+                    ),
+
+                    const SizedBox(height: ClayTokens.space1),
+
+                    Text(
+                      order.destination?.address ?? order.pickup.address,
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                      style: TextStyle(
+                        fontFamily: 'PlusJakartaSans',
+                        fontSize: 13.5,
+                        fontWeight: FontWeight.w600,
+                        height: 1.35,
+                        color: gelap
+                            ? ClayTokens.textPrimaryDark
+                            : ClayTokens.textPrimary,
+                      ),
+                    ),
+                  ],
                 ),
               ),
             ],
@@ -185,29 +272,12 @@ class _KartuOrder extends StatelessWidget {
 
           const SizedBox(height: ClayTokens.space3),
 
-          Text(
-            order.destination?.address ?? order.pickup.address,
-            maxLines: 2,
-            overflow: TextOverflow.ellipsis,
-            style: const TextStyle(
-              fontFamily: 'PlusJakartaSans',
-              fontSize: 13.5,
-              fontWeight: FontWeight.w600,
-              height: 1.35,
-            ),
-          ),
-
-          const SizedBox(height: ClayTokens.space3),
-
           Row(
             children: <Widget>[
-              Text(
-                order.serviceName ?? order.orderNumber,
-                style: const TextStyle(
-                  fontFamily: 'PlusJakartaSans',
-                  fontSize: 11.5,
-                  color: ClayTokens.textSecondary,
-                ),
+              ClayStatusBadge(
+                status: order.status,
+                label: order.statusLabel,
+                compact: true,
               ),
               const Spacer(),
               ClayMoney(

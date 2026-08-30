@@ -18,16 +18,17 @@ import 'package:flutter/material.dart';
 /// ============================================================================
 ///  BENTUKNYA: HERO GRADIEN DI ATAS, ISI DI PERMUKAAN CLAY DI BAWAH
 /// ============================================================================
-///  Bagian atas satu bidang gradien warna aksen yang menembus status bar,
-///  dengan lingkaran-lingkaran samar sebagai tekstur. Merek dan tagline hidup
-///  di sana, putih di atas warna. Bagian bawah kembali ke permukaan clay biasa
-///  untuk daftar fitur dan tombol.
+///  Layar ini adalah contoh pertama bahasa desain v2, dan bagian-bagiannya
+///  sudah diangkat ke `antaride_ui`: bidang gradiennya jadi [ClayHeroHeader],
+///  chip ikonnya jadi [ClayIconChip], animasi masuknya jadi [ClayEntrance].
+///  Yang tersisa di berkas ini hanya susunan layarnya dan mark logo — layar
+///  lain WAJIB memakai komponen yang sama, bukan menyalin dari sini.
 ///
-///  Dua bidang ini yang membuat layarnya tidak terasa seperti formulir:
-///  formulir seluruhnya satu warna latar. Isinya juga masuk dengan animasi
-///  singkat — sekali, saat layar dibuka, bukan berulang.
+///  Dua bidang (gradien + clay) yang membuat layarnya tidak terasa seperti
+///  formulir: formulir seluruhnya satu warna latar. Isinya juga masuk dengan
+///  animasi singkat — sekali, saat layar dibuka, bukan berulang.
 /// ============================================================================
-class WelcomeScreen extends StatefulWidget {
+class WelcomeScreen extends StatelessWidget {
   const WelcomeScreen({
     super.key,
     required this.title,
@@ -64,55 +65,9 @@ class WelcomeScreen extends StatefulWidget {
   final String? footer;
 
   @override
-  State<WelcomeScreen> createState() => _WelcomeScreenState();
-}
-
-class _WelcomeScreenState extends State<WelcomeScreen>
-    with SingleTickerProviderStateMixin {
-  /// Animasi masuk. Satu controller untuk semuanya; tiap bagian mengambil
-  /// potongan kurvanya sendiri lewat `Interval` supaya masuknya bergiliran.
-  late final AnimationController _masuk;
-
-  @override
-  void initState() {
-    super.initState();
-
-    _masuk = AnimationController(
-      vsync: this,
-      duration: const Duration(milliseconds: 700),
-    )..forward();
-  }
-
-  @override
-  void dispose() {
-    _masuk.dispose();
-    super.dispose();
-  }
-
-  /// Fade + geser naik sedikit, dimulai pada [mulai] (0..1 dari durasi total).
-  Widget _muncul({required double mulai, required Widget child}) {
-    final CurvedAnimation kurva = CurvedAnimation(
-      parent: _masuk,
-      curve: Interval(mulai, 1, curve: Curves.easeOutCubic),
-    );
-
-    return FadeTransition(
-      opacity: kurva,
-      child: AnimatedBuilder(
-        animation: kurva,
-        builder: (BuildContext _, Widget? anak) => Transform.translate(
-          offset: Offset(0, 18 * (1 - kurva.value)),
-          child: anak,
-        ),
-        child: child,
-      ),
-    );
-  }
-
-  @override
   Widget build(BuildContext context) {
     final bool gelap = Theme.of(context).brightness == Brightness.dark;
-    final Color aksen = widget.accent ?? ClayTokens.primary;
+    final Color aksen = accent ?? ClayTokens.primary;
 
     return Scaffold(
       body: LayoutBuilder(
@@ -132,12 +87,13 @@ class _WelcomeScreenState extends State<WelcomeScreen>
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: <Widget>[
-                    _muncul(
-                      mulai: 0,
-                      child: _Hero(
-                        aksen: aksen,
-                        title: widget.title,
-                        tagline: widget.tagline,
+                    ClayEntrance(
+                      index: 0,
+                      child: ClayHeroHeader(
+                        accent: aksen,
+                        title: title,
+                        subtitle: tagline,
+                        leading: _LogoMark(aksen: aksen),
                       ),
                     ),
 
@@ -151,17 +107,10 @@ class _WelcomeScreenState extends State<WelcomeScreen>
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.stretch,
                         children: <Widget>[
-                          for (
-                            int i = 0;
-                            i < widget.points.length;
-                            i++
-                          ) ...<Widget>[
-                            _muncul(
-                              mulai: 0.15 + i * 0.12,
-                              child: _KartuPoin(
-                                poin: widget.points[i],
-                                aksen: aksen,
-                              ),
+                          for (int i = 0; i < points.length; i++) ...<Widget>[
+                            ClayEntrance(
+                              index: i + 1,
+                              child: _KartuPoin(poin: points[i], aksen: aksen),
                             ),
                             const SizedBox(height: ClayTokens.space3),
                           ],
@@ -178,8 +127,9 @@ class _WelcomeScreenState extends State<WelcomeScreen>
                         ClayTokens.space6,
                         ClayTokens.space5,
                       ),
-                      child: _muncul(
-                        mulai: 0.45,
+                      child: ClayEntrance(
+                        // Giliran terakhir, setelah semua kartu poin.
+                        index: points.length + 1,
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.stretch,
                           children: <Widget>[
@@ -190,24 +140,24 @@ class _WelcomeScreenState extends State<WelcomeScreen>
                              * tidak pernah sampai ke sini.
                              */
                             ClayButton(
-                              label: widget.registerLabel,
-                              onPressed: widget.onRegister,
+                              label: registerLabel,
+                              onPressed: onRegister,
                               expanded: true,
                             ),
 
                             const SizedBox(height: ClayTokens.space3),
 
                             ClayButton(
-                              label: widget.loginLabel,
-                              onPressed: widget.onLogin,
+                              label: loginLabel,
+                              onPressed: onLogin,
                               variant: ClayButtonVariant.secondary,
                               expanded: true,
                             ),
 
-                            if (widget.footer != null) ...<Widget>[
+                            if (footer != null) ...<Widget>[
                               const SizedBox(height: ClayTokens.space4),
                               Text(
-                                widget.footer!,
+                                footer!,
                                 textAlign: TextAlign.center,
                                 style: TextStyle(
                                   fontFamily: 'PlusJakartaSans',
@@ -249,120 +199,6 @@ class WelcomePoint {
 
 // -----------------------------------------------------------------------------
 
-/// Bidang gradien di atas: merek, tagline, dan tekstur lingkaran.
-class _Hero extends StatelessWidget {
-  const _Hero({
-    required this.aksen,
-    required this.title,
-    required this.tagline,
-  });
-
-  final Color aksen;
-  final String title;
-  final String tagline;
-
-  @override
-  Widget build(BuildContext context) {
-    // Gradien dari aksen ke versi lebih gelapnya sendiri — bukan warna kedua
-    // yang dipilih terpisah, supaya SEMUA aksen (hijau, hijau tua, amber)
-    // menghasilkan gradien yang serasi tanpa tabel kombinasi.
-    final Color tua = Color.lerp(aksen, Colors.black, 0.32)!;
-
-    // Menembus status bar. `padding.top` dari MediaQuery, bukan SafeArea:
-    // gradiennya harus ADA di belakang jam dan baterai, isinya saja yang turun.
-    final double atas = MediaQuery.paddingOf(context).top;
-
-    return ClipRRect(
-      borderRadius: const BorderRadius.vertical(bottom: Radius.circular(36)),
-      child: DecoratedBox(
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-            colors: <Color>[aksen, tua],
-          ),
-        ),
-        child: Stack(
-          children: <Widget>[
-            // Lingkaran-lingkaran samar. Tekstur, bukan informasi — cukup dua,
-            // dan keduanya putih transparan supaya ikut warna aksen apa pun.
-            Positioned(
-              top: -70,
-              right: -50,
-              child: _Lingkaran(diameter: 220, alpha: 0.08),
-            ),
-            Positioned(
-              bottom: -90,
-              left: -70,
-              child: _Lingkaran(diameter: 240, alpha: 0.06),
-            ),
-
-            Padding(
-              padding: EdgeInsets.fromLTRB(
-                ClayTokens.space6,
-                atas + ClayTokens.space8,
-                ClayTokens.space6,
-                ClayTokens.space8,
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: <Widget>[
-                  _LogoMark(aksen: aksen),
-
-                  const SizedBox(height: ClayTokens.space5),
-
-                  Text(
-                    title,
-                    style: const TextStyle(
-                      fontFamily: 'PlusJakartaSans',
-                      fontSize: 30,
-                      fontWeight: FontWeight.w800,
-                      letterSpacing: -0.6,
-                      height: 1.1,
-                      color: Colors.white,
-                    ),
-                  ),
-
-                  const SizedBox(height: ClayTokens.space3),
-
-                  Text(
-                    tagline,
-                    style: TextStyle(
-                      fontFamily: 'PlusJakartaSans',
-                      fontSize: 14,
-                      height: 1.55,
-                      color: Colors.white.withValues(alpha: 0.88),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-class _Lingkaran extends StatelessWidget {
-  const _Lingkaran({required this.diameter, required this.alpha});
-
-  final double diameter;
-  final double alpha;
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      width: diameter,
-      height: diameter,
-      decoration: BoxDecoration(
-        shape: BoxShape.circle,
-        color: Colors.white.withValues(alpha: alpha),
-      ),
-    );
-  }
-}
-
 /// Mark "A•" di atas hero.
 ///
 /// Digambar, bukan memuat berkas gambar: ikon peluncur hidup di `mipmap/` yang
@@ -372,6 +208,9 @@ class _Lingkaran extends StatelessWidget {
 /// Titik amber setelah huruf mengikuti mark ikon peluncur — huruf yang sedang
 /// menuju ke suatu titik. Di sini hurufnya putih di atas gradien, jadi tile-nya
 /// kaca buram (putih transparan), bukan kotak pejal.
+///
+/// TETAP di berkas ini, bukan di `antaride_ui`: mark merek bukan bagian design
+/// system — layar lain tidak boleh menaruh logo di sembarang hero.
 class _LogoMark extends StatelessWidget {
   const _LogoMark({required this.aksen});
 
@@ -433,7 +272,6 @@ class _KartuPoin extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final bool gelap = Theme.of(context).brightness == Brightness.dark;
-    final Color tua = Color.lerp(aksen, Colors.black, 0.28)!;
 
     return ClaySurface(
       depth: ClayDepth.low,
@@ -442,19 +280,7 @@ class _KartuPoin extends StatelessWidget {
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
-          Container(
-            width: 42,
-            height: 42,
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-                colors: <Color>[aksen, tua],
-              ),
-              borderRadius: BorderRadius.circular(ClayTokens.radiusSmall),
-            ),
-            child: Icon(poin.icon, size: 21, color: Colors.white),
-          ),
+          ClayIconChip(icon: poin.icon, accent: aksen),
           const SizedBox(width: ClayTokens.space4),
           Expanded(
             child: Column(

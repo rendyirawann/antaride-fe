@@ -83,23 +83,18 @@ class _AppShellState extends State<AppShell> {
   };
 
   Future<void> _keluar() async {
+    /*
+     * Dialognya wadah clay, alurnya tetap bool.
+     *
+     * AlertDialog Material adalah satu-satunya elemen mentah di alur utama —
+     * kotak datar tanpa kedalaman di antara permukaan clay. Yang diganti hanya
+     * WADAHNYA: kontraknya tetap `showDialog<bool>` yang mengembalikan
+     * true/false lewat pop, karena kode di bawah (dan pola dialog konfirmasi
+     * di seluruh aplikasi) bergantung pada bentuk itu.
+     */
     final bool? yakin = await showDialog<bool>(
       context: context,
-      builder: (BuildContext dialog) => AlertDialog(
-        title: const Text('Keluar?'),
-        content: const Text('Anda perlu memasukkan kode OTP lagi untuk masuk.'),
-        actions: <Widget>[
-          TextButton(
-            onPressed: () => Navigator.of(dialog).pop(false),
-            child: const Text('Batal'),
-          ),
-          TextButton(
-            onPressed: () => Navigator.of(dialog).pop(true),
-            style: TextButton.styleFrom(foregroundColor: ClayTokens.danger),
-            child: const Text('Keluar'),
-          ),
-        ],
-      ),
+      builder: (BuildContext dialog) => const _DialogKeluar(),
     );
 
     if (yakin != true || !mounted) {
@@ -126,6 +121,16 @@ class _AppShellState extends State<AppShell> {
         _pernahDibuka.add(i);
       }),
 
+      /*
+       * Beranda (indeks 0) menggambar kepala halamannya sendiri: hero gradien
+       * yang menembus status bar, dengan hamburger di dalam hero lewat
+       * ClayDrawerScope. AppBar shell di atasnya berarti dua kepala halaman
+       * bertumpuk. Halaman lain (riwayat, dompet, profil) TETAP memakai AppBar
+       * shell — jangan tambahkan indeksnya ke sini tanpa memberi halaman itu
+       * hero + Scaffold miliknya sendiri.
+       */
+      fullBleedPages: const <int>{0},
+
       title: user?.name ?? 'Pengguna Antaride',
       subtitle: user?.phone,
       avatarLabel: user?.initials,
@@ -151,6 +156,104 @@ class _AppShellState extends State<AppShell> {
             else
               const SizedBox.shrink(),
         ],
+      ),
+    );
+  }
+}
+
+/// Dialog konfirmasi keluar dalam wadah clay.
+///
+/// ============================================================================
+///  HIERARKI BAHAYANYA DARI CHIP GRADIEN MERAH, BUKAN DARI WARNA TEKS SAJA
+/// ============================================================================
+///  Versi lama menandai aksi berbahaya hanya lewat warna teks tombol "Keluar".
+///  Di sini bahayanya terbaca tiga lapis: chip ikon bergradien danger di
+///  puncak, tombol "Keluar" varian danger, dan "Batal" sebagai varian sekunder
+///  yang lebih tenang. Teks judul, kalimat konsekuensi, dan label kedua tombol
+///  TIDAK berubah satu kata pun — hanya wadahnya.
+///
+///  Kedua tombol dibungkus `Expanded` — syarat aturan keras: [ClayButton] di
+///  dalam `Row` harus `expanded: false` KECUALI dibungkus `Expanded`.
+/// ============================================================================
+class _DialogKeluar extends StatelessWidget {
+  const _DialogKeluar();
+
+  @override
+  Widget build(BuildContext context) {
+    final bool gelap = Theme.of(context).brightness == Brightness.dark;
+
+    return Dialog(
+      // Wadahnya ClaySurface, jadi Material milik Dialog dibuat tak terlihat —
+      // dua permukaan bertumpuk menghasilkan bayangan ganda.
+      backgroundColor: Colors.transparent,
+      elevation: 0,
+      insetPadding: const EdgeInsets.symmetric(horizontal: ClayTokens.space6),
+      child: ClaySurface(
+        depth: ClayDepth.high,
+        radius: ClayTokens.radiusLarge,
+        padding: const EdgeInsets.all(ClayTokens.space6),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: <Widget>[
+            const ClayIconChip(
+              icon: Icons.logout_rounded,
+              accent: ClayTokens.danger,
+              size: 48,
+            ),
+
+            const SizedBox(height: ClayTokens.space4),
+
+            Text(
+              'Keluar?',
+              style: TextStyle(
+                fontFamily: 'PlusJakartaSans',
+                fontSize: 18,
+                fontWeight: FontWeight.w800,
+                letterSpacing: -0.4,
+                color: gelap
+                    ? ClayTokens.textPrimaryDark
+                    : ClayTokens.textPrimary,
+              ),
+            ),
+
+            const SizedBox(height: ClayTokens.space2),
+
+            Text(
+              'Anda perlu memasukkan kode OTP lagi untuk masuk.',
+              style: TextStyle(
+                fontFamily: 'PlusJakartaSans',
+                fontSize: 13.5,
+                height: 1.5,
+                color: gelap
+                    ? ClayTokens.textSecondaryDark
+                    : ClayTokens.textSecondary,
+              ),
+            ),
+
+            const SizedBox(height: ClayTokens.space6),
+
+            Row(
+              children: <Widget>[
+                Expanded(
+                  child: ClayButton(
+                    label: 'Batal',
+                    variant: ClayButtonVariant.secondary,
+                    onPressed: () => Navigator.of(context).pop(false),
+                  ),
+                ),
+                const SizedBox(width: ClayTokens.space3),
+                Expanded(
+                  child: ClayButton(
+                    label: 'Keluar',
+                    variant: ClayButtonVariant.danger,
+                    onPressed: () => Navigator.of(context).pop(true),
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ),
       ),
     );
   }

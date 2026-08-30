@@ -18,6 +18,15 @@ import 'package:provider/provider.dart';
 ///
 ///  Yang dilakukan di sini: bandingkan dengan nilai awal, kirim yang berbeda.
 /// ============================================================================
+///
+/// ============================================================================
+///  BENTUK LAYAR: HERO COMPACT, BUKAN AppBar
+/// ============================================================================
+///  Layar ini route sendiri (bukan tab shell), jadi dia yang memasang kepala
+///  halamannya: [ClayHeroHeader] compact dengan [ClayBackButton] — pola layar
+///  form di brief v2. Compact, bukan hero penuh: form dibuka berulang kali
+///  dalam satu sesi, dan hero setinggi beranda memakan ruang milik kolomnya.
+/// ============================================================================
 class EditProfileScreen extends StatefulWidget {
   const EditProfileScreen({super.key});
 
@@ -106,76 +115,106 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     );
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Ubah profil')),
-      body: ListView(
-        padding: const EdgeInsets.all(ClayTokens.space5),
+      body: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
         children: <Widget>[
-          ClayInput(
-            controller: _nama,
-            label: 'Nama lengkap',
-            hint: 'Nama yang dilihat driver',
-            prefixIcon: Icons.person_outline_rounded,
-            enabled: !sibuk,
-            maxLength: 80,
-            errorText: _galatKolom['name'],
-          ),
-
-          const SizedBox(height: ClayTokens.space4),
-
-          ClayInput(
-            controller: _email,
-            label: 'Email',
-            hint: 'nama@email.com',
-            prefixIcon: Icons.mail_outline_rounded,
-            keyboardType: TextInputType.emailAddress,
-            enabled: !sibuk,
-            errorText: _galatKolom['email'],
-            helperText: 'Dipakai untuk struk dan pemulihan akun.',
-          ),
-
-          const SizedBox(height: ClayTokens.space5),
-
-          const Text(
-            'Jenis kelamin',
-            style: TextStyle(
-              fontFamily: 'PlusJakartaSans',
-              fontSize: 12,
-              fontWeight: FontWeight.w600,
-              color: ClayTokens.textSecondary,
+          const ClayEntrance(
+            index: 0,
+            child: ClayHeroHeader(
+              accent: ClayTokens.primary,
+              title: 'Ubah profil',
+              subtitle: 'Perbarui nama, email, dan jenis kelamin.',
+              compact: true,
+              leading: ClayBackButton(),
             ),
           ),
 
-          const SizedBox(height: ClayTokens.space3),
+          Expanded(
+            child: ListView(
+              padding: const EdgeInsets.all(ClayTokens.space5),
+              children: <Widget>[
+                ClayEntrance(
+                  index: 1,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: <Widget>[
+                      const _LabelSeksi('Identitas'),
 
-          Row(
-            children: <Widget>[
-              Expanded(
-                child: _PilihanGender(
-                  label: 'Laki-laki',
-                  nilai: 'male',
-                  terpilih: _gender == 'male',
-                  onTap: (String v) => setState(() => _gender = v),
+                      ClayInput(
+                        controller: _nama,
+                        label: 'Nama lengkap',
+                        hint: 'Nama yang dilihat driver',
+                        prefixIcon: Icons.person_outline_rounded,
+                        enabled: !sibuk,
+                        maxLength: 80,
+                        errorText: _galatKolom['name'],
+                      ),
+
+                      const SizedBox(height: ClayTokens.space4),
+
+                      ClayInput(
+                        controller: _email,
+                        label: 'Email',
+                        hint: 'nama@email.com',
+                        prefixIcon: Icons.mail_outline_rounded,
+                        keyboardType: TextInputType.emailAddress,
+                        enabled: !sibuk,
+                        errorText: _galatKolom['email'],
+                        helperText: 'Dipakai untuk struk dan pemulihan akun.',
+                      ),
+                    ],
+                  ),
                 ),
-              ),
-              const SizedBox(width: ClayTokens.space3),
-              Expanded(
-                child: _PilihanGender(
-                  label: 'Perempuan',
-                  nilai: 'female',
-                  terpilih: _gender == 'female',
-                  onTap: (String v) => setState(() => _gender = v),
+
+                const SizedBox(height: ClayTokens.space6),
+
+                ClayEntrance(
+                  index: 2,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: <Widget>[
+                      const _LabelSeksi('Jenis kelamin'),
+
+                      Row(
+                        children: <Widget>[
+                          Expanded(
+                            child: _PilihanGender(
+                              label: 'Laki-laki',
+                              nilai: 'male',
+                              terpilih: _gender == 'male',
+                              onTap: (String v) => setState(() => _gender = v),
+                            ),
+                          ),
+                          const SizedBox(width: ClayTokens.space3),
+                          Expanded(
+                            child: _PilihanGender(
+                              label: 'Perempuan',
+                              nilai: 'female',
+                              terpilih: _gender == 'female',
+                              onTap: (String v) => setState(() => _gender = v),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
                 ),
-              ),
-            ],
-          ),
 
-          const SizedBox(height: ClayTokens.space8),
+                const SizedBox(height: ClayTokens.space8),
 
-          ClayButton(
-            label: 'Simpan',
-            icon: Icons.check_rounded,
-            isLoading: sibuk,
-            onPressed: sibuk ? null : _simpan,
+                ClayEntrance(
+                  index: 3,
+                  child: ClayButton(
+                    label: 'Simpan',
+                    icon: Icons.check_rounded,
+                    isLoading: sibuk,
+                    onPressed: sibuk ? null : _simpan,
+                  ),
+                ),
+
+                const SizedBox(height: ClayTokens.space6),
+              ],
+            ),
           ),
         ],
       ),
@@ -183,6 +222,31 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   }
 }
 
+/// Label seksi dengan jarak bawaannya — sama dengan pola di ProfileScreen.
+class _LabelSeksi extends StatelessWidget {
+  const _LabelSeksi(this.teks);
+
+  final String teks;
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.only(
+        left: ClayTokens.space1,
+        bottom: ClayTokens.space3,
+      ),
+      child: ClaySectionLabel(teks),
+    );
+  }
+}
+
+/// Satu pil pilihan jenis kelamin.
+///
+/// KENAPA yang terpilih diisi gradien aksen, bukan sekadar border: pada form
+/// yang hanya punya dua pilihan berdampingan, keadaan terpilih harus terbaca
+/// sekali lirik — border tipis di atas permukaan pucat tidak cukup. Gradiennya
+/// [ClayGradients.chip], gradien yang sama dengan chip ikon, supaya seluruh
+/// bidang beraksen di aplikasi berasal dari satu resep.
 class _PilihanGender extends StatelessWidget {
   const _PilihanGender({
     required this.label,
@@ -198,19 +262,62 @@ class _PilihanGender extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ClaySurface(
-      depth: terpilih ? ClayDepth.pressed : ClayDepth.low,
-      borderColor: terpilih ? ClayTokens.primary : null,
-      padding: const EdgeInsets.symmetric(vertical: ClayTokens.space4),
-      onTap: () => onTap(nilai),
-      child: Center(
-        child: Text(
-          label,
-          style: TextStyle(
-            fontFamily: 'PlusJakartaSans',
-            fontSize: 13,
-            fontWeight: terpilih ? FontWeight.w700 : FontWeight.w500,
-            color: terpilih ? ClayTokens.primary : null,
+    final bool gelap = Theme.of(context).brightness == Brightness.dark;
+
+    if (!terpilih) {
+      return ClaySurface(
+        depth: ClayDepth.low,
+        padding: const EdgeInsets.symmetric(vertical: ClayTokens.space4),
+        onTap: () => onTap(nilai),
+        child: Center(
+          child: Text(
+            label,
+            style: TextStyle(
+              fontFamily: 'PlusJakartaSans',
+              fontSize: 13,
+              fontWeight: FontWeight.w500,
+              color: gelap
+                  ? ClayTokens.textSecondaryDark
+                  : ClayTokens.textSecondary,
+            ),
+          ),
+        ),
+      );
+    }
+
+    // `Ink` (bukan Container) supaya riak InkWell tergambar DI ATAS gradien —
+    // riak di bawah bidang pejal tidak pernah terlihat.
+    return Material(
+      color: Colors.transparent,
+      borderRadius: BorderRadius.circular(ClayTokens.radiusMedium),
+      child: Ink(
+        decoration: BoxDecoration(
+          gradient: ClayGradients.chip(ClayTokens.primary),
+          borderRadius: BorderRadius.circular(ClayTokens.radiusMedium),
+        ),
+        child: InkWell(
+          onTap: () => onTap(nilai),
+          borderRadius: BorderRadius.circular(ClayTokens.radiusMedium),
+          splashColor: Colors.white.withValues(alpha: 0.12),
+          highlightColor: Colors.white.withValues(alpha: 0.06),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(vertical: ClayTokens.space4),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: <Widget>[
+                const Icon(Icons.check_rounded, size: 16, color: Colors.white),
+                const SizedBox(width: ClayTokens.space2),
+                Text(
+                  label,
+                  style: const TextStyle(
+                    fontFamily: 'PlusJakartaSans',
+                    fontSize: 13,
+                    fontWeight: FontWeight.w700,
+                    color: Colors.white,
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
       ),

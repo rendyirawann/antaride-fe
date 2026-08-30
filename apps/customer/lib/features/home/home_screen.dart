@@ -156,113 +156,135 @@ class _HomeScreenState extends State<HomeScreen> {
     );
 
     return Scaffold(
-      body: SafeArea(
-        bottom: false,
-        child: ClayRefresh(
-          onRefresh: _muat,
-          child: ListView(
-            padding: const EdgeInsets.fromLTRB(
-              ClayTokens.space5,
-              ClayTokens.space4,
-              ClayTokens.space5,
-              ClayTokens.space8,
+      /*
+       * TANPA SafeArea di atas, dan itu wajib.
+       *
+       * Beranda terdaftar di `ClayDrawerShell.fullBleedPages`, jadi tidak ada
+       * AppBar shell di atasnya — hero gradien inilah kepala halamannya, dan
+       * gradien itu harus MENEMBUS status bar. SafeArea di sini akan menyisakan
+       * pita warna latar di atas hero, yang terbaca sebagai kesalahan render.
+       *
+       * Konsekuensinya: hamburger jadi tanggung jawab halaman ini. Diambil dari
+       * `ClayDrawerScope` — tanpa itu sidebar tidak bisa dibuka sama sekali.
+       */
+      body: ClayRefresh(
+        onRefresh: _muat,
+        child: ListView(
+          padding: const EdgeInsets.only(bottom: ClayTokens.space8),
+          children: <Widget>[
+            // Hero ikut sebagai butir pertama daftar, bukan dipatok di atasnya:
+            // dia bergulir pergi saat pengguna menelusuri layanan, dan itu
+            // mengembalikan tinggi layar yang berharga di HP pendek.
+            _HeroBeranda(nama: nama),
+
+            Padding(
+              padding: const EdgeInsets.fromLTRB(
+                ClayTokens.space5,
+                ClayTokens.space5,
+                ClayTokens.space5,
+                0,
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: <Widget>[
+                  if (_orderBerjalan != null) ...<Widget>[
+                    ClayEntrance(
+                      index: 1,
+                      child: _PitaOrderBerjalan(
+                        order: _orderBerjalan!,
+                        onTap: () => _bukaPelacakan(_orderBerjalan!.uuid),
+                      ),
+                    ),
+                    const SizedBox(height: ClayTokens.space5),
+                  ],
+
+                  if (_galat != null && _layanan.isEmpty)
+                    Padding(
+                      padding: const EdgeInsets.only(top: ClayTokens.space8),
+                      child: ClayErrorState(
+                        message: _galat!.message,
+                        onRetry: _muat,
+                      ),
+                    )
+                  else ...<Widget>[
+                    ClayEntrance(
+                      index: 2,
+                      child: Align(
+                        alignment: Alignment.centerLeft,
+                        child: Text(
+                          'Mau ke mana hari ini?',
+                          style: TextStyle(
+                            fontFamily: 'PlusJakartaSans',
+                            fontSize: 17,
+                            fontWeight: FontWeight.w800,
+                            letterSpacing: -0.3,
+                            color: gelap
+                                ? ClayTokens.textPrimaryDark
+                                : ClayTokens.textPrimary,
+                          ),
+                        ),
+                      ),
+                    ),
+
+                    const SizedBox(height: ClayTokens.space4),
+
+                    if (_memuat)
+                      const ClaySkeletonGrid()
+                    else
+                      ClayEntrance(
+                        index: 3,
+                        child: _KisiLayanan(
+                          layanan: _layanan,
+                          onPilih: _mulaiPesan,
+                        ),
+                      ),
+
+                    const SizedBox(height: ClayTokens.space6),
+
+                    /*
+                     * Peta SENGAJA di luar ClayEntrance.
+                     *
+                     * `AntarideMap` adalah platform view. Membungkusnya dengan
+                     * animasi opacity/transform memaksa compositor menyalinnya
+                     * ke layer terpisah tiap frame — mahal, dan pada sebagian
+                     * perangkat petanya berkedip hitam selama animasi.
+                     */
+                    const _PetaSekilas(),
+                  ],
+                ],
+              ),
             ),
-            children: <Widget>[
-              _Sapaan(nama: nama),
-
-              const SizedBox(height: ClayTokens.space5),
-
-              if (_orderBerjalan != null) ...<Widget>[
-                _PitaOrderBerjalan(
-                  order: _orderBerjalan!,
-                  onTap: () => _bukaPelacakan(_orderBerjalan!.uuid),
-                ),
-                const SizedBox(height: ClayTokens.space5),
-              ],
-
-              if (_galat != null && _layanan.isEmpty)
-                Padding(
-                  padding: const EdgeInsets.only(top: ClayTokens.space8),
-                  child: ClayErrorState(
-                    message: _galat!.message,
-                    onRetry: _muat,
-                  ),
-                )
-              else ...<Widget>[
-                Text(
-                  'Mau ke mana hari ini?',
-                  style: TextStyle(
-                    fontFamily: 'PlusJakartaSans',
-                    fontSize: 15,
-                    fontWeight: FontWeight.w700,
-                    color: gelap
-                        ? ClayTokens.textPrimaryDark
-                        : ClayTokens.textPrimary,
-                  ),
-                ),
-
-                const SizedBox(height: ClayTokens.space3),
-
-                if (_memuat)
-                  const ClaySkeletonGrid()
-                else
-                  _KisiLayanan(layanan: _layanan, onPilih: _mulaiPesan),
-
-                const SizedBox(height: ClayTokens.space6),
-
-                const _PetaSekilas(),
-              ],
-            ],
-          ),
+          ],
         ),
       ),
     );
   }
 }
 
-class _Sapaan extends StatelessWidget {
-  const _Sapaan({this.nama});
+/// Kepala beranda: gradien penuh dengan sapaan, hamburger, dan lonceng.
+class _HeroBeranda extends StatelessWidget {
+  const _HeroBeranda({this.nama});
 
   final String? nama;
 
   @override
   Widget build(BuildContext context) {
-    final bool gelap = Theme.of(context).brightness == Brightness.dark;
+    return ClayEntrance(
+      index: 0,
+      child: ClayHeroHeader(
+        accent: ClayTokens.primary,
+        title: nama ?? 'Pengguna Antaride',
+        subtitle: 'Selamat datang di Antaride',
 
-    return Row(
-      children: <Widget>[
-        Expanded(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: <Widget>[
-              Text(
-                'Selamat datang',
-                style: TextStyle(
-                  fontFamily: 'PlusJakartaSans',
-                  fontSize: 12.5,
-                  color: gelap
-                      ? ClayTokens.textSecondaryDark
-                      : ClayTokens.textSecondary,
-                ),
-              ),
-              const SizedBox(height: 2),
-              Text(
-                nama ?? 'Pengguna Antaride',
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-                style: TextStyle(
-                  fontFamily: 'PlusJakartaSans',
-                  fontSize: 20,
-                  fontWeight: FontWeight.w800,
-                  letterSpacing: -0.4,
-                  color: gelap
-                      ? ClayTokens.textPrimaryDark
-                      : ClayTokens.textPrimary,
-                ),
-              ),
-            ],
-          ),
+        // Hamburger. `ClayDrawerScope` boleh null — beranda bisa dipasang
+        // sendirian di test widget, dan tombol yang tidak melakukan apa-apa di
+        // sana lebih baik daripada test yang tidak bisa memasang layarnya.
+        leading: ClayGlassButton(
+          icon: Icons.menu_rounded,
+          semanticLabel: 'Menu',
+          onPressed: ClayDrawerScope.of(context)?.toggle,
         ),
+
         /*
          * Lonceng notifikasi.
          *
@@ -270,26 +292,19 @@ class _Sapaan extends StatelessWidget {
          * aplikasi, jadi angkanya berubah sendiri saat notifikasi dibaca di
          * layar lain — tanpa beranda ini perlu tahu apa pun soal itu.
          *
-         * Pil `ClaySurface`-nya tetap milik beranda, bukan milik paket
-         * notifikasi: yang dibagikan paket itu lencananya dan navigasinya, bukan
-         * bentuk tombolnya. Di aplikasi driver tombol yang sama duduk di AppBar
-         * sebagai ikon biasa.
+         * Bentuknya kini kaca buram, sama dengan hamburger di seberangnya:
+         * keduanya duduk di atas gradien, dan pil clay yang dulu dipakai di
+         * latar pucat tenggelam di sini.
          */
-        NotificationBadge(
-          child: ClaySurface(
-            depth: ClayDepth.low,
-            radius: ClayTokens.radiusPill,
-            padding: const EdgeInsets.all(ClayTokens.space3),
-            onTap: () =>
+        trailing: NotificationBadge(
+          child: ClayGlassButton(
+            icon: Icons.notifications_none_rounded,
+            semanticLabel: 'Notifikasi',
+            onPressed: () =>
                 NotificationIcon.buka(context, onOpenAction: bukaNotifikasi),
-            child: const Icon(
-              Icons.notifications_none_rounded,
-              size: 22,
-              color: ClayTokens.primary,
-            ),
           ),
         ),
-      ],
+      ),
     );
   }
 }
@@ -303,50 +318,97 @@ class _PitaOrderBerjalan extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ClaySurface(
-      depth: ClayDepth.medium,
-      onTap: onTap,
-      borderColor: ClayTokens.primary,
-      child: Row(
-        children: <Widget>[
-          ClaySurface(
-            depth: ClayDepth.pressed,
-            radius: ClayTokens.radiusSmall,
-            padding: const EdgeInsets.all(ClayTokens.space3),
-            child: Icon(
-              order.isSearching
-                  ? Icons.radar_rounded
-                  : Icons.directions_bike_rounded,
-              color: ClayTokens.primary,
-              size: 22,
-            ),
+    /*
+     * Satu-satunya kartu bergradien di beranda, dan itu disengaja.
+     *
+     * Order yang sedang berjalan adalah hal paling mendesak di layar ini —
+     * penumpang yang membuka aplikasi saat drivernya dalam perjalanan mencari
+     * INI, bukan katalog layanan. Versi lama hanya kartu clay ber-border, jadi
+     * bobotnya sama dengan sel katalog di bawahnya.
+     *
+     * Gradien dipakai hemat justru supaya tetap berarti: kalau semua kartu
+     * bergradien, tidak ada yang menonjol.
+     */
+    return Material(
+      color: Colors.transparent,
+      borderRadius: BorderRadius.circular(ClayTokens.radiusMedium),
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(ClayTokens.radiusMedium),
+        splashColor: Colors.white.withValues(alpha: 0.12),
+        highlightColor: Colors.white.withValues(alpha: 0.06),
+        child: Ink(
+          decoration: BoxDecoration(
+            gradient: ClayGradients.hero(ClayTokens.primary),
+            borderRadius: BorderRadius.circular(ClayTokens.radiusMedium),
           ),
-          const SizedBox(width: ClayTokens.space4),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: <Widget>[
-                ClayStatusBadge(
-                  status: order.status,
-                  label: order.statusLabel,
-                  compact: true,
+          padding: const EdgeInsets.all(ClayTokens.space4),
+          child: Row(
+            children: <Widget>[
+              Container(
+                width: 42,
+                height: 42,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: Colors.white.withValues(alpha: 0.18),
                 ),
-                const SizedBox(height: ClayTokens.space2),
-                Text(
-                  order.destination?.address ?? order.pickup.address,
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style: const TextStyle(
-                    fontFamily: 'PlusJakartaSans',
-                    fontSize: 13,
-                    fontWeight: FontWeight.w600,
-                  ),
+                child: Icon(
+                  order.isSearching
+                      ? Icons.radar_rounded
+                      : Icons.directions_bike_rounded,
+                  color: Colors.white,
+                  size: 22,
                 ),
-              ],
-            ),
+              ),
+              const SizedBox(width: ClayTokens.space4),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: <Widget>[
+                    // Label status dari backend, ditulis di atas kaca buram —
+                    // ClayStatusBadge memakai warna latar pucat yang hilang di
+                    // atas gradien.
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: ClayTokens.space2,
+                        vertical: 3,
+                      ),
+                      decoration: BoxDecoration(
+                        color: Colors.white.withValues(alpha: 0.22),
+                        borderRadius: BorderRadius.circular(
+                          ClayTokens.radiusPill,
+                        ),
+                      ),
+                      child: Text(
+                        order.statusLabel,
+                        style: const TextStyle(
+                          fontFamily: 'PlusJakartaSans',
+                          fontSize: 10.5,
+                          fontWeight: FontWeight.w700,
+                          letterSpacing: 0.4,
+                          color: Colors.white,
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: ClayTokens.space2),
+                    Text(
+                      order.destination?.address ?? order.pickup.address,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: const TextStyle(
+                        fontFamily: 'PlusJakartaSans',
+                        fontSize: 13.5,
+                        fontWeight: FontWeight.w700,
+                        color: Colors.white,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              const Icon(Icons.chevron_right_rounded, color: Colors.white),
+            ],
           ),
-          const Icon(Icons.chevron_right_rounded, color: ClayTokens.primary),
-        ],
+        ),
       ),
     );
   }
@@ -405,16 +467,14 @@ class _KisiLayanan extends StatelessWidget {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
-              Icon(
-                _ikon[s.code] ?? Icons.category_rounded,
-                size: 30,
-
-                // Layanan yang belum siap dibuat REDUP, bukan disembunyikan.
-                // Pilihan yang hilang membuat orang menyimpulkan Antaride tidak
-                // punya layanan itu sama sekali.
-                color: siap
-                    ? ClayTokens.primary
-                    : ClayTokens.textTertiary.withValues(alpha: 0.6),
+              // Layanan yang belum siap dibuat REDUP, bukan disembunyikan.
+              // Pilihan yang hilang membuat orang menyimpulkan Antaride tidak
+              // punya layanan itu sama sekali. Chipnya tetap bergradien, hanya
+              // warnanya abu — bentuknya sama supaya kisinya tidak belang.
+              ClayIconChip(
+                icon: _ikon[s.code] ?? Icons.category_rounded,
+                accent: siap ? ClayTokens.primary : ClayTokens.textTertiary,
+                size: 40,
               ),
               const SizedBox(height: ClayTokens.space2),
               Text(

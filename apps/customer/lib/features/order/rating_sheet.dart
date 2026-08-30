@@ -26,6 +26,16 @@ import 'package:provider/provider.dart';
 ///  Batasnya dipilih di situ karena bintang 3 di layanan seperti ini praktis
 ///  selalu berarti ada yang salah, bukan "biasa saja".
 /// ============================================================================
+///
+/// ============================================================================
+///  GAYA V2 DI DALAM SHEET: CHIP GRADIEN + ANIMASI MIKRO, TANPA HERO
+/// ============================================================================
+///  Ini bottom sheet, bukan halaman — hero gradien di dalamnya membuat sheet
+///  bersaing dengan layar di belakangnya. Bahasa v2 masuk lewat dua hal:
+///  avatar driver bergradien aksen (yang dinilai adalah ORANGNYA, bukan
+///  ordernya), dan animasi mikro — bintang yang membal saat dipilih, blok tag
+///  yang mengalir masuk lewat AnimatedSize alih-alih melompat.
+/// ============================================================================
 class RatingSheet extends StatefulWidget {
   const RatingSheet({super.key, required this.order});
 
@@ -165,121 +175,176 @@ class _RatingSheetState extends State<RatingSheet> {
   @override
   Widget build(BuildContext context) {
     final OrderDriver? driver = widget.order.driver;
+    final bool gelap = Theme.of(context).brightness == Brightness.dark;
 
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: <Widget>[
-        if (driver != null)
-          Text(
-            'Bagaimana perjalanan Anda dengan ${driver.name}?',
-            textAlign: TextAlign.center,
-            style: const TextStyle(
-              fontFamily: 'PlusJakartaSans',
-              fontSize: 14,
-              height: 1.45,
-              color: ClayTokens.textSecondary,
-            ),
-          ),
+    /*
+     * Digulung: sheet ini bisa tinggi (avatar + bintang + tag + komentar) dan
+     * saat keyboard terbuka ClayBottomSheet menyusutkan ruangnya lewat
+     * Flexible. Tanpa scroll, kombinasi bintang-terisi + keyboard meluap di HP
+     * pendek — dan yang tertutup justru tombol kirimnya.
+     */
+    return SingleChildScrollView(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: <Widget>[
+          if (driver != null) ...<Widget>[
+            Center(child: _AvatarDriver(nama: driver.name)),
 
-        const SizedBox(height: ClayTokens.space5),
+            const SizedBox(height: ClayTokens.space3),
 
-        // Bintang. Ukurannya besar — ini satu-satunya bagian form yang wajib,
-        // dan target sentuh yang kecil pada lima pilihan berdempetan
-        // menghasilkan skor yang bukan yang dimaksud.
-        Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            for (int i = 1; i <= 5; i++)
-              IconButton(
-                onPressed: _mengirim ? null : () => _pilihSkor(i),
-                iconSize: 40,
-                padding: const EdgeInsets.symmetric(
-                  horizontal: ClayTokens.space1,
-                ),
-                icon: Icon(
-                  i <= _skor ? Icons.star_rounded : Icons.star_outline_rounded,
-                  color: i <= _skor
-                      ? ClayTokens.warning
-                      : ClayTokens.textTertiary,
-                ),
-              ),
-          ],
-        ),
-
-        if (_skor > 0) ...<Widget>[
-          Center(
-            child: Text(
-              _labelSkor(_skor),
-              style: const TextStyle(
+            Text(
+              'Bagaimana perjalanan Anda dengan ${driver.name}?',
+              textAlign: TextAlign.center,
+              style: TextStyle(
                 fontFamily: 'PlusJakartaSans',
-                fontSize: 13,
-                fontWeight: FontWeight.w700,
+                fontSize: 14,
+                height: 1.45,
+                color: gelap
+                    ? ClayTokens.textSecondaryDark
+                    : ClayTokens.textSecondary,
               ),
             ),
-          ),
+          ],
 
           const SizedBox(height: ClayTokens.space5),
 
-          Wrap(
-            spacing: ClayTokens.space2,
-            runSpacing: ClayTokens.space2,
+          // Bintang. Ukurannya besar — ini satu-satunya bagian form yang wajib,
+          // dan target sentuh yang kecil pada lima pilihan berdempetan
+          // menghasilkan skor yang bukan yang dimaksud.
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
-              for (final String tag in _tagTersedia)
-                _ChipTag(
-                  label: tag,
-                  terpilih: _tagTerpilih.contains(tag),
-                  onTap: _mengirim
-                      ? null
-                      : () => setState(() {
-                          if (!_tagTerpilih.remove(tag)) {
-                            // Maksimal 5, sama dengan batas validasi backend.
-                            // Membatasinya di sini berarti penumpang tidak
-                            // pernah melihat 422 untuk sesuatu yang bisa
-                            // dicegah di layar.
-                            if (_tagTerpilih.length < 5) {
-                              _tagTerpilih.add(tag);
-                            }
-                          }
-                        }),
+              for (int i = 1; i <= 5; i++)
+                IconButton(
+                  onPressed: _mengirim ? null : () => _pilihSkor(i),
+                  iconSize: 44,
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: ClayTokens.space1,
+                  ),
+                  /*
+                   * Membal saat terisi: bintang kosong menunggu di 0.86, dan
+                   * easeOutBack membawanya ke 1.0 dengan sedikit lampauan —
+                   * umpan balik bahwa sentuhannya mendarat, tanpa controller
+                   * tambahan. AnimatedScale hanya bergerak saat NILAINYA
+                   * berubah, jadi rebuild lain tidak memutar ulang apa pun.
+                   */
+                  icon: AnimatedScale(
+                    scale: i <= _skor ? 1 : 0.86,
+                    duration: const Duration(milliseconds: 220),
+                    curve: Curves.easeOutBack,
+                    child: Icon(
+                      i <= _skor
+                          ? Icons.star_rounded
+                          : Icons.star_outline_rounded,
+                      color: i <= _skor
+                          ? ClayTokens.warning
+                          : (gelap
+                                ? ClayTokens.textTertiaryDark
+                                : ClayTokens.textTertiary),
+                    ),
+                  ),
                 ),
             ],
           ),
 
-          const SizedBox(height: ClayTokens.space4),
+          /*
+           * Blok label skor + tag + komentar MENGALIR masuk, bukan melompat:
+           * tanpa AnimatedSize, sentuhan bintang pertama membuat seluruh sheet
+           * tersentak setinggi bloknya. Alignment ke atas supaya isinya
+           * terlihat tumbuh dari bawah bintang.
+           */
+          AnimatedSize(
+            duration: const Duration(milliseconds: 280),
+            curve: Curves.easeOutCubic,
+            alignment: Alignment.topCenter,
+            child: _skor == 0
+                ? const SizedBox(width: double.infinity)
+                : Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: <Widget>[
+                      Center(
+                        child: Text(
+                          _labelSkor(_skor),
+                          style: TextStyle(
+                            fontFamily: 'PlusJakartaSans',
+                            fontSize: 13.5,
+                            fontWeight: FontWeight.w800,
+                            letterSpacing: -0.2,
+                            // Warna mengikuti arti skornya: 1–3 ada masalah,
+                            // 4–5 puas — ambang yang sama dengan pergantian tag.
+                            color: _skor >= 4
+                                ? ClayTokens.primary
+                                : ClayTokens.warning,
+                          ),
+                        ),
+                      ),
 
-          ClayInput(
-            controller: _komentar,
-            label: 'Komentar (opsional)',
-            hint: _skor >= 4
-                ? 'Apa yang paling Anda sukai?'
-                : 'Ceritakan apa yang terjadi',
-            maxLines: 3,
-            maxLength: 1000,
-            enabled: !_mengirim,
+                      const SizedBox(height: ClayTokens.space5),
+
+                      Wrap(
+                        spacing: ClayTokens.space2,
+                        runSpacing: ClayTokens.space2,
+                        children: <Widget>[
+                          for (final String tag in _tagTersedia)
+                            _ChipTag(
+                              label: tag,
+                              terpilih: _tagTerpilih.contains(tag),
+                              onTap: _mengirim
+                                  ? null
+                                  : () => setState(() {
+                                      if (!_tagTerpilih.remove(tag)) {
+                                        // Maksimal 5, sama dengan batas
+                                        // validasi backend. Membatasinya di
+                                        // sini berarti penumpang tidak pernah
+                                        // melihat 422 untuk sesuatu yang bisa
+                                        // dicegah di layar.
+                                        if (_tagTerpilih.length < 5) {
+                                          _tagTerpilih.add(tag);
+                                        }
+                                      }
+                                    }),
+                            ),
+                        ],
+                      ),
+
+                      const SizedBox(height: ClayTokens.space4),
+
+                      ClayInput(
+                        controller: _komentar,
+                        label: 'Komentar (opsional)',
+                        hint: _skor >= 4
+                            ? 'Apa yang paling Anda sukai?'
+                            : 'Ceritakan apa yang terjadi',
+                        maxLines: 3,
+                        maxLength: 1000,
+                        enabled: !_mengirim,
+                      ),
+                    ],
+                  ),
+          ),
+
+          const SizedBox(height: ClayTokens.space5),
+
+          ClayButton(
+            label: 'Kirim penilaian',
+            icon: Icons.send_rounded,
+            isLoading: _mengirim,
+
+            // Mati sampai bintangnya dipilih. Tombol aktif yang menolak saat
+            // ditekan lebih membingungkan daripada tombol yang jelas belum siap.
+            onPressed: _skor == 0 || _mengirim ? null : _kirim,
+          ),
+
+          const SizedBox(height: ClayTokens.space2),
+
+          Center(
+            child: TextButton(
+              onPressed: _mengirim ? null : () => Navigator.of(context).pop(),
+              child: const Text('Nanti saja'),
+            ),
           ),
         ],
-
-        const SizedBox(height: ClayTokens.space5),
-
-        ClayButton(
-          label: 'Kirim penilaian',
-          icon: Icons.send_rounded,
-          isLoading: _mengirim,
-
-          // Mati sampai bintangnya dipilih. Tombol aktif yang menolak saat
-          // ditekan lebih membingungkan daripada tombol yang jelas belum siap.
-          onPressed: _skor == 0 || _mengirim ? null : _kirim,
-        ),
-
-        const SizedBox(height: ClayTokens.space2),
-
-        Center(
-          child: TextButton(
-            onPressed: _mengirim ? null : () => Navigator.of(context).pop(),
-            child: const Text('Nanti saja'),
-          ),
-        ),
-      ],
+      ),
     );
   }
 
@@ -290,6 +355,46 @@ class _RatingSheetState extends State<RatingSheet> {
     4 => 'Bagus',
     _ => 'Sangat bagus',
   };
+}
+
+/// Avatar driver: lingkaran bergradien aksen berisi inisial.
+///
+/// Backend Fase 1 belum mengirim foto driver, jadi identitas visualnya adalah
+/// inisial di atas gradien aksen — [ClayGradients.chip], gradien yang sama
+/// dengan chip ikon di seluruh v2, supaya avatarnya tidak jadi sumber warna
+/// kedua di sheet. Kalau namanya kosong, jatuh ke ikon orang.
+class _AvatarDriver extends StatelessWidget {
+  const _AvatarDriver({required this.nama});
+
+  final String nama;
+
+  @override
+  Widget build(BuildContext context) {
+    final String inisial = nama.trim().isEmpty
+        ? ''
+        : nama.trim()[0].toUpperCase();
+
+    return Container(
+      width: 56,
+      height: 56,
+      decoration: BoxDecoration(
+        shape: BoxShape.circle,
+        gradient: ClayGradients.chip(ClayTokens.primary),
+      ),
+      alignment: Alignment.center,
+      child: inisial.isEmpty
+          ? const Icon(Icons.person_rounded, size: 26, color: Colors.white)
+          : Text(
+              inisial,
+              style: const TextStyle(
+                fontFamily: 'PlusJakartaSans',
+                fontSize: 22,
+                fontWeight: FontWeight.w800,
+                color: Colors.white,
+              ),
+            ),
+    );
+  }
 }
 
 class _ChipTag extends StatelessWidget {

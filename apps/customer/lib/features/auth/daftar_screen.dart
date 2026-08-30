@@ -119,129 +119,123 @@ class _DaftarScreenState extends State<DaftarScreen> {
     );
 
     return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-        scrolledUnderElevation: 0,
-      ),
-      body: SafeArea(
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.all(ClayTokens.space6),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: <Widget>[
-              const SizedBox(height: ClayTokens.space4),
+      /*
+       * KENAPA hero gradien, bukan AppBar transparan seperti dulu.
+       *
+       * Layar ini kembaran PhoneScreen, dan keduanya dirombak dengan idiom
+       * v2 yang sama: `ClayHeroHeader` compact menggantikan blok tile-ikon +
+       * judul di latar polos, dengan `ClayBackButton` di leading sebagai
+       * pengganti AppBar. Merombak satu tanpa yang lain membuat alur auth
+       * terasa belang.
+       *
+       * Hero ikut DI DALAM scroll — alasan yang sama dengan PhoneScreen:
+       * keyboard di HP pendek butuh hero yang bisa tergulir.
+       */
+      body: SingleChildScrollView(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: <Widget>[
+            const ClayEntrance(
+              index: 0,
+              child: ClayHeroHeader(
+                accent: ClayTokens.primary,
+                compact: true,
+                title: 'Buat akun baru',
+                subtitle:
+                    'Tidak perlu kata sandi — kami kirim kode verifikasi ke '
+                    'nomor HP Anda.',
+                leading: ClayBackButton(),
+              ),
+            ),
 
-              ClaySurface(
-                depth: ClayDepth.high,
-                radius: ClayTokens.radiusLarge,
-                padding: const EdgeInsets.all(ClayTokens.space5),
-                width: 84,
-                child: const Icon(
-                  Icons.person_add_alt_1_rounded,
-                  size: 40,
-                  color: ClayTokens.primary,
+            SafeArea(
+              top: false,
+              child: Padding(
+                padding: const EdgeInsets.all(ClayTokens.space6),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: <Widget>[
+                    ClayEntrance(
+                      index: 1,
+                      child: ClayInput(
+                        controller: _nama,
+                        label: 'Nama lengkap',
+                        hint: 'Nama yang dilihat driver',
+                        prefixIcon: Icons.badge_rounded,
+                        keyboardType: TextInputType.name,
+                        textInputAction: TextInputAction.next,
+                        errorText: _galatNama,
+                        enabled: !sibuk,
+                        onChanged: (String _) {
+                          if (_galatNama != null) {
+                            setState(() => _galatNama = null);
+                          }
+                        },
+                      ),
+                    ),
+
+                    const SizedBox(height: ClayTokens.space4),
+
+                    ClayEntrance(
+                      index: 2,
+                      child: ClayInput(
+                        controller: _nomor,
+                        label: 'Nomor HP',
+                        hint: '0812 3456 7890',
+                        prefixIcon: Icons.phone_rounded,
+                        keyboardType: TextInputType.phone,
+                        textInputAction: TextInputAction.done,
+                        errorText: _galatNomor,
+                        enabled: !sibuk,
+                        letterSpacing: 0.5,
+                        inputFormatters: <TextInputFormatter>[
+                          FilteringTextInputFormatter.allow(RegExp(r'[0-9+ ]')),
+                          LengthLimitingTextInputFormatter(20),
+                        ],
+                        onChanged: (String _) {
+                          if (_galatNomor != null) {
+                            setState(() => _galatNomor = null);
+                          }
+                        },
+                        onSubmitted: (String _) => _daftar(),
+                      ),
+                    ),
+
+                    const SizedBox(height: ClayTokens.space6),
+
+                    ClayEntrance(
+                      index: 3,
+                      child: ClayButton(
+                        label: 'Daftar',
+                        icon: Icons.arrow_forward_rounded,
+                        isLoading: sibuk,
+                        onPressed: sibuk ? null : _daftar,
+                      ),
+                    ),
+
+                    const SizedBox(height: ClayTokens.space6),
+
+                    ClayEntrance(
+                      index: 4,
+                      child: Text(
+                        'Dengan mendaftar, Anda menyetujui Syarat Layanan '
+                        'dan Kebijakan Privasi Antaride.',
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          fontFamily: 'PlusJakartaSans',
+                          fontSize: 11.5,
+                          height: 1.5,
+                          color: gelap
+                              ? ClayTokens.textTertiaryDark
+                              : ClayTokens.textTertiary,
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
               ),
-
-              const SizedBox(height: ClayTokens.space6),
-
-              Text(
-                'Buat akun baru',
-                style: TextStyle(
-                  fontFamily: 'PlusJakartaSans',
-                  fontSize: 24,
-                  fontWeight: FontWeight.w800,
-                  letterSpacing: -0.4,
-                  color: gelap
-                      ? ClayTokens.textPrimaryDark
-                      : ClayTokens.textPrimary,
-                ),
-              ),
-
-              const SizedBox(height: ClayTokens.space2),
-
-              Text(
-                'Tidak perlu kata sandi — kami kirim kode verifikasi ke nomor '
-                'HP Anda.',
-                style: TextStyle(
-                  fontFamily: 'PlusJakartaSans',
-                  fontSize: 14,
-                  height: 1.5,
-                  color: gelap
-                      ? ClayTokens.textSecondaryDark
-                      : ClayTokens.textSecondary,
-                ),
-              ),
-
-              const SizedBox(height: ClayTokens.space6),
-
-              ClayInput(
-                controller: _nama,
-                label: 'Nama lengkap',
-                hint: 'Nama yang dilihat driver',
-                prefixIcon: Icons.badge_rounded,
-                keyboardType: TextInputType.name,
-                textInputAction: TextInputAction.next,
-                errorText: _galatNama,
-                enabled: !sibuk,
-                onChanged: (String _) {
-                  if (_galatNama != null) {
-                    setState(() => _galatNama = null);
-                  }
-                },
-              ),
-
-              const SizedBox(height: ClayTokens.space4),
-
-              ClayInput(
-                controller: _nomor,
-                label: 'Nomor HP',
-                hint: '0812 3456 7890',
-                prefixIcon: Icons.phone_rounded,
-                keyboardType: TextInputType.phone,
-                textInputAction: TextInputAction.done,
-                errorText: _galatNomor,
-                enabled: !sibuk,
-                letterSpacing: 0.5,
-                inputFormatters: <TextInputFormatter>[
-                  FilteringTextInputFormatter.allow(RegExp(r'[0-9+ ]')),
-                  LengthLimitingTextInputFormatter(20),
-                ],
-                onChanged: (String _) {
-                  if (_galatNomor != null) {
-                    setState(() => _galatNomor = null);
-                  }
-                },
-                onSubmitted: (String _) => _daftar(),
-              ),
-
-              const SizedBox(height: ClayTokens.space6),
-
-              ClayButton(
-                label: 'Daftar',
-                icon: Icons.arrow_forward_rounded,
-                isLoading: sibuk,
-                onPressed: sibuk ? null : _daftar,
-              ),
-
-              const SizedBox(height: ClayTokens.space6),
-
-              Text(
-                'Dengan mendaftar, Anda menyetujui Syarat Layanan dan '
-                'Kebijakan Privasi Antaride.',
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  fontFamily: 'PlusJakartaSans',
-                  fontSize: 11.5,
-                  height: 1.5,
-                  color: gelap
-                      ? ClayTokens.textTertiaryDark
-                      : ClayTokens.textTertiary,
-                ),
-              ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );

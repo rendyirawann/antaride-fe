@@ -61,11 +61,30 @@ class ClayDrawerShell extends StatefulWidget {
     this.footerLabel,
     this.onFooterTap,
     this.actions = const <Widget>[],
+    this.fullBleedPages = const <int>{},
   });
 
   final List<ClayDrawerItem> items;
   final int selectedIndex;
   final void Function(int) onSelect;
+
+  /// Indeks halaman yang menggambar kepala halamannya SENDIRI.
+  ///
+  /// ==========================================================================
+  ///  UNTUK HALAMAN BER-HERO GRADIEN
+  /// ==========================================================================
+  ///  Bahasa v2 membuka halaman dengan bidang gradien yang menembus status bar.
+  ///  AppBar bawaan shell menghalanginya dua kali: dia mengambil status bar,
+  ///  dan dia menaruh bilah datar di atas hero — dua kepala halaman bertumpuk.
+  ///
+  ///  Indeks yang terdaftar di sini dirender TANPA AppBar shell. Hamburger
+  ///  menjadi tanggung jawab halamannya — ambil lewat [ClayDrawerScope]:
+  ///
+  ///      ClayDrawerScope.of(context)?.toggle()
+  ///
+  ///  Halamannya juga harus menyediakan Scaffold-nya sendiri.
+  /// ==========================================================================
+  final Set<int> fullBleedPages;
 
   /// Membangun halaman untuk indeks terpilih.
   final Widget Function(BuildContext, int) pageBuilder;
@@ -119,11 +138,20 @@ class _ClayDrawerShellState extends State<ClayDrawerShell> {
         },
       ),
 
-      mainScreen: _Halaman(
-        title: widget.items[widget.selectedIndex].label,
-        actions: widget.actions,
-        onMenu: () => _drawer.toggle?.call(),
-        child: widget.pageBuilder(context, widget.selectedIndex),
+      mainScreen: ClayDrawerScope(
+        toggle: () => _drawer.toggle?.call(),
+
+        // Halaman full-bleed memasang kepala halamannya sendiri (hero gradien
+        // dengan hamburger dari ClayDrawerScope); selain itu shell yang
+        // memasang AppBar standar.
+        child: widget.fullBleedPages.contains(widget.selectedIndex)
+            ? widget.pageBuilder(context, widget.selectedIndex)
+            : _Halaman(
+                title: widget.items[widget.selectedIndex].label,
+                actions: widget.actions,
+                onMenu: () => _drawer.toggle?.call(),
+                child: widget.pageBuilder(context, widget.selectedIndex),
+              ),
       ),
 
       // -----------------------------------------------------------------------
@@ -197,6 +225,37 @@ class _ClayDrawerShellState extends State<ClayDrawerShell> {
 
       androidCloseOnBackTap: true,
     );
+  }
+}
+
+/// Akses ke drawer dari dalam halaman.
+///
+/// Ada untuk halaman [ClayDrawerShell.fullBleedPages]: mereka tidak punya
+/// AppBar shell, jadi hamburger-nya hidup di dalam hero milik halaman — dan
+/// tombol itu butuh cara memanggil drawer tanpa menerima callback lewat
+/// berlapis-lapis konstruktor.
+///
+/// `of` mengembalikan null di luar shell (mis. di test yang memasang
+/// halamannya sendirian) — pemanggil memakai `?.` dan hamburger yang tidak
+/// melakukan apa-apa lebih baik daripada test yang tidak bisa memasang
+/// halamannya.
+class ClayDrawerScope extends InheritedWidget {
+  const ClayDrawerScope({
+    super.key,
+    required this.toggle,
+    required super.child,
+  });
+
+  /// Membuka/menutup sidebar.
+  final VoidCallback toggle;
+
+  static ClayDrawerScope? of(BuildContext context) {
+    return context.dependOnInheritedWidgetOfExactType<ClayDrawerScope>();
+  }
+
+  @override
+  bool updateShouldNotify(ClayDrawerScope oldWidget) {
+    return toggle != oldWidget.toggle;
   }
 }
 

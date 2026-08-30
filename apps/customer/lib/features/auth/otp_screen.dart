@@ -213,151 +213,184 @@ class _OtpScreenState extends State<OtpScreen> {
     final OtpChallenge? tantangan = sesi.challenge;
 
     return Scaffold(
-      appBar: AppBar(
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back_rounded),
-          onPressed: () => Navigator.of(context).maybePop(),
-        ),
-      ),
-      body: SafeArea(
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.all(ClayTokens.space6),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: <Widget>[
-              Text(
-                'Masukkan kode',
-                style: TextStyle(
-                  fontFamily: 'PlusJakartaSans',
-                  fontSize: 24,
-                  fontWeight: FontWeight.w800,
-                  letterSpacing: -0.4,
-                  color: gelap
-                      ? ClayTokens.textPrimaryDark
-                      : ClayTokens.textPrimary,
-                ),
+      /*
+       * KENAPA hero gradien, bukan AppBar Material seperti dulu.
+       *
+       * Idiom v2 yang sama dengan PhoneScreen/DaftarScreen: judul dan nomor
+       * tujuan pindah ke `ClayHeroHeader` compact, tombol kembali jadi
+       * `ClayBackButton` (bawaannya maybePop — sama dengan IconButton lama).
+       *
+       * Nomor di subjudul tetap TERSAMARKAN dari backend, bukan nomor penuh.
+       * Aplikasi sudah tahu nomor yang dia kirim; nomor penuh di layar hanya
+       * menambah yang bisa dibaca orang di sekitar.
+       */
+      body: SingleChildScrollView(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: <Widget>[
+            ClayEntrance(
+              index: 0,
+              child: ClayHeroHeader(
+                accent: ClayTokens.primary,
+                compact: true,
+                title: 'Masukkan kode',
+                subtitle:
+                    'Kami kirim ke ${tantangan?.phoneMasked ?? widget.phone}',
+                leading: const ClayBackButton(),
               ),
+            ),
 
-              const SizedBox(height: ClayTokens.space2),
+            SafeArea(
+              top: false,
+              child: Padding(
+                padding: const EdgeInsets.all(ClayTokens.space6),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: <Widget>[
+                    ClayEntrance(
+                      index: 1,
+                      child: ClayInput(
+                        controller: _kode,
+                        label: 'Kode 6 digit',
+                        hint: '••••••',
+                        keyboardType: TextInputType.number,
+                        textInputAction: TextInputAction.done,
+                        textAlign: TextAlign.center,
+                        letterSpacing: 12,
+                        maxLength: 6,
+                        autofocus: true,
+                        errorText: _galatKolom,
+                        enabled: !sesi.isBusy,
+                        inputFormatters: <TextInputFormatter>[
+                          FilteringTextInputFormatter.digitsOnly,
+                        ],
+                        onChanged: (String nilai) {
+                          if (_galatKolom != null) {
+                            setState(() {
+                              _galatKolom = null;
+                            });
+                          }
 
-              Text(
-                // Nomor TERSAMARKAN dari backend, bukan nomor penuh. Aplikasi
-                // sudah tahu nomor yang dia kirim; nomor penuh di layar hanya
-                // menambah yang bisa dibaca orang di sekitar.
-                'Kami kirim ke ${tantangan?.phoneMasked ?? widget.phone}',
-                style: TextStyle(
-                  fontFamily: 'PlusJakartaSans',
-                  fontSize: 14,
-                  color: gelap
-                      ? ClayTokens.textSecondaryDark
-                      : ClayTokens.textSecondary,
-                ),
-              ),
-
-              const SizedBox(height: ClayTokens.space8),
-
-              ClayInput(
-                controller: _kode,
-                label: 'Kode 6 digit',
-                hint: '••••••',
-                keyboardType: TextInputType.number,
-                textInputAction: TextInputAction.done,
-                textAlign: TextAlign.center,
-                letterSpacing: 12,
-                maxLength: 6,
-                autofocus: true,
-                errorText: _galatKolom,
-                enabled: !sesi.isBusy,
-                inputFormatters: <TextInputFormatter>[
-                  FilteringTextInputFormatter.digitsOnly,
-                ],
-                onChanged: (String nilai) {
-                  if (_galatKolom != null) {
-                    setState(() {
-                      _galatKolom = null;
-                    });
-                  }
-
-                  // Kirim otomatis setelah digit keenam. Menekan tombol setelah
-                  // mengetik enam digit adalah langkah yang tidak menambah apa
-                  // pun — dan pada keypad kecil, tombolnya sering tertutup
-                  // keyboard.
-                  if (nilai.length == 6 && !sesi.isBusy) {
-                    _verifikasi();
-                  }
-                },
-                onSubmitted: (String _) => _verifikasi(),
-              ),
-
-              const SizedBox(height: ClayTokens.space5),
-
-              ClayButton(
-                label: 'Verifikasi',
-                isLoading: sesi.isBusy,
-                onPressed: sesi.isBusy ? null : _verifikasi,
-              ),
-
-              const SizedBox(height: ClayTokens.space5),
-
-              Center(
-                child: _sisaKirimUlang > 0
-                    ? Text(
-                        'Kirim ulang dalam $_sisaKirimUlang detik',
-                        style: TextStyle(
-                          fontFamily: 'PlusJakartaSans',
-                          fontSize: 13,
-                          color: gelap
-                              ? ClayTokens.textTertiaryDark
-                              : ClayTokens.textTertiary,
-                        ),
-                      )
-                    : TextButton(
-                        onPressed: sesi.isBusy ? null : _kirimUlang,
-                        child: const Text('Kirim ulang kode'),
+                          // Kirim otomatis setelah digit keenam. Menekan
+                          // tombol setelah mengetik enam digit adalah langkah
+                          // yang tidak menambah apa pun — dan pada keypad
+                          // kecil, tombolnya sering tertutup keyboard.
+                          if (nilai.length == 6 && !sesi.isBusy) {
+                            _verifikasi();
+                          }
+                        },
+                        onSubmitted: (String _) => _verifikasi(),
                       ),
-              ),
+                    ),
 
-              /*
-               * Kode debug HANYA di lingkungan non-produksi.
-               *
-               * Backend mengirimnya saat gateway SMS belum aktif supaya
-               * pengembangan tidak terhenti menunggu SMS yang tidak pernah
-               * datang. Dua penjaga di sini: field-nya tidak dikirim di
-               * produksi, DAN `showDevTools` false di produksi. Satu penjaga
-               * saja cukup — dua karena yang dipertaruhkan adalah kode masuk
-               * yang tampil di layar pengguna sungguhan.
-               */
-              if (AppConfig.showDevTools &&
-                  tantangan?.debugCode != null) ...<Widget>[
-                const SizedBox(height: ClayTokens.space6),
-                ClaySurface(
-                  depth: ClayDepth.pressed,
-                  color: gelap ? null : const Color(0xFFFEF3C7),
-                  child: Row(
-                    children: <Widget>[
-                      const Icon(
-                        Icons.construction_rounded,
-                        size: 18,
-                        color: ClayTokens.warning,
+                    const SizedBox(height: ClayTokens.space5),
+
+                    ClayEntrance(
+                      index: 2,
+                      child: ClayButton(
+                        label: 'Verifikasi',
+                        isLoading: sesi.isBusy,
+                        onPressed: sesi.isBusy ? null : _verifikasi,
                       ),
-                      const SizedBox(width: ClayTokens.space3),
-                      Expanded(
-                        child: Text(
-                          'Mode pengembangan — kode: ${tantangan!.debugCode}',
-                          style: const TextStyle(
-                            fontFamily: 'PlusJakartaSans',
-                            fontSize: 12.5,
-                            fontWeight: FontWeight.w600,
-                            color: ClayTokens.warning,
-                          ),
+                    ),
+
+                    const SizedBox(height: ClayTokens.space5),
+
+                    ClayEntrance(
+                      index: 3,
+                      child: Center(
+                        child: _sisaKirimUlang > 0
+                            /*
+                             * Hitung mundur sebagai chip clay tenggelam, bukan
+                             * teks polos: dia status yang sedang berjalan,
+                             * dan bidang kecil membuatnya terbaca sebagai
+                             * satu benda — bukan kalimat yang tercecer.
+                             */
+                            ? ClaySurface(
+                                depth: ClayDepth.pressed,
+                                radius: ClayTokens.radiusPill,
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: ClayTokens.space4,
+                                  vertical: ClayTokens.space2,
+                                ),
+                                child: Row(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: <Widget>[
+                                    Icon(
+                                      Icons.timer_outlined,
+                                      size: 15,
+                                      color: gelap
+                                          ? ClayTokens.textTertiaryDark
+                                          : ClayTokens.textTertiary,
+                                    ),
+                                    const SizedBox(width: ClayTokens.space2),
+                                    Text(
+                                      'Kirim ulang dalam $_sisaKirimUlang detik',
+                                      style: TextStyle(
+                                        fontFamily: 'PlusJakartaSans',
+                                        fontSize: 13,
+                                        fontWeight: FontWeight.w600,
+                                        color: gelap
+                                            ? ClayTokens.textTertiaryDark
+                                            : ClayTokens.textTertiary,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              )
+                            : TextButton(
+                                onPressed: sesi.isBusy ? null : _kirimUlang,
+                                child: const Text('Kirim ulang kode'),
+                              ),
+                      ),
+                    ),
+
+                    /*
+                     * Kode debug HANYA di lingkungan non-produksi.
+                     *
+                     * Backend mengirimnya saat gateway SMS belum aktif supaya
+                     * pengembangan tidak terhenti menunggu SMS yang tidak
+                     * pernah datang. Dua penjaga di sini: field-nya tidak
+                     * dikirim di produksi, DAN `showDevTools` false di
+                     * produksi. Satu penjaga saja cukup — dua karena yang
+                     * dipertaruhkan adalah kode masuk yang tampil di layar
+                     * pengguna sungguhan.
+                     */
+                    if (AppConfig.showDevTools &&
+                        tantangan?.debugCode != null) ...<Widget>[
+                      const SizedBox(height: ClayTokens.space6),
+                      ClaySurface(
+                        depth: ClayDepth.pressed,
+                        color: gelap ? null : const Color(0xFFFEF3C7),
+                        child: Row(
+                          children: <Widget>[
+                            const Icon(
+                              Icons.construction_rounded,
+                              size: 18,
+                              color: ClayTokens.warning,
+                            ),
+                            const SizedBox(width: ClayTokens.space3),
+                            Expanded(
+                              child: Text(
+                                'Mode pengembangan — kode: '
+                                '${tantangan!.debugCode}',
+                                style: const TextStyle(
+                                  fontFamily: 'PlusJakartaSans',
+                                  fontSize: 12.5,
+                                  fontWeight: FontWeight.w600,
+                                  color: ClayTokens.warning,
+                                ),
+                              ),
+                            ),
+                          ],
                         ),
                       ),
                     ],
-                  ),
+                  ],
                 ),
-              ],
-            ],
-          ),
+              ),
+            ),
+          ],
         ),
       ),
     );

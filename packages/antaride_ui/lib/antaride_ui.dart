@@ -26,16 +26,23 @@ library;
 export 'package:easy_refresh/easy_refresh.dart'
     show EasyRefreshController, IndicatorResult;
 
+export 'src/theme/clay_gradients.dart';
 export 'src/theme/clay_shadows.dart';
 export 'src/theme/clay_theme.dart';
 export 'src/theme/clay_tokens.dart';
+export 'src/widgets/clay_back_button.dart';
 export 'src/widgets/clay_bottom_sheet.dart';
 export 'src/widgets/clay_button.dart';
 export 'src/widgets/clay_drawer_shell.dart';
 export 'src/widgets/clay_empty_state.dart';
+export 'src/widgets/clay_entrance.dart';
+export 'src/widgets/clay_glass_button.dart';
+export 'src/widgets/clay_hero_header.dart';
+export 'src/widgets/clay_icon_chip.dart';
 export 'src/widgets/clay_input.dart';
 export 'src/widgets/clay_loader.dart';
 export 'src/widgets/clay_refresh.dart';
+export 'src/widgets/clay_section_label.dart';
 export 'src/widgets/clay_skeleton.dart';
 export 'src/widgets/clay_money.dart';
 export 'src/widgets/clay_status_badge.dart';

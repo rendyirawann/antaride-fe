@@ -22,6 +22,17 @@ import 'package:provider/provider.dart';
 ///  dan dua kolom tidak butuh dua layar — terutama untuk orang yang membukanya
 ///  sambil bersiap berangkat kerja.
 /// ============================================================================
+///
+/// ============================================================================
+///  BENTUK V2: HERO COMPACT DI ATAS, FORMULIR DALAM KARTU DI BAWAH
+/// ============================================================================
+///  Judul dan paragraf penjelasan hidup di [ClayHeroHeader] compact — bidang
+///  gradien aksen driver yang menyambung dengan `DriverWelcomeScreen`, supaya
+///  perpindahan welcome→login tidak terasa turun kelas ke formulir polos.
+///  Kolom-kolomnya dikumpulkan dalam SATU kartu clay: kolom kode yang muncul
+///  belakangan membesar dari DALAM kartu lewat [AnimatedSize], bukan
+///  menambah kartu baru yang menggeser tombol tanpa peringatan.
+/// ============================================================================
 class DriverLoginScreen extends StatefulWidget {
   const DriverLoginScreen({super.key});
 
@@ -32,6 +43,10 @@ class DriverLoginScreen extends StatefulWidget {
 class _DriverLoginScreenState extends State<DriverLoginScreen> {
   final TextEditingController _nomor = TextEditingController();
   final TextEditingController _kode = TextEditingController();
+
+  /// Aksen aplikasi driver — hijau tua yang sama dengan ikon peluncurnya
+  /// dan hero `DriverWelcomeScreen`.
+  static const Color _aksen = Color(0xFF057A55);
 
   Timer? _hitungan;
   int _sisaKirimUlang = 0;
@@ -128,198 +143,308 @@ class _DriverLoginScreenState extends State<DriverLoginScreen> {
     final bool gelap = Theme.of(context).brightness == Brightness.dark;
 
     return Scaffold(
-      body: SafeArea(
+      /*
+       * Hero gradien gelap menembus status bar, jadi ikon jam/baterai harus
+       * putih selama layar ini hidup — di kedua mode tema, karena gradiennya
+       * sama di kedua mode. Hanya status bar yang disentuh; bilah navigasi
+       * bawah dibiarkan mengikuti tema.
+       */
+      body: AnnotatedRegion<SystemUiOverlayStyle>(
+        value: const SystemUiOverlayStyle(
+          statusBarColor: Colors.transparent,
+          statusBarIconBrightness: Brightness.light,
+          statusBarBrightness: Brightness.dark,
+        ),
         child: SingleChildScrollView(
-          padding: const EdgeInsets.all(ClayTokens.space6),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: <Widget>[
-              const SizedBox(height: ClayTokens.space8),
+              ClayEntrance(
+                index: 0,
+                child: ClayHeroHeader(
+                  accent: _aksen,
+                  compact: true,
+                  title: 'Masuk sebagai driver',
 
-              ClaySurface(
-                depth: ClayDepth.high,
-                radius: ClayTokens.radiusLarge,
-                padding: const EdgeInsets.all(ClayTokens.space5),
-                width: 84,
-                child: const Icon(
-                  Icons.badge_rounded,
-                  size: 38,
-                  color: ClayTokens.primary,
+                  // Menyebutkan bahwa tidak ada pendaftaran mandiri. Tanpa ini,
+                  // orang yang belum terdaftar akan mencari tombol daftar,
+                  // menekan "masuk" dengan nomor yang belum ada, dan
+                  // menyimpulkan aplikasinya rusak.
+                  subtitle:
+                      'Akun driver dibuat oleh tim Antaride setelah dokumen '
+                      'Anda diverifikasi. Belum punya akun? Hubungi kantor '
+                      'Antaride Medan.',
+                  leading: const ClayBackButton(),
+                  trailing: const _TileKaca(icon: Icons.badge_rounded),
                 ),
               ),
 
-              const SizedBox(height: ClayTokens.space6),
-
-              Text(
-                'Masuk sebagai driver',
-                style: TextStyle(
-                  fontFamily: 'PlusJakartaSans',
-                  fontSize: 23,
-                  fontWeight: FontWeight.w800,
-                  letterSpacing: -0.4,
-                  color: gelap
-                      ? ClayTokens.textPrimaryDark
-                      : ClayTokens.textPrimary,
+              Padding(
+                padding: EdgeInsets.fromLTRB(
+                  ClayTokens.space6,
+                  ClayTokens.space6,
+                  ClayTokens.space6,
+                  ClayTokens.space6 + MediaQuery.paddingOf(context).bottom,
                 ),
-              ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: <Widget>[
+                    ClayEntrance(
+                      index: 1,
+                      child: ClaySurface(
+                        depth: ClayDepth.medium,
+                        radius: ClayTokens.radiusLarge,
+                        padding: const EdgeInsets.all(ClayTokens.space5),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
+                          children: <Widget>[
+                            ClayInput(
+                              controller: _nomor,
+                              label: 'Nomor HP terdaftar',
+                              hint: '0812 3456 7890',
+                              prefixIcon: Icons.phone_rounded,
+                              keyboardType: TextInputType.phone,
 
-              const SizedBox(height: ClayTokens.space2),
+                              // Nomor dikunci setelah kode dikirim. Kalau
+                              // tidak, driver bisa mengubah nomornya lalu
+                              // memverifikasi kode dengan nomor yang berbeda —
+                              // dan yang terjadi adalah "kode selalu salah"
+                              // yang tidak menunjuk ke penyebabnya.
+                              enabled: !_tahapKode && !sesi.isBusy,
+                              letterSpacing: 0.5,
+                              inputFormatters: <TextInputFormatter>[
+                                FilteringTextInputFormatter.allow(
+                                  RegExp(r'[0-9+ ]'),
+                                ),
+                                LengthLimitingTextInputFormatter(20),
+                              ],
+                              errorText: _tahapKode ? null : _galat,
+                              onSubmitted: (String _) => _mintaKode(),
+                            ),
 
-              Text(
-                // Menyebutkan bahwa tidak ada pendaftaran mandiri. Tanpa ini,
-                // orang yang belum terdaftar akan mencari tombol daftar,
-                // menekan "masuk" dengan nomor yang belum ada, dan menyimpulkan
-                // aplikasinya rusak.
-                'Akun driver dibuat oleh tim Antaride setelah dokumen Anda '
-                'diverifikasi. Belum punya akun? Hubungi kantor Antaride Medan.',
-                style: TextStyle(
-                  fontFamily: 'PlusJakartaSans',
-                  fontSize: 13,
-                  height: 1.5,
-                  color: gelap
-                      ? ClayTokens.textSecondaryDark
-                      : ClayTokens.textSecondary,
-                ),
-              ),
+                            /*
+                             * Kolom kode membesar dari dalam kartu, bukan
+                             * muncul mendadak: AnimatedSize membuat kartunya
+                             * tumbuh halus saat _tahapKode menyala, sehingga
+                             * tombol di bawahnya bergeser mengikuti — bukan
+                             * melompat.
+                             */
+                            AnimatedSize(
+                              duration: const Duration(milliseconds: 300),
+                              curve: Curves.easeOutCubic,
+                              alignment: Alignment.topCenter,
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.stretch,
+                                children: <Widget>[
+                                  if (_tahapKode) ...<Widget>[
+                                    const SizedBox(height: ClayTokens.space4),
+                                    ClayInput(
+                                      controller: _kode,
+                                      label: 'Kode dari SMS',
+                                      hint: '••••••',
+                                      keyboardType: TextInputType.number,
+                                      textAlign: TextAlign.center,
+                                      letterSpacing: 12,
+                                      maxLength: 6,
+                                      autofocus: true,
+                                      enabled: !sesi.isBusy,
+                                      errorText: _galat,
+                                      inputFormatters: <TextInputFormatter>[
+                                        FilteringTextInputFormatter.digitsOnly,
+                                      ],
+                                      onChanged: (String nilai) {
+                                        if (nilai.length == 6 && !sesi.isBusy) {
+                                          _verifikasi();
+                                        }
+                                      },
+                                      onSubmitted: (String _) => _verifikasi(),
+                                    ),
 
-              const SizedBox(height: ClayTokens.space6),
-
-              ClayInput(
-                controller: _nomor,
-                label: 'Nomor HP terdaftar',
-                hint: '0812 3456 7890',
-                prefixIcon: Icons.phone_rounded,
-                keyboardType: TextInputType.phone,
-
-                // Nomor dikunci setelah kode dikirim. Kalau tidak, driver bisa
-                // mengubah nomornya lalu memverifikasi kode dengan nomor yang
-                // berbeda — dan yang terjadi adalah "kode selalu salah" yang
-                // tidak menunjuk ke penyebabnya.
-                enabled: !_tahapKode && !sesi.isBusy,
-                letterSpacing: 0.5,
-                inputFormatters: <TextInputFormatter>[
-                  FilteringTextInputFormatter.allow(RegExp(r'[0-9+ ]')),
-                  LengthLimitingTextInputFormatter(20),
-                ],
-                errorText: _tahapKode ? null : _galat,
-                onSubmitted: (String _) => _mintaKode(),
-              ),
-
-              if (_tahapKode) ...<Widget>[
-                const SizedBox(height: ClayTokens.space4),
-                ClayInput(
-                  controller: _kode,
-                  label: 'Kode dari SMS',
-                  hint: '••••••',
-                  keyboardType: TextInputType.number,
-                  textAlign: TextAlign.center,
-                  letterSpacing: 12,
-                  maxLength: 6,
-                  autofocus: true,
-                  enabled: !sesi.isBusy,
-                  errorText: _galat,
-                  inputFormatters: <TextInputFormatter>[
-                    FilteringTextInputFormatter.digitsOnly,
-                  ],
-                  onChanged: (String nilai) {
-                    if (nilai.length == 6 && !sesi.isBusy) {
-                      _verifikasi();
-                    }
-                  },
-                  onSubmitted: (String _) => _verifikasi(),
-                ),
-
-                if (tantangan != null) ...<Widget>[
-                  const SizedBox(height: ClayTokens.space2),
-                  Text(
-                    'Dikirim ke ${tantangan.phoneMasked}',
-                    style: const TextStyle(
-                      fontFamily: 'PlusJakartaSans',
-                      fontSize: 11.5,
-                      color: ClayTokens.textTertiary,
-                    ),
-                  ),
-                ],
-              ],
-
-              const SizedBox(height: ClayTokens.space6),
-
-              ClayButton(
-                label: _tahapKode ? 'Mulai bekerja' : 'Kirim kode',
-                icon: _tahapKode
-                    ? Icons.login_rounded
-                    : Icons.arrow_forward_rounded,
-                isLoading: sesi.isBusy,
-
-                // Tombol driver lebih tinggi dari bawaan. Dipakai dengan sarung
-                // tangan dan sambil berdiri di dekat kendaraan; target sentuh
-                // yang pas-pasan menghasilkan tekanan yang tidak terdaftar.
-                height: ClayTokens.driverPrimaryButtonHeight,
-                onPressed: sesi.isBusy
-                    ? null
-                    : (_tahapKode ? _verifikasi : _mintaKode),
-              ),
-
-              /*
-               * Daftar akun demo.
-               *
-               * Menyembunyikan dirinya sendiri kalau fiturnya dimatikan di
-               * server — lihat docblock `DemoAccountPicker`. Jadi aman
-               * dibiarkan di build produksi.
-               */
-              const DemoAccountPicker(role: 'driver'),
-
-              if (_tahapKode) ...<Widget>[
-                const SizedBox(height: ClayTokens.space4),
-                Center(
-                  child: _sisaKirimUlang > 0
-                      ? Text(
-                          'Kirim ulang dalam $_sisaKirimUlang detik',
-                          style: const TextStyle(
-                            fontFamily: 'PlusJakartaSans',
-                            fontSize: 12.5,
-                            color: ClayTokens.textTertiary,
-                          ),
-                        )
-                      : TextButton(
-                          onPressed: sesi.isBusy ? null : _mintaKode,
-                          child: const Text('Kirim ulang kode'),
+                                    if (tantangan != null) ...<Widget>[
+                                      const SizedBox(height: ClayTokens.space2),
+                                      Text(
+                                        'Dikirim ke ${tantangan.phoneMasked}',
+                                        style: TextStyle(
+                                          fontFamily: 'PlusJakartaSans',
+                                          fontSize: 11.5,
+                                          color: gelap
+                                              ? ClayTokens.textTertiaryDark
+                                              : ClayTokens.textTertiary,
+                                        ),
+                                      ),
+                                    ],
+                                  ],
+                                ],
+                              ),
+                            ),
+                          ],
                         ),
-                ),
-                Center(
-                  child: TextButton(
-                    onPressed: sesi.isBusy
-                        ? null
-                        : () => setState(() {
-                            _tahapKode = false;
-                            _galat = null;
-                            _kode.clear();
-                          }),
-                    child: const Text('Ganti nomor'),
-                  ),
-                ),
-              ],
-
-              if (AppConfig.showDevTools &&
-                  tantangan?.debugCode != null) ...<Widget>[
-                const SizedBox(height: ClayTokens.space5),
-                ClaySurface(
-                  depth: ClayDepth.pressed,
-                  child: Text(
-                    'Mode pengembangan — kode: ${tantangan!.debugCode}',
-                    style: const TextStyle(
-                      fontFamily: 'PlusJakartaSans',
-                      fontSize: 12.5,
-                      fontWeight: FontWeight.w600,
-                      color: ClayTokens.warning,
+                      ),
                     ),
-                  ),
+
+                    const SizedBox(height: ClayTokens.space5),
+
+                    ClayEntrance(
+                      index: 2,
+                      child: ClayButton(
+                        label: _tahapKode ? 'Mulai bekerja' : 'Kirim kode',
+                        icon: _tahapKode
+                            ? Icons.login_rounded
+                            : Icons.arrow_forward_rounded,
+                        isLoading: sesi.isBusy,
+
+                        // Tombol driver lebih tinggi dari bawaan. Dipakai
+                        // dengan sarung tangan dan sambil berdiri di dekat
+                        // kendaraan; target sentuh yang pas-pasan menghasilkan
+                        // tekanan yang tidak terdaftar.
+                        height: ClayTokens.driverPrimaryButtonHeight,
+                        onPressed: sesi.isBusy
+                            ? null
+                            : (_tahapKode ? _verifikasi : _mintaKode),
+                      ),
+                    ),
+
+                    /*
+                     * Daftar akun demo.
+                     *
+                     * Menyembunyikan dirinya sendiri kalau fiturnya dimatikan
+                     * di server — lihat docblock `DemoAccountPicker`. Jadi aman
+                     * dibiarkan di build produksi. ClayEntrance di sini hanya
+                     * animasi masuk, bukan kondisi baru.
+                     */
+                    const ClayEntrance(
+                      index: 3,
+                      child: DemoAccountPicker(role: 'driver'),
+                    ),
+
+                    if (_tahapKode) ...<Widget>[
+                      const SizedBox(height: ClayTokens.space4),
+                      Center(
+                        child: _sisaKirimUlang > 0
+                            // Hitung mundur dalam pill clay tenggelam: keadaan
+                            // "belum bisa" yang terlihat sebagai keadaan, bukan
+                            // teks polos yang seolah tombol mati.
+                            ? ClaySurface(
+                                depth: ClayDepth.pressed,
+                                radius: ClayTokens.radiusPill,
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: ClayTokens.space4,
+                                  vertical: ClayTokens.space2,
+                                ),
+                                child: Text(
+                                  'Kirim ulang dalam $_sisaKirimUlang detik',
+                                  style: TextStyle(
+                                    fontFamily: 'PlusJakartaSans',
+                                    fontSize: 12.5,
+                                    fontWeight: FontWeight.w600,
+                                    color: gelap
+                                        ? ClayTokens.textTertiaryDark
+                                        : ClayTokens.textTertiary,
+                                  ),
+                                ),
+                              )
+                            : TextButton(
+                                onPressed: sesi.isBusy ? null : _mintaKode,
+                                child: const Text('Kirim ulang kode'),
+                              ),
+                      ),
+                      Center(
+                        child: TextButton(
+                          onPressed: sesi.isBusy
+                              ? null
+                              : () => setState(() {
+                                  _tahapKode = false;
+                                  _galat = null;
+                                  _kode.clear();
+                                }),
+                          child: const Text('Ganti nomor'),
+                        ),
+                      ),
+                    ],
+
+                    if (AppConfig.showDevTools &&
+                        tantangan?.debugCode != null) ...<Widget>[
+                      const SizedBox(height: ClayTokens.space5),
+                      ClaySurface(
+                        depth: ClayDepth.pressed,
+                        child: Row(
+                          children: <Widget>[
+                            const Icon(
+                              Icons.construction_rounded,
+                              size: 18,
+                              color: ClayTokens.warning,
+                            ),
+                            const SizedBox(width: ClayTokens.space3),
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: <Widget>[
+                                  const Text(
+                                    'MODE PENGEMBANGAN',
+                                    style: TextStyle(
+                                      fontFamily: 'PlusJakartaSans',
+                                      fontSize: 10.5,
+                                      fontWeight: FontWeight.w700,
+                                      letterSpacing: 1.2,
+                                      color: ClayTokens.warning,
+                                    ),
+                                  ),
+                                  const SizedBox(height: 2),
+                                  Text(
+                                    'Kode: ${tantangan!.debugCode}',
+                                    style: TextStyle(
+                                      fontFamily: 'PlusJakartaSans',
+                                      fontSize: 15,
+                                      fontWeight: FontWeight.w700,
+                                      letterSpacing: 3,
+                                      fontFeatures: const <FontFeature>[
+                                        FontFeature.tabularFigures(),
+                                      ],
+                                      color: gelap
+                                          ? ClayTokens.textPrimaryDark
+                                          : ClayTokens.textPrimary,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ],
                 ),
-              ],
+              ),
             ],
           ),
         ),
       ),
+    );
+  }
+}
+
+/// Tile kaca buram untuk DI DALAM hero: ikon putih di kotak putih-transparan.
+///
+/// Bahasa yang sama dengan mark logo welcome dan [ClayBackButton] (putih
+/// alpha 0.16, border 0.22) — di atas gradien pekat, kaca buram terbaca
+/// sebagai bagian dari bidangnya, bukan stiker yang ditempel. Lokal di berkas
+/// ini karena `antaride_ui` belum mengekspor tile kaca sebagai komponen.
+class _TileKaca extends StatelessWidget {
+  const _TileKaca({required this.icon});
+
+  final IconData icon;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: 44,
+      height: 44,
+      decoration: BoxDecoration(
+        color: Colors.white.withValues(alpha: 0.16),
+        borderRadius: BorderRadius.circular(ClayTokens.radiusSmall),
+        border: Border.all(color: Colors.white.withValues(alpha: 0.22)),
+      ),
+      child: Icon(icon, size: 22, color: Colors.white),
     );
   }
 }

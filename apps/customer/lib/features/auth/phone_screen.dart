@@ -109,129 +109,119 @@ class _PhoneScreenState extends State<PhoneScreen> {
 
     return Scaffold(
       /*
-       * Bilah atas hanya berisi tombol kembali.
+       * KENAPA hero gradien, bukan AppBar transparan seperti dulu.
        *
-       * Layar ini sekarang DIBUKA dari layar sambutan, bukan layar pertama
-       * aplikasi. Tanpa tombol kembali, orang yang menekan "Daftar" padahal
-       * sudah punya akun terjebak — satu-satunya jalan keluar menutup paksa
-       * aplikasinya.
+       * Desain v2: layar form sekunder memakai `ClayHeroHeader` compact —
+       * judul dan pengantar pindah ke atas bidang gradien, sehingga bagian
+       * atas layar bukan lagi latar polos satu warna.
+       *
+       * Tombol kembali TETAP ADA — sekarang `ClayBackButton` di leading hero.
+       * Layar ini dibuka dari layar sambutan; tanpa tombol kembali, orang
+       * yang menekan "Masuk" padahal belum punya akun terjebak.
+       *
+       * Hero ikut DI DALAM scroll, bukan dipaku di luar: saat keyboard
+       * terbuka di HP pendek, hero bisa ikut tergulir sehingga kolom nomor
+       * dan tombolnya tetap terlihat.
        */
-      appBar: AppBar(
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-        scrolledUnderElevation: 0,
-      ),
-      body: SafeArea(
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.all(ClayTokens.space6),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: <Widget>[
-              const SizedBox(height: ClayTokens.space10),
+      body: SingleChildScrollView(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: <Widget>[
+            const ClayEntrance(
+              index: 0,
+              child: ClayHeroHeader(
+                accent: ClayTokens.primary,
+                compact: true,
+                title: 'Masuk',
+                subtitle:
+                    'Masukkan nomor HP yang terdaftar. Kami kirim kode '
+                    'verifikasi ke nomor itu.',
+                leading: ClayBackButton(),
+              ),
+            ),
 
-              ClaySurface(
-                depth: ClayDepth.high,
-                radius: ClayTokens.radiusLarge,
-                padding: const EdgeInsets.all(ClayTokens.space5),
-                width: 84,
-                child: const Icon(
-                  Icons.two_wheeler_rounded,
-                  size: 40,
-                  color: ClayTokens.primary,
+            SafeArea(
+              top: false,
+              child: Padding(
+                padding: const EdgeInsets.all(ClayTokens.space6),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: <Widget>[
+                    ClayEntrance(
+                      index: 1,
+                      child: ClayInput(
+                        controller: _nomor,
+                        label: 'Nomor HP',
+                        hint: '0812 3456 7890',
+                        prefixIcon: Icons.phone_rounded,
+                        keyboardType: TextInputType.phone,
+                        textInputAction: TextInputAction.done,
+                        errorText: _galatKolom,
+                        enabled: !sibuk,
+                        letterSpacing: 0.5,
+                        inputFormatters: <TextInputFormatter>[
+                          FilteringTextInputFormatter.allow(RegExp(r'[0-9+ ]')),
+                          LengthLimitingTextInputFormatter(20),
+                        ],
+                        onChanged: (String _) {
+                          if (_galatKolom != null) {
+                            setState(() {
+                              _galatKolom = null;
+                            });
+                          }
+                        },
+                        onSubmitted: (String _) => _lanjut(),
+                      ),
+                    ),
+
+                    const SizedBox(height: ClayTokens.space6),
+
+                    ClayEntrance(
+                      index: 2,
+                      child: ClayButton(
+                        label: 'Kirim kode',
+                        icon: Icons.arrow_forward_rounded,
+                        isLoading: sibuk,
+                        onPressed: sibuk ? null : _lanjut,
+                      ),
+                    ),
+
+                    /*
+                     * Daftar akun demo.
+                     *
+                     * Menyembunyikan dirinya sendiri kalau fiturnya dimatikan
+                     * di server — lihat docblock `DemoAccountPicker`. Jadi
+                     * aman dibiarkan di build produksi.
+                     *
+                     * SENGAJA tidak dibungkus ClayEntrance: geometrinya
+                     * diukur widget-test di paket antaride_onboarding, dan
+                     * widget ini dipertahankan persis apa adanya.
+                     */
+                    const DemoAccountPicker(role: 'customer'),
+
+                    const SizedBox(height: ClayTokens.space6),
+
+                    ClayEntrance(
+                      index: 3,
+                      child: Text(
+                        'Dengan melanjutkan, Anda menyetujui Syarat Layanan '
+                        'dan Kebijakan Privasi Antaride.',
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          fontFamily: 'PlusJakartaSans',
+                          fontSize: 11.5,
+                          height: 1.5,
+                          color: gelap
+                              ? ClayTokens.textTertiaryDark
+                              : ClayTokens.textTertiary,
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
               ),
-
-              const SizedBox(height: ClayTokens.space8),
-
-              Text(
-                'Masuk',
-                style: TextStyle(
-                  fontFamily: 'PlusJakartaSans',
-                  fontSize: 24,
-                  fontWeight: FontWeight.w800,
-                  letterSpacing: -0.4,
-                  color: gelap
-                      ? ClayTokens.textPrimaryDark
-                      : ClayTokens.textPrimary,
-                ),
-              ),
-
-              const SizedBox(height: ClayTokens.space2),
-
-              Text(
-                'Masukkan nomor HP yang terdaftar. Kami kirim kode '
-                'verifikasi ke nomor itu.',
-                style: TextStyle(
-                  fontFamily: 'PlusJakartaSans',
-                  fontSize: 14,
-                  height: 1.5,
-                  color: gelap
-                      ? ClayTokens.textSecondaryDark
-                      : ClayTokens.textSecondary,
-                ),
-              ),
-
-              const SizedBox(height: ClayTokens.space8),
-
-              ClayInput(
-                controller: _nomor,
-                label: 'Nomor HP',
-                hint: '0812 3456 7890',
-                prefixIcon: Icons.phone_rounded,
-                keyboardType: TextInputType.phone,
-                textInputAction: TextInputAction.done,
-                errorText: _galatKolom,
-                enabled: !sibuk,
-                letterSpacing: 0.5,
-                inputFormatters: <TextInputFormatter>[
-                  FilteringTextInputFormatter.allow(RegExp(r'[0-9+ ]')),
-                  LengthLimitingTextInputFormatter(20),
-                ],
-                onChanged: (String _) {
-                  if (_galatKolom != null) {
-                    setState(() {
-                      _galatKolom = null;
-                    });
-                  }
-                },
-                onSubmitted: (String _) => _lanjut(),
-              ),
-
-              const SizedBox(height: ClayTokens.space6),
-
-              ClayButton(
-                label: 'Kirim kode',
-                icon: Icons.arrow_forward_rounded,
-                isLoading: sibuk,
-                onPressed: sibuk ? null : _lanjut,
-              ),
-
-              /*
-               * Daftar akun demo.
-               *
-               * Menyembunyikan dirinya sendiri kalau fiturnya dimatikan di
-               * server — lihat docblock `DemoAccountPicker`. Jadi aman
-               * dibiarkan di build produksi.
-               */
-              const DemoAccountPicker(role: 'customer'),
-
-              const SizedBox(height: ClayTokens.space6),
-
-              Text(
-                'Dengan melanjutkan, Anda menyetujui Syarat Layanan dan '
-                'Kebijakan Privasi Antaride.',
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  fontFamily: 'PlusJakartaSans',
-                  fontSize: 11.5,
-                  height: 1.5,
-                  color: gelap
-                      ? ClayTokens.textTertiaryDark
-                      : ClayTokens.textTertiary,
-                ),
-              ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );
