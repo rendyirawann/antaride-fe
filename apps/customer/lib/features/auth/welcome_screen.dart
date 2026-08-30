@@ -1,25 +1,13 @@
 import 'package:antaride_onboarding/antaride_onboarding.dart';
 import 'package:flutter/material.dart';
 
+import 'daftar_screen.dart';
 import 'phone_screen.dart';
 
 /// Layar pembuka aplikasi penumpang.
 ///
-/// ============================================================================
-///  "MASUK" DAN "DAFTAR" MENUJU LAYAR YANG SAMA, DAN ITU DISENGAJA
-/// ============================================================================
-///  Autentikasi di Antaride memakai OTP: yang dimasukkan pengguna nomor HP-nya,
-///  dan backend yang menentukan apakah nomor itu sudah terdaftar. Tidak ada
-///  kata sandi, jadi tidak ada perbedaan teknis antara masuk dan mendaftar.
-///
-///  Yang membedakan keduanya di sini hanya KALIMATNYA — dan itu bukan hiasan.
-///  Orang yang menekan "Daftar" perlu diberi tahu bahwa dia akan menerima kode,
-///  bukan diminta membuat sandi. Orang yang menekan "Masuk" tidak perlu
-///  penjelasan itu.
-///
-///  Alternatifnya — satu tombol "Lanjutkan" — bekerja, tapi membuat orang yang
-///  belum punya akun ragu apakah aplikasi ini bisa dia pakai sama sekali.
-/// ============================================================================
+/// "Masuk" dan "Daftar" menuju layar BERBEDA: masuk hanya butuh nomor, daftar
+/// juga meminta nama. Alasan pemisahannya ada di docblock `DaftarScreen`.
 class CustomerWelcomeScreen extends StatelessWidget {
   const CustomerWelcomeScreen({super.key});
 
@@ -51,16 +39,15 @@ class CustomerWelcomeScreen extends StatelessWidget {
         ),
       ],
 
-      onRegister: () => _buka(context, daftar: true),
-      onLogin: () => _buka(context, daftar: false),
+      onRegister: () => _buka(context, const DaftarScreen()),
+      onLogin: () => _buka(context, const PhoneScreen()),
     );
   }
 
-  void _buka(BuildContext context, {required bool daftar}) {
+  void _buka(BuildContext context, Widget layar) {
     Navigator.of(context).push(
       MaterialPageRoute<void>(
-        builder: (BuildContext _) =>
-            TutupSaatMasuk(child: PhoneScreen(mendaftar: daftar)),
+        builder: (BuildContext _) => TutupSaatMasuk(child: layar),
       ),
     );
   }

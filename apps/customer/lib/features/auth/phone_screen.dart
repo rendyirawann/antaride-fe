@@ -8,23 +8,13 @@ import 'package:provider/provider.dart';
 
 import 'otp_screen.dart';
 
-/// Layar pertama: masukkan nomor HP.
+/// Layar masuk: masukkan nomor HP yang terdaftar.
+///
+/// Pendaftaran hidup di layarnya sendiri (`DaftarScreen`) — pendaftaran punya
+/// kolom yang masuk tidak punya (nama), dan alasan selengkapnya ada di docblock
+/// layar itu. Keduanya bertemu lagi di `OtpScreen` yang sama.
 class PhoneScreen extends StatefulWidget {
-  const PhoneScreen({super.key, this.mendaftar = false});
-
-  /// Dibuka lewat tombol "Daftar", bukan "Masuk".
-  ///
-  /// ==========================================================================
-  ///  YANG BERBEDA HANYA KALIMATNYA, DAN ITU DISENGAJA
-  /// ==========================================================================
-  ///  Autentikasi memakai OTP: yang dimasukkan pengguna nomor HP-nya, dan
-  ///  BACKEND yang menentukan apakah nomor itu sudah terdaftar. Tidak ada kata
-  ///  sandi, jadi tidak ada perbedaan teknis antara masuk dan mendaftar.
-  ///
-  ///  Dua layar terpisah akan menghasilkan dua salinan dari alur yang sama —
-  ///  dan perbaikan pada satu sisi tidak sampai ke sisi lain.
-  /// ==========================================================================
-  final bool mendaftar;
+  const PhoneScreen({super.key});
 
   @override
   State<PhoneScreen> createState() => _PhoneScreenState();
@@ -154,7 +144,7 @@ class _PhoneScreenState extends State<PhoneScreen> {
               const SizedBox(height: ClayTokens.space8),
 
               Text(
-                widget.mendaftar ? 'Buat akun' : 'Masuk',
+                'Masuk',
                 style: TextStyle(
                   fontFamily: 'PlusJakartaSans',
                   fontSize: 24,
@@ -169,15 +159,8 @@ class _PhoneScreenState extends State<PhoneScreen> {
               const SizedBox(height: ClayTokens.space2),
 
               Text(
-                // Kalimatnya mengikuti tombol yang ditekan di layar sambutan.
-                // Orang yang menekan "Daftar" perlu tahu bahwa dia akan
-                // menerima kode, bukan diminta membuat sandi; yang menekan
-                // "Masuk" tidak perlu penjelasan itu.
-                widget.mendaftar
-                    ? 'Masukkan nomor HP Anda. Kami kirim kode verifikasi — '
-                          'tidak perlu membuat kata sandi.'
-                    : 'Masukkan nomor HP yang terdaftar. Kami kirim kode '
-                          'verifikasi ke nomor itu.',
+                'Masukkan nomor HP yang terdaftar. Kami kirim kode '
+                'verifikasi ke nomor itu.',
                 style: TextStyle(
                   fontFamily: 'PlusJakartaSans',
                   fontSize: 14,

@@ -10,10 +10,26 @@ import 'package:provider/provider.dart';
 
 /// Layar kedua: masukkan kode OTP.
 class OtpScreen extends StatefulWidget {
-  const OtpScreen({super.key, required this.phone});
+  const OtpScreen({super.key, required this.phone, this.namaBaru});
 
   /// Nomor yang sudah dibersihkan, seperti yang dikirim ke backend.
   final String phone;
+
+  /// Nama dari halaman daftar, disimpan ke profil SETELAH verifikasi berhasil.
+  ///
+  /// ==========================================================================
+  ///  KENAPA SETELAH, BUKAN SAAT VERIFIKASI
+  /// ==========================================================================
+  ///  Endpoint verifikasi tidak menerima nama — dan memang tidak boleh: nomor
+  ///  yang SUDAH terdaftar juga melewati endpoint yang sama, dan nama dari
+  ///  formulir daftar tidak boleh menimpa nama akun lama hanya karena
+  ///  pemiliknya menekan "Daftar" alih-alih "Masuk"... kecuali dia memang baru.
+  ///
+  ///  Backend menamai akun BARU "Pengguna 1234" (empat digit terakhir nomor).
+  ///  Nama dari sini hanya dipakai menggantikan nama tiruan itu — akun lama
+  ///  yang namanya sudah diisi tidak disentuh.
+  /// ==========================================================================
+  final String? namaBaru;
 
   @override
   State<OtpScreen> createState() => _OtpScreenState();
@@ -111,6 +127,12 @@ class _OtpScreenState extends State<OtpScreen> {
       return;
     }
 
+    await _simpanNamaBaru(sesi);
+
+    if (!mounted) {
+      return;
+    }
+
     /*
      * TIDAK ada navigasi ke beranda di sini.
      *
@@ -122,6 +144,32 @@ class _OtpScreenState extends State<OtpScreen> {
      * kodenya sudah terpakai.
      */
     Navigator.of(context).popUntil((Route<dynamic> r) => r.isFirst);
+  }
+
+  /// Simpan nama dari halaman daftar — hanya kalau akunnya memang masih
+  /// bernama tiruan.
+  ///
+  /// Kegagalan di sini SENGAJA tidak menghalangi apa pun: pengguna sudah
+  /// masuk, dan namanya bisa diganti kapan saja dari menu profil. Galat yang
+  /// menahan orang di layar OTP setelah kodenya diterima jauh lebih buruk
+  /// daripada nama tiruan yang bertahan sebentar.
+  Future<void> _simpanNamaBaru(SessionController sesi) async {
+    final String? nama = widget.namaBaru?.trim();
+
+    if (nama == null || nama.isEmpty) {
+      return;
+    }
+
+    // "Pengguna 1234" adalah nama buatan backend untuk akun baru. Akun LAMA
+    // yang mendaftar ulang lewat tombol Daftar namanya bukan itu — dan nama
+    // lamanya tidak boleh ditimpa formulir daftar.
+    final String sekarang = sesi.user?.name ?? '';
+
+    if (!RegExp(r'^Pengguna \d{4}$').hasMatch(sekarang)) {
+      return;
+    }
+
+    await sesi.updateProfile(name: nama);
   }
 
   Future<void> _kirimUlang() async {

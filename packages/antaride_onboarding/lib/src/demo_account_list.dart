@@ -316,6 +316,17 @@ class _Kartu extends StatelessWidget {
             isLoading: memuat,
             variant: ClayButtonVariant.secondary,
             height: 40,
+
+            /*
+             * `expanded: false` WAJIB di dalam Row.
+             *
+             * Bawaan tombolnya melebar penuh (width: infinity). Di dalam Row,
+             * lebar tak terhingga membuat tombolnya keluar dari layar — tidak
+             * terlihat sama sekali — dan kolom teks di sebelahnya kebagian
+             * lebar nol, sehingga nama akunnya jatuh SATU HURUF PER BARIS.
+             * Keduanya terjadi tanpa satu pun galat di analyzer maupun log.
+             */
+            expanded: false,
           ),
         ],
       ),
