@@ -276,8 +276,9 @@ class ApiClient {
         (badan['error'] as Map<String, dynamic>?) ?? <String, dynamic>{};
 
     final ApiFailure kegagalan = ApiFailure(
-      code: galat['code'] as String? ?? 'UNKNOWN',
-      message: galat['message'] as String? ?? 'Terjadi gangguan. Coba lagi.',
+      code: galat['code'] as String? ?? _kodeDariStatus(response.statusCode),
+      message:
+          galat['message'] as String? ?? _pesanDariStatus(response.statusCode),
       statusCode: response.statusCode,
       details:
           (galat['details'] as Map<String, dynamic>?) ?? <String, dynamic>{},
@@ -288,6 +289,58 @@ class ApiClient {
     }
 
     return Err<Map<String, dynamic>>(kegagalan);
+  }
+
+  /*
+   * ==========================================================================
+   *  RESPONSE GAGAL TANPA `error.message` HARUS TETAP MENYEBUT PENYEBABNYA
+   * ==========================================================================
+   *  Backend Antaride selalu membalas galat dalam bentuk
+   *  `{"success":false,"error":{"code":..,"message":..}}`. Tapi tidak semua
+   *  yang menjawab permintaan ini adalah backend Antaride:
+   *
+   *    429  Laravel menjawab `{"message":"Too Many Attempts."}` — Map, tapi
+   *         TANPA amplop `error`.
+   *    500  Di produksi Laravel menjawab `{"message":"Server Error"}`, juga
+   *         tanpa amplop.
+   *    502  Nginx yang tidak bisa menghubungi Octane.
+   *
+   *  Sebelum ini, ketiganya menghasilkan satu pesan yang sama: "Terjadi
+   *  gangguan. Coba lagi." Pesan itu tidak salah, tapi menyembunyikan SATU
+   *  hal yang paling dibutuhkan saat menelusuri masalah — status HTTP-nya.
+   *
+   *  Akibatnya nyata dan baru saja terjadi: layar dasbor driver menampilkan
+   *  "Terjadi gangguan" tanpa ada cara mengetahui apakah servernya balas 500,
+   *  429, atau 502. Endpoint-nya diperiksa dari luar dan sehat, jadi
+   *  penelusurannya berhenti tanpa jawaban.
+   *
+   *  Sekarang statusnya ikut disebut. Pesannya tetap dalam bahasa yang bisa
+   *  dibaca pengguna — angka di dalam tanda kurung itu untuk yang membantu dia,
+   *  bukan untuk dia sendiri.
+   * ==========================================================================
+   */
+  String _pesanDariStatus(int? status) {
+    return switch (status) {
+      429 => 'Terlalu banyak permintaan. Tunggu sebentar lalu coba lagi.',
+
+      // 5xx: masalahnya di server, dan pengguna tidak bisa memperbaikinya —
+      // jadi yang disarankan menunggu, bukan memeriksa jaringannya sendiri.
+      final int s when s >= 500 =>
+        'Server sedang bermasalah (HTTP $s). Coba lagi sesaat.',
+
+      final int s when s >= 400 =>
+        'Permintaan ditolak server (HTTP $s). Coba lagi.',
+
+      _ => 'Terjadi gangguan. Coba lagi.',
+    };
+  }
+
+  String _kodeDariStatus(int? status) {
+    return switch (status) {
+      429 => 'RATE_LIMITED',
+      final int s when s >= 500 => 'SERVER_ERROR',
+      _ => 'UNKNOWN',
+    };
   }
 
   ApiFailure _dariDioException(DioException e) {
