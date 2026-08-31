@@ -74,7 +74,7 @@ class ClayEmptyState extends StatelessWidget {
                 color: gelap
                     ? ClayTokens.textPrimaryDark
                     : ClayTokens.textPrimary,
-                fontFamily: 'PlusJakartaSans',
+                fontFamily: ClayTokens.fontFamily,
               ),
             ),
 
@@ -90,7 +90,7 @@ class ClayEmptyState extends StatelessWidget {
                 color: gelap
                     ? ClayTokens.textSecondaryDark
                     : ClayTokens.textSecondary,
-                fontFamily: 'PlusJakartaSans',
+                fontFamily: ClayTokens.fontFamily,
               ),
             ),
 

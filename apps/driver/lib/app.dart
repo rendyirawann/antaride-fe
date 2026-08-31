@@ -1,5 +1,6 @@
 import 'package:antaride_auth/antaride_auth.dart';
 import 'package:antaride_notifications/antaride_notifications.dart';
+import 'package:antaride_onboarding/antaride_onboarding.dart';
 import 'package:antaride_ui/antaride_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -85,9 +86,9 @@ class _Gerbang extends StatelessWidget {
       (SessionController s) => s.stage,
     );
 
-    return switch (tahap) {
+    final Widget layar = switch (tahap) {
       SessionStage.unknown || SessionStage.loadingProfile => const _Splash(),
-      SessionStage.signedOut => const DriverWelcomeScreen(),
+      SessionStage.signedOut => const _PembukaDriver(),
       // `NotificationSync` menjaga angka lencana notifikasi tetap mutakhir saat
       // aplikasi kembali ke depan. Ditempatkan DI DALAM gerbang, bukan di
       // atasnya — alasannya di docblock `NotificationSync`.
@@ -95,6 +96,18 @@ class _Gerbang extends StatelessWidget {
         child: DriverHomeScreen(),
       ),
     };
+
+    /*
+     * Pergantian tahap MEMUDAR, tidak melompat. Alasan lengkapnya sama dengan
+     * gerbang aplikasi penumpang: pergantian seketika dari bidang gradien penuh
+     * ke permukaan clay pucat terbaca sebagai kedipan, bukan perpindahan.
+     */
+    return AnimatedSwitcher(
+      duration: const Duration(milliseconds: 260),
+      switchInCurve: Curves.easeOut,
+      switchOutCurve: Curves.easeIn,
+      child: KeyedSubtree(key: ValueKey<SessionStage>(tahap), child: layar),
+    );
   }
 }
 
@@ -122,7 +135,7 @@ class _Splash extends StatelessWidget {
             Text(
               'Antaride Driver',
               style: TextStyle(
-                fontFamily: 'PlusJakartaSans',
+                fontFamily: ClayTokens.fontFamily,
                 fontSize: 22,
                 fontWeight: FontWeight.w800,
               ),
@@ -132,6 +145,46 @@ class _Splash extends StatelessWidget {
           ],
         ),
       ),
+    );
+  }
+}
+
+/// Perkenalan aplikasi driver, lalu layar sambutan.
+///
+/// Kalimatnya berbeda dari aplikasi penumpang dengan sengaja: yang membuka ini
+/// calon mitra pengemudi, dan yang perlu dia tahu lebih dulu adalah bagaimana
+/// order sampai kepadanya dan bagaimana penghasilannya dihitung.
+class _PembukaDriver extends StatelessWidget {
+  const _PembukaDriver();
+
+  @override
+  Widget build(BuildContext context) {
+    return const IntroGate(
+      accent: ClayTokens.primaryDark,
+      pages: <IntroPage>[
+        IntroPage(
+          icon: Icons.notifications_active_rounded,
+          title: 'Order datang sendiri',
+          body:
+              'Nyalakan status bekerja, dan tawaran masuk dengan jarak serta '
+              'perkiraan penghasilannya. Anda yang memutuskan menerima.',
+        ),
+        IntroPage(
+          icon: Icons.route_rounded,
+          title: 'Dipandu sampai selesai',
+          body:
+              'Peta penjemputan, kode verifikasi penumpang, sampai penyelesaian '
+              'order — semuanya dari satu layar.',
+        ),
+        IntroPage(
+          icon: Icons.savings_rounded,
+          title: 'Penghasilan langsung tercatat',
+          body:
+              'Setiap order masuk ke dompet Anda begitu perjalanannya selesai. '
+              'Tidak ada perhitungan yang menunggu akhir hari.',
+        ),
+      ],
+      child: DriverWelcomeScreen(),
     );
   }
 }

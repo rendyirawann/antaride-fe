@@ -196,7 +196,7 @@ class _RatingSheetState extends State<RatingSheet> {
               'Bagaimana perjalanan Anda dengan ${driver.name}?',
               textAlign: TextAlign.center,
               style: TextStyle(
-                fontFamily: 'PlusJakartaSans',
+                fontFamily: ClayTokens.fontFamily,
                 fontSize: 14,
                 height: 1.45,
                 color: gelap
@@ -266,7 +266,7 @@ class _RatingSheetState extends State<RatingSheet> {
                         child: Text(
                           _labelSkor(_skor),
                           style: TextStyle(
-                            fontFamily: 'PlusJakartaSans',
+                            fontFamily: ClayTokens.fontFamily,
                             fontSize: 13.5,
                             fontWeight: FontWeight.w800,
                             letterSpacing: -0.2,
@@ -387,7 +387,7 @@ class _AvatarDriver extends StatelessWidget {
           : Text(
               inisial,
               style: const TextStyle(
-                fontFamily: 'PlusJakartaSans',
+                fontFamily: ClayTokens.fontFamily,
                 fontSize: 22,
                 fontWeight: FontWeight.w800,
                 color: Colors.white,
@@ -424,7 +424,7 @@ class _ChipTag extends StatelessWidget {
       child: Text(
         label,
         style: TextStyle(
-          fontFamily: 'PlusJakartaSans',
+          fontFamily: ClayTokens.fontFamily,
           fontSize: 12.5,
           fontWeight: terpilih ? FontWeight.w700 : FontWeight.w500,
           color: terpilih ? ClayTokens.primary : null,

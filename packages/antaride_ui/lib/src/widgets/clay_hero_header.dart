@@ -135,7 +135,7 @@ class ClayHeroHeader extends StatelessWidget {
                     Text(
                       title,
                       style: TextStyle(
-                        fontFamily: 'PlusJakartaSans',
+                        fontFamily: ClayTokens.fontFamily,
                         fontSize: compact ? 20 : 30,
                         fontWeight: FontWeight.w800,
                         letterSpacing: compact ? -0.4 : -0.6,
@@ -151,7 +151,7 @@ class ClayHeroHeader extends StatelessWidget {
                       Text(
                         subtitle!,
                         style: TextStyle(
-                          fontFamily: 'PlusJakartaSans',
+                          fontFamily: ClayTokens.fontFamily,
                           fontSize: compact ? 12.5 : 14,
                           height: 1.55,
 

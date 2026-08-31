@@ -265,7 +265,7 @@ class _DriverLoginScreenState extends State<DriverLoginScreen> {
                                       Text(
                                         'Dikirim ke ${tantangan.phoneMasked}',
                                         style: TextStyle(
-                                          fontFamily: 'PlusJakartaSans',
+                                          fontFamily: ClayTokens.fontFamily,
                                           fontSize: 11.5,
                                           color: gelap
                                               ? ClayTokens.textTertiaryDark
@@ -334,7 +334,7 @@ class _DriverLoginScreenState extends State<DriverLoginScreen> {
                                 child: Text(
                                   'Kirim ulang dalam $_sisaKirimUlang detik',
                                   style: TextStyle(
-                                    fontFamily: 'PlusJakartaSans',
+                                    fontFamily: ClayTokens.fontFamily,
                                     fontSize: 12.5,
                                     fontWeight: FontWeight.w600,
                                     color: gelap
@@ -382,7 +382,7 @@ class _DriverLoginScreenState extends State<DriverLoginScreen> {
                                   const Text(
                                     'MODE PENGEMBANGAN',
                                     style: TextStyle(
-                                      fontFamily: 'PlusJakartaSans',
+                                      fontFamily: ClayTokens.fontFamily,
                                       fontSize: 10.5,
                                       fontWeight: FontWeight.w700,
                                       letterSpacing: 1.2,
@@ -393,7 +393,7 @@ class _DriverLoginScreenState extends State<DriverLoginScreen> {
                                   Text(
                                     'Kode: ${tantangan!.debugCode}',
                                     style: TextStyle(
-                                      fontFamily: 'PlusJakartaSans',
+                                      fontFamily: ClayTokens.fontFamily,
                                       fontSize: 15,
                                       fontWeight: FontWeight.w700,
                                       letterSpacing: 3,

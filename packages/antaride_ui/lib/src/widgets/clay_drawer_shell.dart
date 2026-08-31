@@ -378,7 +378,7 @@ class _Sidebar extends StatelessWidget {
                           child: Text(
                             avatarLabel ?? '?',
                             style: const TextStyle(
-                              fontFamily: 'PlusJakartaSans',
+                              fontFamily: ClayTokens.fontFamily,
                               fontSize: 22,
                               fontWeight: FontWeight.w800,
                               color: Colors.white,
@@ -394,7 +394,7 @@ class _Sidebar extends StatelessWidget {
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                         style: const TextStyle(
-                          fontFamily: 'PlusJakartaSans',
+                          fontFamily: ClayTokens.fontFamily,
                           fontSize: 19,
                           fontWeight: FontWeight.w800,
                           letterSpacing: -0.3,
@@ -409,7 +409,7 @@ class _Sidebar extends StatelessWidget {
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
                           style: TextStyle(
-                            fontFamily: 'PlusJakartaSans',
+                            fontFamily: ClayTokens.fontFamily,
                             fontSize: 12.5,
                             color: Colors.white.withValues(alpha: 0.75),
                           ),
@@ -463,7 +463,7 @@ class _Sidebar extends StatelessWidget {
                       child: Text(
                         footerLabel!,
                         style: const TextStyle(
-                          fontFamily: 'PlusJakartaSans',
+                          fontFamily: ClayTokens.fontFamily,
                           fontSize: 14,
                           fontWeight: FontWeight.w700,
                         ),
@@ -542,7 +542,7 @@ class _ButirMenu extends StatelessWidget {
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
                 style: TextStyle(
-                  fontFamily: 'PlusJakartaSans',
+                  fontFamily: ClayTokens.fontFamily,
                   fontSize: 14.5,
                   fontWeight: selected ? FontWeight.w800 : FontWeight.w600,
                   color: selected
@@ -564,7 +564,7 @@ class _ButirMenu extends StatelessWidget {
                 child: Text(
                   '${item.badge}',
                   style: TextStyle(
-                    fontFamily: 'PlusJakartaSans',
+                    fontFamily: ClayTokens.fontFamily,
                     fontSize: 11,
                     fontWeight: FontWeight.w800,
                     color: ClayGradients.gelapkan(accent),

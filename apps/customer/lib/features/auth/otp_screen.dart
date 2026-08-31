@@ -327,7 +327,7 @@ class _OtpScreenState extends State<OtpScreen> {
                                     Text(
                                       'Kirim ulang dalam $_sisaKirimUlang detik',
                                       style: TextStyle(
-                                        fontFamily: 'PlusJakartaSans',
+                                        fontFamily: ClayTokens.fontFamily,
                                         fontSize: 13,
                                         fontWeight: FontWeight.w600,
                                         color: gelap
@@ -375,7 +375,7 @@ class _OtpScreenState extends State<OtpScreen> {
                                 'Mode pengembangan — kode: '
                                 '${tantangan!.debugCode}',
                                 style: const TextStyle(
-                                  fontFamily: 'PlusJakartaSans',
+                                  fontFamily: ClayTokens.fontFamily,
                                   fontSize: 12.5,
                                   fontWeight: FontWeight.w600,
                                   color: ClayTokens.warning,

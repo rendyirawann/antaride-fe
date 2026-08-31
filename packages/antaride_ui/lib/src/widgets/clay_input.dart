@@ -81,7 +81,7 @@ class ClayInput extends StatelessWidget {
               color: gelap
                   ? ClayTokens.textSecondaryDark
                   : ClayTokens.textSecondary,
-              fontFamily: 'PlusJakartaSans',
+              fontFamily: ClayTokens.fontFamily,
             ),
           ),
           const SizedBox(height: ClayTokens.space2),
@@ -136,7 +136,7 @@ class ClayInput extends StatelessWidget {
                     color: gelap
                         ? ClayTokens.textPrimaryDark
                         : ClayTokens.textPrimary,
-                    fontFamily: 'PlusJakartaSans',
+                    fontFamily: ClayTokens.fontFamily,
                     letterSpacing: letterSpacing,
                   ),
 
@@ -148,7 +148,7 @@ class ClayInput extends StatelessWidget {
                       color: gelap
                           ? ClayTokens.textTertiaryDark
                           : ClayTokens.textTertiary,
-                      fontFamily: 'PlusJakartaSans',
+                      fontFamily: ClayTokens.fontFamily,
                       letterSpacing: letterSpacing,
                     ),
 
@@ -202,7 +202,7 @@ class ClayInput extends StatelessWidget {
                     : (gelap
                           ? ClayTokens.textTertiaryDark
                           : ClayTokens.textTertiary),
-                fontFamily: 'PlusJakartaSans',
+                fontFamily: ClayTokens.fontFamily,
               ),
             ),
           ),

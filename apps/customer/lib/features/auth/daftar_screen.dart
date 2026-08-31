@@ -222,7 +222,7 @@ class _DaftarScreenState extends State<DaftarScreen> {
                         'dan Kebijakan Privasi Antaride.',
                         textAlign: TextAlign.center,
                         style: TextStyle(
-                          fontFamily: 'PlusJakartaSans',
+                          fontFamily: ClayTokens.fontFamily,
                           fontSize: 11.5,
                           height: 1.5,
                           color: gelap

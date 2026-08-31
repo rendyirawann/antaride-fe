@@ -231,7 +231,7 @@ class _Outlet extends StatelessWidget {
                                 child: Text(
                                   'Pengelolaan outlet belum aktif',
                                   style: TextStyle(
-                                    fontFamily: 'PlusJakartaSans',
+                                    fontFamily: ClayTokens.fontFamily,
                                     fontSize: 16,
                                     fontWeight: FontWeight.w800,
                                     letterSpacing: -0.4,
@@ -259,7 +259,7 @@ class _Outlet extends StatelessWidget {
                             'dikelola tim Antaride lewat backoffice. Hubungi '
                             'kantor Antaride Medan untuk perubahan apa pun.',
                             style: TextStyle(
-                              fontFamily: 'PlusJakartaSans',
+                              fontFamily: ClayTokens.fontFamily,
                               fontSize: 13,
                               height: 1.6,
                               color: gelap
@@ -334,7 +334,7 @@ class _KartuMenyusul extends StatelessWidget {
             child: Text(
               label,
               style: TextStyle(
-                fontFamily: 'PlusJakartaSans',
+                fontFamily: ClayTokens.fontFamily,
                 fontSize: 13,
                 fontWeight: FontWeight.w600,
                 height: 1.35,
@@ -359,7 +359,7 @@ class _KartuMenyusul extends StatelessWidget {
             child: Text(
               'Menyusul',
               style: TextStyle(
-                fontFamily: 'PlusJakartaSans',
+                fontFamily: ClayTokens.fontFamily,
                 fontSize: 10.5,
                 fontWeight: FontWeight.w700,
                 letterSpacing: 0.4,
@@ -529,7 +529,7 @@ class _Profil extends StatelessWidget {
                         'Antaride Merchant'
                         '${AppConfig.isProduction ? '' : ' · ${AppConfig.environment}'}',
                         style: TextStyle(
-                          fontFamily: 'PlusJakartaSans',
+                          fontFamily: ClayTokens.fontFamily,
                           fontSize: 11,
                           color: gelap
                               ? ClayTokens.textTertiaryDark
@@ -586,7 +586,7 @@ class _BarisData extends StatelessWidget {
                 Text(
                   label,
                   style: TextStyle(
-                    fontFamily: 'PlusJakartaSans',
+                    fontFamily: ClayTokens.fontFamily,
                     fontSize: 11,
                     fontWeight: FontWeight.w600,
                     color: gelap
@@ -600,7 +600,7 @@ class _BarisData extends StatelessWidget {
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                   style: TextStyle(
-                    fontFamily: 'PlusJakartaSans',
+                    fontFamily: ClayTokens.fontFamily,
                     fontSize: 14,
                     fontWeight: FontWeight.w700,
                     color: redup
@@ -685,7 +685,7 @@ class _AvatarKaca extends StatelessWidget {
       child: Text(
         inisial,
         style: const TextStyle(
-          fontFamily: 'PlusJakartaSans',
+          fontFamily: ClayTokens.fontFamily,
           fontSize: 17,
           fontWeight: FontWeight.w800,
           color: Colors.white,
@@ -728,7 +728,7 @@ class _PilKaca extends StatelessWidget {
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
               style: const TextStyle(
-                fontFamily: 'PlusJakartaSans',
+                fontFamily: ClayTokens.fontFamily,
                 fontSize: 11.5,
                 fontWeight: FontWeight.w700,
                 letterSpacing: 0.2,

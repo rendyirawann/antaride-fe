@@ -86,7 +86,7 @@ class ClayMoney extends StatelessWidget {
             : warna,
         decoration: strikethrough ? TextDecoration.lineThrough : null,
         height: 1.2,
-        fontFamily: 'PlusJakartaSans',
+        fontFamily: ClayTokens.fontFamily,
 
         // Lihat penjelasan di docblock kelas.
         fontFeatures: const <FontFeature>[FontFeature.tabularFigures()],
@@ -143,7 +143,7 @@ class ClayMoneyRow extends StatelessWidget {
                         : (emphasized
                               ? ClayTokens.textPrimary
                               : ClayTokens.textSecondary),
-                    fontFamily: 'PlusJakartaSans',
+                    fontFamily: ClayTokens.fontFamily,
                   ),
                 ),
                 if (hint != null)
@@ -156,7 +156,7 @@ class ClayMoneyRow extends StatelessWidget {
                         color: gelap
                             ? ClayTokens.textTertiaryDark
                             : ClayTokens.textTertiary,
-                        fontFamily: 'PlusJakartaSans',
+                        fontFamily: ClayTokens.fontFamily,
                       ),
                     ),
                   ),

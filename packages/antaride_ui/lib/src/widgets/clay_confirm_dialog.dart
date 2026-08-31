@@ -150,7 +150,7 @@ class ClayConfirmDialog extends StatelessWidget {
             Text(
               title,
               style: TextStyle(
-                fontFamily: 'PlusJakartaSans',
+                fontFamily: ClayTokens.fontFamily,
                 fontSize: 18,
                 fontWeight: FontWeight.w800,
                 letterSpacing: -0.4,
@@ -165,7 +165,7 @@ class ClayConfirmDialog extends StatelessWidget {
             Text(
               message,
               style: TextStyle(
-                fontFamily: 'PlusJakartaSans',
+                fontFamily: ClayTokens.fontFamily,
                 fontSize: 13.5,
                 height: 1.5,
                 color: gelap

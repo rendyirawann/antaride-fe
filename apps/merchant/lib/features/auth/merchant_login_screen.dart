@@ -247,7 +247,7 @@ class _MerchantLoginScreenState extends State<MerchantLoginScreen> {
                                         'Dikirim ke ${tantangan.phoneMasked}',
                                         textAlign: TextAlign.center,
                                         style: TextStyle(
-                                          fontFamily: 'PlusJakartaSans',
+                                          fontFamily: ClayTokens.fontFamily,
                                           fontSize: 11.5,
                                           color: gelap
                                               ? ClayTokens.textTertiaryDark
@@ -325,7 +325,7 @@ class _MerchantLoginScreenState extends State<MerchantLoginScreen> {
                                   Text(
                                     'Kode: ${tantangan!.debugCode}',
                                     style: TextStyle(
-                                      fontFamily: 'PlusJakartaSans',
+                                      fontFamily: ClayTokens.fontFamily,
                                       fontSize: 15,
                                       fontWeight: FontWeight.w700,
                                       letterSpacing: 3,

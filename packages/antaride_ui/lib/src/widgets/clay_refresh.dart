@@ -66,7 +66,7 @@ class ClayRefresh extends StatelessWidget {
         : ClayTokens.textSecondary;
 
     final TextStyle gaya = TextStyle(
-      fontFamily: 'PlusJakartaSans',
+      fontFamily: ClayTokens.fontFamily,
       fontSize: 12,
       fontWeight: FontWeight.w600,
       color: teks,

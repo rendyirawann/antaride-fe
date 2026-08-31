@@ -50,7 +50,7 @@ class ClayLoader extends StatelessWidget {
               message!,
               textAlign: TextAlign.center,
               style: TextStyle(
-                fontFamily: 'PlusJakartaSans',
+                fontFamily: ClayTokens.fontFamily,
                 fontSize: 12.5,
                 color: gelap
                     ? ClayTokens.textSecondaryDark

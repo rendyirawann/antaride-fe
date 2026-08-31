@@ -68,7 +68,7 @@ class ClayStatusBadge extends StatelessWidget {
               fontSize: compact ? 11 : 12,
               fontWeight: FontWeight.w700,
               color: warna,
-              fontFamily: 'PlusJakartaSans',
+              fontFamily: ClayTokens.fontFamily,
               height: 1.2,
             ),
           ),

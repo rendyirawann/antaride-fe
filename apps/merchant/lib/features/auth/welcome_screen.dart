@@ -92,7 +92,7 @@ class MerchantWelcomeScreen extends StatelessWidget {
             'Setelah akun dibuat, masuk lewat tombol Masuk dengan nomor HP '
             'yang Anda daftarkan.',
             style: TextStyle(
-              fontFamily: 'PlusJakartaSans',
+              fontFamily: ClayTokens.fontFamily,
               fontSize: 13,
               height: 1.6,
               color: Theme.of(context).brightness == Brightness.dark

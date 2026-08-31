@@ -303,7 +303,7 @@ class ActiveOrderScreen extends StatelessWidget {
                             Text(
                               a.text,
                               style: const TextStyle(
-                                fontFamily: 'PlusJakartaSans',
+                                fontFamily: ClayTokens.fontFamily,
                                 fontSize: 13.5,
                                 fontWeight: FontWeight.w600,
                               ),
@@ -317,7 +317,7 @@ class ActiveOrderScreen extends StatelessWidget {
                               const Text(
                                 'Menurunkan skor pembatalan Anda',
                                 style: TextStyle(
-                                  fontFamily: 'PlusJakartaSans',
+                                  fontFamily: ClayTokens.fontFamily,
                                   fontSize: 10.5,
                                   fontWeight: FontWeight.w600,
                                   color: ClayTokens.warning,
@@ -459,7 +459,7 @@ class _StripStatus extends StatelessWidget {
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                   style: TextStyle(
-                    fontFamily: 'PlusJakartaSans',
+                    fontFamily: ClayTokens.fontFamily,
                     fontSize: 10.5,
                     fontWeight: FontWeight.w700,
                     letterSpacing: 1.2,
@@ -473,7 +473,7 @@ class _StripStatus extends StatelessWidget {
                   maxLines: 2,
                   overflow: TextOverflow.ellipsis,
                   style: const TextStyle(
-                    fontFamily: 'PlusJakartaSans',
+                    fontFamily: ClayTokens.fontFamily,
                     fontSize: 17,
                     fontWeight: FontWeight.w800,
                     letterSpacing: -0.4,
@@ -583,7 +583,7 @@ class _Uang extends StatelessWidget {
                   Text(
                     'TAGIH TUNAI',
                     style: TextStyle(
-                      fontFamily: 'PlusJakartaSans',
+                      fontFamily: ClayTokens.fontFamily,
                       fontSize: 9.5,
                       fontWeight: FontWeight.w800,
                       letterSpacing: 0.6,
@@ -692,7 +692,7 @@ class _Baris extends StatelessWidget {
               Text(
                 label,
                 style: TextStyle(
-                  fontFamily: 'PlusJakartaSans',
+                  fontFamily: ClayTokens.fontFamily,
                   fontSize: 10.5,
                   fontWeight: FontWeight.w700,
                   letterSpacing: 1.2,
@@ -703,7 +703,7 @@ class _Baris extends StatelessWidget {
               Text(
                 teks,
                 style: TextStyle(
-                  fontFamily: 'PlusJakartaSans',
+                  fontFamily: ClayTokens.fontFamily,
                   fontSize: 13.5,
                   fontWeight: FontWeight.w600,
                   height: 1.4,
@@ -738,7 +738,7 @@ class _Baris extends StatelessWidget {
                           // menemukan titiknya tanpa menelepon.
                           catatan!,
                           style: TextStyle(
-                            fontFamily: 'PlusJakartaSans',
+                            fontFamily: ClayTokens.fontFamily,
                             fontSize: 12,
                             fontWeight: FontWeight.w600,
                             height: 1.35,
@@ -793,7 +793,7 @@ class _Penumpang extends StatelessWidget {
             child: Text(
               inisial,
               style: const TextStyle(
-                fontFamily: 'PlusJakartaSans',
+                fontFamily: ClayTokens.fontFamily,
                 fontSize: 17,
                 fontWeight: FontWeight.w800,
                 color: Colors.white,
@@ -810,7 +810,7 @@ class _Penumpang extends StatelessWidget {
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                   style: TextStyle(
-                    fontFamily: 'PlusJakartaSans',
+                    fontFamily: ClayTokens.fontFamily,
                     fontSize: 14,
                     fontWeight: FontWeight.w700,
                     color: gelap
@@ -821,7 +821,7 @@ class _Penumpang extends StatelessWidget {
                 Text(
                   penumpang.phone,
                   style: TextStyle(
-                    fontFamily: 'PlusJakartaSans',
+                    fontFamily: ClayTokens.fontFamily,
                     fontSize: 12.5,
                     color: gelap
                         ? ClayTokens.textSecondaryDark
@@ -1002,7 +1002,7 @@ class _BilahAksi extends StatelessWidget {
                   'Minta penumpang menyebutkan 4 digit kode jemput, lalu '
                   'masukkan di bawah.',
                   style: TextStyle(
-                    fontFamily: 'PlusJakartaSans',
+                    fontFamily: ClayTokens.fontFamily,
                     fontSize: 13,
                     height: 1.5,
                     color: gelap

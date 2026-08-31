@@ -15,5 +15,8 @@
 library;
 
 export 'src/demo_account_list.dart' show DemoAccountPicker;
+export 'src/intro_gate.dart';
+export 'src/intro_screen.dart';
+export 'src/intro_store.dart';
 export 'src/welcome_screen.dart';
 export 'src/tutup_saat_masuk.dart';

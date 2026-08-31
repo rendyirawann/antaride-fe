@@ -204,7 +204,7 @@ class _PlaceSearchFieldState extends State<PlaceSearchField> {
                 'Alamat tidak ditemukan. Anda tetap bisa mengetiknya sendiri '
                 'dan menggeser peta ke titik yang benar.',
                 style: TextStyle(
-                  fontFamily: 'PlusJakartaSans',
+                  fontFamily: ClayTokens.fontFamily,
                   fontSize: 11.5,
                   height: 1.45,
                   color: gelap
@@ -287,7 +287,7 @@ class _BarisSaran extends StatelessWidget {
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                     style: TextStyle(
-                      fontFamily: 'PlusJakartaSans',
+                      fontFamily: ClayTokens.fontFamily,
                       fontSize: 13,
                       fontWeight: FontWeight.w700,
                       color: gelap
@@ -301,7 +301,7 @@ class _BarisSaran extends StatelessWidget {
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                     style: TextStyle(
-                      fontFamily: 'PlusJakartaSans',
+                      fontFamily: ClayTokens.fontFamily,
                       fontSize: 11,
                       color: gelap
                           ? ClayTokens.textTertiaryDark

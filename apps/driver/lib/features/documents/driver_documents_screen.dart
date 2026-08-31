@@ -259,11 +259,13 @@ class _DriverDocumentsScreenState extends State<DriverDocumentsScreen> {
     return ClayRefresh(
       onRefresh: _muat,
       child: ListView(
-        padding: const EdgeInsets.fromLTRB(
+        // Ruang akhir guliran menambahkan tinggi bilah navigasi Android,
+        // supaya kartu terakhir tidak berhenti di belakangnya.
+        padding: EdgeInsets.fromLTRB(
           ClayTokens.space5,
           ClayTokens.space4,
           ClayTokens.space5,
-          ClayTokens.space8,
+          ClayTokens.space8 + context.ruangBawah,
         ),
         children: <Widget>[
           ClayEntrance(
@@ -443,7 +445,7 @@ class _PanelRingkasan extends StatelessWidget {
                     Text(
                       'STATUS DOKUMEN',
                       style: TextStyle(
-                        fontFamily: 'PlusJakartaSans',
+                        fontFamily: ClayTokens.fontFamily,
                         fontSize: 10.5,
                         fontWeight: FontWeight.w700,
                         letterSpacing: 1.2,
@@ -460,7 +462,7 @@ class _PanelRingkasan extends StatelessWidget {
                           ? '${keadaan.missing.length} dokumen belum disetujui'
                           : '${keadaan.expired.length} dokumen kadaluarsa',
                       style: const TextStyle(
-                        fontFamily: 'PlusJakartaSans',
+                        fontFamily: ClayTokens.fontFamily,
                         fontSize: 19,
                         fontWeight: FontWeight.w800,
                         letterSpacing: -0.4,
@@ -502,7 +504,7 @@ class _PanelRingkasan extends StatelessWidget {
                       'memfoto ulang yang lama tidak akan '
                       'diterima.',
             style: TextStyle(
-              fontFamily: 'PlusJakartaSans',
+              fontFamily: ClayTokens.fontFamily,
               fontSize: 12,
               height: 1.5,
 
@@ -526,7 +528,7 @@ class _PanelRingkasan extends StatelessWidget {
             Text(
               '$disetujui dari $wajib dokumen wajib disetujui',
               style: TextStyle(
-                fontFamily: 'PlusJakartaSans',
+                fontFamily: ClayTokens.fontFamily,
                 fontSize: 11,
                 fontWeight: FontWeight.w700,
                 color: Colors.white.withValues(alpha: 0.82),
@@ -649,7 +651,7 @@ class _KartuDokumen extends StatelessWidget {
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                   style: TextStyle(
-                    fontFamily: 'PlusJakartaSans',
+                    fontFamily: ClayTokens.fontFamily,
                     fontSize: 15,
                     fontWeight: FontWeight.w800,
                     letterSpacing: -0.2,
@@ -744,7 +746,7 @@ class _KartuDokumen extends StatelessWidget {
             Text(
               'Mengirim ${((kemajuan ?? 0) * 100).round()}%',
               style: TextStyle(
-                fontFamily: 'PlusJakartaSans',
+                fontFamily: ClayTokens.fontFamily,
                 fontSize: 11,
                 fontWeight: FontWeight.w600,
                 color: gelap
@@ -885,7 +887,7 @@ class _LencanaVerifikasi extends StatelessWidget {
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
               style: TextStyle(
-                fontFamily: 'PlusJakartaSans',
+                fontFamily: ClayTokens.fontFamily,
                 fontSize: 11,
                 fontWeight: FontWeight.w700,
                 height: 1.2,
@@ -928,7 +930,7 @@ class _ChipTanggal extends StatelessWidget {
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
             style: TextStyle(
-              fontFamily: 'PlusJakartaSans',
+              fontFamily: ClayTokens.fontFamily,
               fontSize: 11,
               fontWeight: FontWeight.w600,
               height: 1.2,
@@ -983,7 +985,7 @@ class _PanelCatatan extends StatelessWidget {
                         child: Text(
                           teks,
                           style: TextStyle(
-                            fontFamily: 'PlusJakartaSans',
+                            fontFamily: ClayTokens.fontFamily,
                             fontSize: 11.5,
                             height: 1.45,
                             color: gelap
@@ -1029,7 +1031,7 @@ class _CatatanFoto extends StatelessWidget {
               'fotonya dihapus. Pastikan seluruh tulisan pada dokumen terbaca '
               'jelas dan tidak ada bagian yang terpotong.',
               style: TextStyle(
-                fontFamily: 'PlusJakartaSans',
+                fontFamily: ClayTokens.fontFamily,
                 fontSize: 11.5,
                 height: 1.5,
                 color: warna,

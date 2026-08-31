@@ -26,6 +26,7 @@ library;
 export 'package:easy_refresh/easy_refresh.dart'
     show EasyRefreshController, IndicatorResult;
 
+export 'src/theme/clay_insets.dart';
 export 'src/theme/clay_gradients.dart';
 export 'src/theme/clay_shadows.dart';
 export 'src/theme/clay_theme.dart';

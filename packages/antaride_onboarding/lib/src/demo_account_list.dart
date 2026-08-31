@@ -166,7 +166,7 @@ class _DemoAccountPickerState extends State<DemoAccountPicker> {
               child: Text(
                 'AKUN DEMO',
                 style: TextStyle(
-                  fontFamily: 'PlusJakartaSans',
+                  fontFamily: ClayTokens.fontFamily,
                   fontSize: 10.5,
                   fontWeight: FontWeight.w700,
                   letterSpacing: 1.2,
@@ -198,7 +198,7 @@ class _DemoAccountPickerState extends State<DemoAccountPicker> {
             'Fitur akun demo menyala, tapi belum ada akun yang disiapkan. '
             'Jalankan di server: php artisan db:seed --class=DemoAccountSeeder',
             style: TextStyle(
-              fontFamily: 'PlusJakartaSans',
+              fontFamily: ClayTokens.fontFamily,
               fontSize: 11.5,
               height: 1.5,
               color: gelap
@@ -211,7 +211,7 @@ class _DemoAccountPickerState extends State<DemoAccountPicker> {
             'Untuk pengujian. Tekan Masuk untuk langsung memakai akun ini '
             'tanpa kode OTP.',
             style: TextStyle(
-              fontFamily: 'PlusJakartaSans',
+              fontFamily: ClayTokens.fontFamily,
               fontSize: 11.5,
               height: 1.5,
               color: gelap
@@ -271,7 +271,7 @@ class _Kartu extends StatelessWidget {
                 Text(
                   akun.name,
                   style: TextStyle(
-                    fontFamily: 'PlusJakartaSans',
+                    fontFamily: ClayTokens.fontFamily,
                     fontSize: 13.5,
                     fontWeight: FontWeight.w700,
                     color: gelap
@@ -283,7 +283,7 @@ class _Kartu extends StatelessWidget {
                 Text(
                   akun.phone,
                   style: TextStyle(
-                    fontFamily: 'PlusJakartaSans',
+                    fontFamily: ClayTokens.fontFamily,
                     fontSize: 11.5,
                     color: gelap
                         ? ClayTokens.textSecondaryDark
@@ -295,7 +295,7 @@ class _Kartu extends StatelessWidget {
                   Text(
                     akun.note!,
                     style: TextStyle(
-                      fontFamily: 'PlusJakartaSans',
+                      fontFamily: ClayTokens.fontFamily,
                       fontSize: 11,
                       height: 1.4,
                       color: gelap

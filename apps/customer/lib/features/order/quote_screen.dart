@@ -139,7 +139,7 @@ class _QuoteScreenState extends State<QuoteScreen> {
                         Text(
                           p.title,
                           style: const TextStyle(
-                            fontFamily: 'PlusJakartaSans',
+                            fontFamily: ClayTokens.fontFamily,
                             fontSize: 13.5,
                             fontWeight: FontWeight.w700,
                           ),
@@ -147,7 +147,7 @@ class _QuoteScreenState extends State<QuoteScreen> {
                         Text(
                           p.code,
                           style: TextStyle(
-                            fontFamily: 'PlusJakartaSans',
+                            fontFamily: ClayTokens.fontFamily,
                             fontSize: 11.5,
                             color:
                                 Theme.of(context).brightness == Brightness.dark
@@ -556,7 +556,7 @@ class _Metrik extends StatelessWidget {
           maxLines: 1,
           overflow: TextOverflow.ellipsis,
           style: const TextStyle(
-            fontFamily: 'PlusJakartaSans',
+            fontFamily: ClayTokens.fontFamily,
             fontSize: 13.5,
             fontWeight: FontWeight.w700,
           ),
@@ -564,7 +564,7 @@ class _Metrik extends StatelessWidget {
         Text(
           label,
           style: TextStyle(
-            fontFamily: 'PlusJakartaSans',
+            fontFamily: ClayTokens.fontFamily,
             fontSize: 11,
             color: gelap
                 ? ClayTokens.textTertiaryDark
@@ -644,7 +644,7 @@ class _KartuLayanan extends StatelessWidget {
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                         style: TextStyle(
-                          fontFamily: 'PlusJakartaSans',
+                          fontFamily: ClayTokens.fontFamily,
                           fontSize: 14.5,
                           fontWeight: FontWeight.w700,
                           color: bisa
@@ -671,7 +671,7 @@ class _KartuLayanan extends StatelessWidget {
                         child: const Text(
                           'Jam sibuk',
                           style: TextStyle(
-                            fontFamily: 'PlusJakartaSans',
+                            fontFamily: ClayTokens.fontFamily,
                             fontSize: 10,
                             fontWeight: FontWeight.w700,
                             color: ClayTokens.warning,
@@ -685,7 +685,7 @@ class _KartuLayanan extends StatelessWidget {
                 Text(
                   _keterangan(),
                   style: TextStyle(
-                    fontFamily: 'PlusJakartaSans',
+                    fontFamily: ClayTokens.fontFamily,
                     fontSize: 11.5,
                     color: gelap
                         ? ClayTokens.textSecondaryDark
@@ -715,7 +715,7 @@ class _KartuLayanan extends StatelessWidget {
                 const Text(
                   'Promo aktif',
                   style: TextStyle(
-                    fontFamily: 'PlusJakartaSans',
+                    fontFamily: ClayTokens.fontFamily,
                     fontSize: 10.5,
                     fontWeight: FontWeight.w700,
                     color: ClayTokens.primary,
@@ -824,7 +824,7 @@ class _TombolBayar extends StatelessWidget {
           Text(
             label,
             style: TextStyle(
-              fontFamily: 'PlusJakartaSans',
+              fontFamily: ClayTokens.fontFamily,
               fontSize: 12.5,
               fontWeight: terpilih ? FontWeight.w700 : FontWeight.w500,
               color: terpilih ? ClayTokens.primary : null,
@@ -887,7 +887,7 @@ class _KartuPromo extends StatelessWidget {
                   ? 'Belum ada promo untuk rute ini'
                   : (promoCode ?? 'Pilih promo yang tersedia'),
               style: TextStyle(
-                fontFamily: 'PlusJakartaSans',
+                fontFamily: ClayTokens.fontFamily,
                 fontSize: 13,
                 fontWeight: FontWeight.w600,
                 color: !ada
@@ -1077,7 +1077,7 @@ class _PilCountdown extends StatelessWidget {
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
               style: TextStyle(
-                fontFamily: 'PlusJakartaSans',
+                fontFamily: ClayTokens.fontFamily,
                 fontSize: 11.5,
                 fontWeight: tegas ? FontWeight.w700 : FontWeight.w500,
                 color: warna,

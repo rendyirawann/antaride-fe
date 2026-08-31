@@ -29,7 +29,7 @@ class ClaySectionLabel extends StatelessWidget {
     return Text(
       text.toUpperCase(),
       style: TextStyle(
-        fontFamily: 'PlusJakartaSans',
+        fontFamily: ClayTokens.fontFamily,
         fontSize: 11,
         fontWeight: FontWeight.w700,
         letterSpacing: 1.2,

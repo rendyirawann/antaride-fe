@@ -71,7 +71,7 @@ class SplashScreen extends StatelessWidget {
                       const Text(
                         'Antaride',
                         style: TextStyle(
-                          fontFamily: 'PlusJakartaSans',
+                          fontFamily: ClayTokens.fontFamily,
                           fontSize: 26,
                           fontWeight: FontWeight.w800,
                           letterSpacing: -0.5,
@@ -82,7 +82,7 @@ class SplashScreen extends StatelessWidget {
                       Text(
                         'Medan, dalam satu aplikasi',
                         style: TextStyle(
-                          fontFamily: 'PlusJakartaSans',
+                          fontFamily: ClayTokens.fontFamily,
                           fontSize: 13,
 
                           // Putih diredupkan, bukan abu-abu — aturan subtitle
@@ -112,11 +112,55 @@ class SplashScreen extends StatelessWidget {
 /// yang sah (ini layar merek), jadi marknya digambar ulang kecil di sini
 /// dengan resep yang sama: tile kaca putih alpha 0.16 + border 0.22, huruf 'A'
 /// putih, titik amber ([ClayTokens.warning]) di kaki huruf.
-class _MarkAntaride extends StatelessWidget {
+class _MarkAntaride extends StatefulWidget {
   const _MarkAntaride();
 
   @override
+  State<_MarkAntaride> createState() => _MarkAntarideState();
+}
+
+class _MarkAntarideState extends State<_MarkAntaride>
+    with SingleTickerProviderStateMixin {
+  /*
+   * ==========================================================================
+   *  DENYUT PELAN, BUKAN PUTARAN
+   * ==========================================================================
+   *  Spinner yang berputar di bawah sudah menyatakan "sedang memuat". Mark yang
+   *  ikut berputar akan menyatakan hal yang sama dua kali, dan gerakan cepat
+   *  pada logo membuatnya terbaca sebagai bagian dari spinner, bukan sebagai
+   *  merek.
+   *
+   *  Denyut 1400 ms dengan skala 3% cukup untuk membuat layar terasa HIDUP
+   *  selama menunggu, tanpa menarik mata dari mereknya sendiri. Di bawah
+   *  1000 ms gerakannya mulai terasa gelisah.
+   *
+   *  Berulang selama layar ini hidup — dan layar ini memang hidup persis
+   *  selama pemeriksaan sesinya berjalan.
+   * ==========================================================================
+   */
+  late final AnimationController _denyut = AnimationController(
+    vsync: this,
+    duration: const Duration(milliseconds: 1400),
+  )..repeat(reverse: true);
+
+  @override
+  void dispose() {
+    _denyut.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
+    return ScaleTransition(
+      scale: Tween<double>(
+        begin: 1,
+        end: 1.03,
+      ).animate(CurvedAnimation(parent: _denyut, curve: Curves.easeInOut)),
+      child: _tile(),
+    );
+  }
+
+  Widget _tile() {
     return Container(
       width: 72,
       height: 72,
@@ -133,7 +177,7 @@ class _MarkAntaride extends StatelessWidget {
           const Text(
             'A',
             style: TextStyle(
-              fontFamily: 'PlusJakartaSans',
+              fontFamily: ClayTokens.fontFamily,
               fontSize: 38,
               fontWeight: FontWeight.w800,
               height: 1,

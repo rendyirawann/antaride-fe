@@ -157,7 +157,7 @@ class _Langkah extends StatelessWidget {
             child: Text(
               '$nomor',
               style: const TextStyle(
-                fontFamily: 'PlusJakartaSans',
+                fontFamily: ClayTokens.fontFamily,
                 fontSize: 12,
                 fontWeight: FontWeight.w700,
                 color: Colors.white,
@@ -170,7 +170,7 @@ class _Langkah extends StatelessWidget {
             child: Text(
               teks,
               style: TextStyle(
-                fontFamily: 'PlusJakartaSans',
+                fontFamily: ClayTokens.fontFamily,
                 fontSize: 13,
                 height: 1.5,
                 color: gelap

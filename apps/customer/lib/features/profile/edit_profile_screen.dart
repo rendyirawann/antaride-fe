@@ -273,7 +273,7 @@ class _PilihanGender extends StatelessWidget {
           child: Text(
             label,
             style: TextStyle(
-              fontFamily: 'PlusJakartaSans',
+              fontFamily: ClayTokens.fontFamily,
               fontSize: 13,
               fontWeight: FontWeight.w500,
               color: gelap
@@ -310,7 +310,7 @@ class _PilihanGender extends StatelessWidget {
                 Text(
                   label,
                   style: const TextStyle(
-                    fontFamily: 'PlusJakartaSans',
+                    fontFamily: ClayTokens.fontFamily,
                     fontSize: 13,
                     fontWeight: FontWeight.w700,
                     color: Colors.white,

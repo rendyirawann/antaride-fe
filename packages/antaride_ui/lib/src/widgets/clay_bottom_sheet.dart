@@ -141,7 +141,7 @@ class ClayBottomSheet extends StatelessWidget {
                         color: gelap
                             ? ClayTokens.textPrimaryDark
                             : ClayTokens.textPrimary,
-                        fontFamily: 'PlusJakartaSans',
+                        fontFamily: ClayTokens.fontFamily,
                       ),
                     ),
                   ),

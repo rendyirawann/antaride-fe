@@ -156,7 +156,14 @@ class _HistoryScreenState extends State<HistoryScreen> {
           onRefresh: () => _muat(ulangDariAwal: true),
           onLoad: _muatLagi,
           child: ListView.builder(
-            padding: const EdgeInsets.all(ClayTokens.space5),
+            // Ruang tambahan di akhir guliran supaya kartu terakhir tidak
+            // berhenti di belakang bilah navigasi Android — lihat ClayInsets.
+            padding: EdgeInsets.fromLTRB(
+              ClayTokens.space5,
+              ClayTokens.space5,
+              ClayTokens.space5,
+              ClayTokens.space5 + context.ruangBawah,
+            ),
             itemCount: _orders.length,
             itemBuilder: (BuildContext context, int i) =>
                 _KartuOrder(order: _orders[i]),
@@ -225,7 +232,7 @@ class _KartuOrder extends StatelessWidget {
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
                             style: TextStyle(
-                              fontFamily: 'PlusJakartaSans',
+                              fontFamily: ClayTokens.fontFamily,
                               fontSize: 11.5,
                               fontWeight: FontWeight.w700,
                               color: gelap
@@ -238,7 +245,7 @@ class _KartuOrder extends StatelessWidget {
                         Text(
                           _tanggal(),
                           style: TextStyle(
-                            fontFamily: 'PlusJakartaSans',
+                            fontFamily: ClayTokens.fontFamily,
                             fontSize: 11,
                             color: gelap
                                 ? ClayTokens.textTertiaryDark
@@ -255,7 +262,7 @@ class _KartuOrder extends StatelessWidget {
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
                       style: TextStyle(
-                        fontFamily: 'PlusJakartaSans',
+                        fontFamily: ClayTokens.fontFamily,
                         fontSize: 13.5,
                         fontWeight: FontWeight.w600,
                         height: 1.35,

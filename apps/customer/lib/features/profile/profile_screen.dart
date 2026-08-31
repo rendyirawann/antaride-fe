@@ -111,7 +111,14 @@ class ProfileScreen extends StatelessWidget {
               onRetry: sesi.refreshProfile,
             )
           : ListView(
-              padding: const EdgeInsets.all(ClayTokens.space5),
+              // Ruang tambahan di akhir guliran supaya baris terakhir tidak
+              // berhenti di belakang bilah navigasi Android.
+              padding: EdgeInsets.fromLTRB(
+                ClayTokens.space5,
+                ClayTokens.space5,
+                ClayTokens.space5,
+                ClayTokens.space5 + context.ruangBawah,
+              ),
               children: <Widget>[
                 /*
                  * Animasi masuk bergiliran per SEKSI, bukan per baris: halaman
@@ -220,7 +227,7 @@ class ProfileScreen extends StatelessWidget {
                   child: Text(
                     'Antaride ${AppConfig.environment == 'production' ? '' : '· ${AppConfig.environment}'}',
                     style: TextStyle(
-                      fontFamily: 'PlusJakartaSans',
+                      fontFamily: ClayTokens.fontFamily,
                       fontSize: 11,
                       color: gelap
                           ? ClayTokens.textTertiaryDark
@@ -297,7 +304,7 @@ class _Kepala extends StatelessWidget {
             child: Text(
               user.initials,
               style: const TextStyle(
-                fontFamily: 'PlusJakartaSans',
+                fontFamily: ClayTokens.fontFamily,
                 fontSize: 20,
                 fontWeight: FontWeight.w800,
                 color: Colors.white,
@@ -314,7 +321,7 @@ class _Kepala extends StatelessWidget {
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                   style: TextStyle(
-                    fontFamily: 'PlusJakartaSans',
+                    fontFamily: ClayTokens.fontFamily,
                     fontSize: 17,
                     fontWeight: FontWeight.w800,
                     letterSpacing: -0.4,
@@ -329,7 +336,7 @@ class _Kepala extends StatelessWidget {
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                   style: TextStyle(
-                    fontFamily: 'PlusJakartaSans',
+                    fontFamily: ClayTokens.fontFamily,
                     fontSize: 12.5,
                     color: gelap
                         ? ClayTokens.textSecondaryDark
@@ -381,7 +388,7 @@ class _AjakanLengkapi extends StatelessWidget {
               'Lengkapi nama dan email Anda supaya driver dan bantuan lebih '
               'mudah mengenali.',
               style: TextStyle(
-                fontFamily: 'PlusJakartaSans',
+                fontFamily: ClayTokens.fontFamily,
                 fontSize: 12,
                 height: 1.45,
                 color: gelap
@@ -436,7 +443,7 @@ class _Baris extends StatelessWidget {
             child: Text(
               label,
               style: TextStyle(
-                fontFamily: 'PlusJakartaSans',
+                fontFamily: ClayTokens.fontFamily,
                 fontSize: 13.5,
                 fontWeight: FontWeight.w600,
                 color: gelap
@@ -449,7 +456,7 @@ class _Baris extends StatelessWidget {
             Text(
               nilai!,
               style: TextStyle(
-                fontFamily: 'PlusJakartaSans',
+                fontFamily: ClayTokens.fontFamily,
                 fontSize: 12.5,
                 fontWeight: FontWeight.w700,
                 color: gelap
@@ -505,7 +512,7 @@ class _ZonaBahaya extends StatelessWidget {
                 const Text(
                   'Hapus akun',
                   style: TextStyle(
-                    fontFamily: 'PlusJakartaSans',
+                    fontFamily: ClayTokens.fontFamily,
                     fontSize: 13.5,
                     fontWeight: FontWeight.w700,
                     color: ClayTokens.danger,
@@ -517,7 +524,7 @@ class _ZonaBahaya extends StatelessWidget {
                   // sukses penghapusan datang dari sana.
                   'Akun dihapus setelah masa tenggang.',
                   style: TextStyle(
-                    fontFamily: 'PlusJakartaSans',
+                    fontFamily: ClayTokens.fontFamily,
                     fontSize: 11.5,
                     height: 1.4,
                     color: gelap

@@ -214,7 +214,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         child: Text(
                           'Mau ke mana hari ini?',
                           style: TextStyle(
-                            fontFamily: 'PlusJakartaSans',
+                            fontFamily: ClayTokens.fontFamily,
                             fontSize: 17,
                             fontWeight: FontWeight.w800,
                             letterSpacing: -0.3,
@@ -382,7 +382,7 @@ class _PitaOrderBerjalan extends StatelessWidget {
                       child: Text(
                         order.statusLabel,
                         style: const TextStyle(
-                          fontFamily: 'PlusJakartaSans',
+                          fontFamily: ClayTokens.fontFamily,
                           fontSize: 10.5,
                           fontWeight: FontWeight.w700,
                           letterSpacing: 0.4,
@@ -396,7 +396,7 @@ class _PitaOrderBerjalan extends StatelessWidget {
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                       style: const TextStyle(
-                        fontFamily: 'PlusJakartaSans',
+                        fontFamily: ClayTokens.fontFamily,
                         fontSize: 13.5,
                         fontWeight: FontWeight.w700,
                         color: Colors.white,
@@ -505,7 +505,7 @@ class _KisiLayanan extends StatelessWidget {
                 maxLines: 2,
                 overflow: TextOverflow.ellipsis,
                 style: TextStyle(
-                  fontFamily: 'PlusJakartaSans',
+                  fontFamily: ClayTokens.fontFamily,
                   fontSize: 11.5,
                   fontWeight: FontWeight.w600,
                   height: 1.25,

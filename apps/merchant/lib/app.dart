@@ -1,4 +1,5 @@
 import 'package:antaride_auth/antaride_auth.dart';
+import 'package:antaride_onboarding/antaride_onboarding.dart';
 import 'package:antaride_ui/antaride_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -56,11 +57,23 @@ class _Gerbang extends StatelessWidget {
       (SessionController s) => s.stage,
     );
 
-    return switch (tahap) {
+    final Widget layar = switch (tahap) {
       SessionStage.unknown || SessionStage.loadingProfile => const _LayarBoot(),
-      SessionStage.signedOut => const MerchantWelcomeScreen(),
+      SessionStage.signedOut => const _PembukaMerchant(),
       SessionStage.signedIn => const MerchantShell(),
     };
+
+    /*
+     * Pergantian tahap MEMUDAR, tidak melompat. Alasan lengkapnya sama dengan
+     * gerbang aplikasi penumpang: pergantian seketika dari bidang gradien penuh
+     * ke permukaan clay pucat terbaca sebagai kedipan, bukan perpindahan.
+     */
+    return AnimatedSwitcher(
+      duration: const Duration(milliseconds: 260),
+      switchInCurve: Curves.easeOut,
+      switchOutCurve: Curves.easeIn,
+      child: KeyedSubtree(key: ValueKey<SessionStage>(tahap), child: layar),
+    );
   }
 }
 
@@ -132,7 +145,7 @@ class _LayarBoot extends StatelessWidget {
                       const Text(
                         'Antaride Merchant',
                         style: TextStyle(
-                          fontFamily: 'PlusJakartaSans',
+                          fontFamily: ClayTokens.fontFamily,
                           fontSize: 24,
                           fontWeight: FontWeight.w800,
                           letterSpacing: -0.5,
@@ -154,7 +167,7 @@ class _LayarBoot extends StatelessWidget {
                         'Menyiapkan Antaride Merchant…',
                         textAlign: TextAlign.center,
                         style: TextStyle(
-                          fontFamily: 'PlusJakartaSans',
+                          fontFamily: ClayTokens.fontFamily,
                           fontSize: 13,
                           color: Colors.white.withValues(alpha: 0.88),
                         ),
@@ -212,7 +225,7 @@ class _MarkMerchant extends StatelessWidget {
           const Text(
             'A',
             style: TextStyle(
-              fontFamily: 'PlusJakartaSans',
+              fontFamily: ClayTokens.fontFamily,
               fontSize: 38,
               fontWeight: FontWeight.w800,
               height: 1,
@@ -252,6 +265,47 @@ class _Lingkaran extends StatelessWidget {
         shape: BoxShape.circle,
         color: Colors.white.withValues(alpha: alpha),
       ),
+    );
+  }
+}
+
+/// Perkenalan aplikasi merchant, lalu layar sambutan.
+///
+/// Halaman ketiga menyebut batasnya apa adanya. Perkenalan yang menjanjikan
+/// kelola menu dan pesanan masuk — keduanya belum ada di Fase 1 — akan membuat
+/// pemilik warung mencari fitur yang tidak ada, lalu menyimpulkan aplikasinya
+/// rusak.
+class _PembukaMerchant extends StatelessWidget {
+  const _PembukaMerchant();
+
+  @override
+  Widget build(BuildContext context) {
+    return const IntroGate(
+      accent: ClayTokens.warning,
+      pages: <IntroPage>[
+        IntroPage(
+          icon: Icons.storefront_rounded,
+          title: 'Toko Anda di Antaride',
+          body:
+              'Kelola data toko yang terdaftar dan lihat statusnya kapan saja '
+              'dari satu aplikasi.',
+        ),
+        IntroPage(
+          icon: Icons.groups_rounded,
+          title: 'Pelanggan di sekitar Anda',
+          body:
+              'Antaride mempertemukan toko Anda dengan pemesan di area layanan '
+              'yang sama.',
+        ),
+        IntroPage(
+          icon: Icons.construction_rounded,
+          title: 'Menu dan pesanan menyusul',
+          body:
+              'Fase pertama ini baru memuat masuk dan profil toko. Pengelolaan '
+              'menu dan pesanan masuk datang di pembaruan berikutnya.',
+        ),
+      ],
+      child: MerchantWelcomeScreen(),
     );
   }
 }

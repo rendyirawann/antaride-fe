@@ -96,7 +96,7 @@ class OfferCard extends StatelessWidget {
                           Text(
                             'Pendapatan Anda',
                             style: TextStyle(
-                              fontFamily: 'PlusJakartaSans',
+                              fontFamily: ClayTokens.fontFamily,
                               fontSize: 10.5,
                               fontWeight: FontWeight.w700,
                               letterSpacing: 0.2,
@@ -260,7 +260,7 @@ class _KepalaHitungMundur extends StatelessWidget {
                     child: Text(
                       'SISA WAKTU',
                       style: TextStyle(
-                        fontFamily: 'PlusJakartaSans',
+                        fontFamily: ClayTokens.fontFamily,
                         fontSize: 11,
                         fontWeight: FontWeight.w700,
                         letterSpacing: 1.2,
@@ -272,7 +272,7 @@ class _KepalaHitungMundur extends StatelessWidget {
                   Text(
                     '$sisa',
                     style: const TextStyle(
-                      fontFamily: 'PlusJakartaSans',
+                      fontFamily: ClayTokens.fontFamily,
                       fontSize: 30,
                       fontWeight: FontWeight.w800,
                       letterSpacing: -1,
@@ -291,7 +291,7 @@ class _KepalaHitungMundur extends StatelessWidget {
                     child: Text(
                       'detik',
                       style: TextStyle(
-                        fontFamily: 'PlusJakartaSans',
+                        fontFamily: ClayTokens.fontFamily,
                         fontSize: 12,
                         fontWeight: FontWeight.w700,
                         height: 1.0,
@@ -367,7 +367,7 @@ class _LencanaPembayaran extends StatelessWidget {
           Text(
             tunai ? 'TUNAI' : 'DOMPET',
             style: TextStyle(
-              fontFamily: 'PlusJakartaSans',
+              fontFamily: ClayTokens.fontFamily,
               fontSize: 10.5,
               fontWeight: FontWeight.w800,
               letterSpacing: 0.6,
@@ -415,7 +415,7 @@ class _Titik extends StatelessWidget {
               Text(
                 label,
                 style: TextStyle(
-                  fontFamily: 'PlusJakartaSans',
+                  fontFamily: ClayTokens.fontFamily,
                   fontSize: 10.5,
                   fontWeight: FontWeight.w800,
                   letterSpacing: 0.2,
@@ -428,7 +428,7 @@ class _Titik extends StatelessWidget {
                 maxLines: 2,
                 overflow: TextOverflow.ellipsis,
                 style: TextStyle(
-                  fontFamily: 'PlusJakartaSans',
+                  fontFamily: ClayTokens.fontFamily,
                   fontSize: 12.5,
                   fontWeight: FontWeight.w600,
                   height: 1.35,

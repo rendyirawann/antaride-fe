@@ -408,7 +408,7 @@ class _RoutePickerScreenState extends State<RoutePickerScreen> {
                           Text(
                             'Mencari posisi Anda…',
                             style: TextStyle(
-                              fontFamily: 'PlusJakartaSans',
+                              fontFamily: ClayTokens.fontFamily,
                               fontSize: 12,
                               fontWeight: FontWeight.w600,
                             ),
@@ -495,7 +495,7 @@ class _RoutePickerScreenState extends State<RoutePickerScreen> {
                             Text(
                               'Mencari alamat titik ini...',
                               style: TextStyle(
-                                fontFamily: 'PlusJakartaSans',
+                                fontFamily: ClayTokens.fontFamily,
                                 fontSize: 11,
                                 color: gelap
                                     ? ClayTokens.textTertiaryDark
@@ -650,7 +650,7 @@ class _PilJudul extends StatelessWidget {
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
                 style: TextStyle(
-                  fontFamily: 'PlusJakartaSans',
+                  fontFamily: ClayTokens.fontFamily,
                   fontSize: 13,
                   fontWeight: FontWeight.w700,
                   letterSpacing: -0.2,
@@ -722,7 +722,7 @@ class _PenandaTahap extends StatelessWidget {
         Text(
           'Jemput',
           style: TextStyle(
-            fontFamily: 'PlusJakartaSans',
+            fontFamily: ClayTokens.fontFamily,
             fontSize: 11.5,
             fontWeight: FontWeight.w700,
             color: labelAktif,
@@ -744,7 +744,7 @@ class _PenandaTahap extends StatelessWidget {
         Text(
           'Tujuan',
           style: TextStyle(
-            fontFamily: 'PlusJakartaSans',
+            fontFamily: ClayTokens.fontFamily,
             fontSize: 11.5,
             fontWeight: FontWeight.w700,
             color: jemput ? labelRedup : labelAktif,

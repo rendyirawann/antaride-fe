@@ -155,7 +155,7 @@ class _IsiState extends State<_Isi> {
                         child: Text(
                           a.text,
                           style: const TextStyle(
-                            fontFamily: 'PlusJakartaSans',
+                            fontFamily: ClayTokens.fontFamily,
                             fontSize: 13.5,
                             fontWeight: FontWeight.w600,
                           ),
@@ -460,7 +460,7 @@ class _KontrolPeta extends StatelessWidget {
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
                           style: TextStyle(
-                            fontFamily: 'PlusJakartaSans',
+                            fontFamily: ClayTokens.fontFamily,
                             fontSize: 12.5,
                             fontWeight: FontWeight.w800,
                             letterSpacing: 0.3,
@@ -504,7 +504,7 @@ class _KontrolPeta extends StatelessWidget {
                     'Pembaruan tertunda. Data yang tampil mungkin belum '
                     'yang terbaru.',
                     style: TextStyle(
-                      fontFamily: 'PlusJakartaSans',
+                      fontFamily: ClayTokens.fontFamily,
                       fontSize: 11.5,
                       fontWeight: FontWeight.w600,
                       height: 1.35,
@@ -785,7 +785,7 @@ class _Status extends StatelessWidget {
                         // Label dari backend — satu sumber untuk tiga aplikasi.
                         order.statusLabel,
                         style: TextStyle(
-                          fontFamily: 'PlusJakartaSans',
+                          fontFamily: ClayTokens.fontFamily,
                           fontSize: 16,
                           fontWeight: FontWeight.w800,
                           letterSpacing: -0.4,
@@ -797,7 +797,7 @@ class _Status extends StatelessWidget {
                       Text(
                         _pesan(),
                         style: TextStyle(
-                          fontFamily: 'PlusJakartaSans',
+                          fontFamily: ClayTokens.fontFamily,
                           fontSize: 12.5,
                           height: 1.45,
                           color: _teksKedua(gelap),
@@ -963,7 +963,7 @@ class _Jejak extends StatelessWidget {
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                   style: TextStyle(
-                    fontFamily: 'PlusJakartaSans',
+                    fontFamily: ClayTokens.fontFamily,
                     fontSize: 9.5,
                     fontWeight: FontWeight.w700,
                     letterSpacing: 0.2,
@@ -1052,7 +1052,7 @@ class _ButirMetrik extends StatelessWidget {
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
             style: TextStyle(
-              fontFamily: 'PlusJakartaSans',
+              fontFamily: ClayTokens.fontFamily,
               fontSize: 12,
               fontWeight: FontWeight.w700,
               color: _teksKedua(gelap),
@@ -1100,7 +1100,7 @@ class _KartuDriver extends StatelessWidget {
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                   style: TextStyle(
-                    fontFamily: 'PlusJakartaSans',
+                    fontFamily: ClayTokens.fontFamily,
                     fontSize: 15,
                     fontWeight: FontWeight.w800,
                     letterSpacing: -0.3,
@@ -1133,7 +1133,7 @@ class _KartuDriver extends StatelessWidget {
                       '${driver.ratingAverage.toStringAsFixed(1)} '
                       '(${driver.ratingCount})',
                       style: TextStyle(
-                        fontFamily: 'PlusJakartaSans',
+                        fontFamily: ClayTokens.fontFamily,
                         fontSize: 11.5,
                         fontWeight: FontWeight.w700,
                         color: _teksKedua(gelap),
@@ -1159,7 +1159,7 @@ class _KartuDriver extends StatelessWidget {
                   textAlign: TextAlign.right,
                   maxLines: 2,
                   style: TextStyle(
-                    fontFamily: 'PlusJakartaSans',
+                    fontFamily: ClayTokens.fontFamily,
                     fontSize: 13,
                     fontWeight: FontWeight.w700,
                     height: 1.3,
@@ -1198,7 +1198,7 @@ class _KartuDriver extends StatelessWidget {
                   child: Text(
                     driver.plateNumber!,
                     style: TextStyle(
-                      fontFamily: 'PlusJakartaSans',
+                      fontFamily: ClayTokens.fontFamily,
                       fontSize: 16,
                       fontWeight: FontWeight.w800,
                       letterSpacing: 2,
@@ -1231,7 +1231,7 @@ class _BarisInfo extends StatelessWidget {
         Text(
           label.toUpperCase(),
           style: TextStyle(
-            fontFamily: 'PlusJakartaSans',
+            fontFamily: ClayTokens.fontFamily,
             fontSize: 10.5,
             fontWeight: FontWeight.w700,
             letterSpacing: 1.2,
@@ -1319,7 +1319,7 @@ class _KodeJemput extends StatelessWidget {
                     child: Text(
                       huruf,
                       style: TextStyle(
-                        fontFamily: 'PlusJakartaSans',
+                        fontFamily: ClayTokens.fontFamily,
                         fontSize: 28,
                         fontWeight: FontWeight.w800,
                         color: aksen,
@@ -1342,7 +1342,7 @@ class _KodeJemput extends StatelessWidget {
               'Sebutkan kode ini kepada driver sebelum berangkat.',
               textAlign: TextAlign.center,
               style: TextStyle(
-                fontFamily: 'PlusJakartaSans',
+                fontFamily: ClayTokens.fontFamily,
                 fontSize: 11.5,
                 height: 1.4,
                 color: _teksKedua(gelap),
@@ -1438,7 +1438,7 @@ class _Baris extends StatelessWidget {
               Text(
                 label.toUpperCase(),
                 style: TextStyle(
-                  fontFamily: 'PlusJakartaSans',
+                  fontFamily: ClayTokens.fontFamily,
                   fontSize: 10.5,
                   fontWeight: FontWeight.w700,
                   letterSpacing: 1.2,
@@ -1449,7 +1449,7 @@ class _Baris extends StatelessWidget {
               Text(
                 teks,
                 style: TextStyle(
-                  fontFamily: 'PlusJakartaSans',
+                  fontFamily: ClayTokens.fontFamily,
                   fontSize: 13,
                   fontWeight: FontWeight.w600,
                   height: 1.4,
@@ -1461,7 +1461,7 @@ class _Baris extends StatelessWidget {
                 Text(
                   catatan!,
                   style: TextStyle(
-                    fontFamily: 'PlusJakartaSans',
+                    fontFamily: ClayTokens.fontFamily,
                     fontSize: 11.5,
                     fontStyle: FontStyle.italic,
                     height: 1.35,
@@ -1550,7 +1550,7 @@ class _AjakanMenilai extends StatelessWidget {
               'Nilai perjalanan ini. Penilaian Anda membantu '
               'driver lain mendapat order.',
               style: TextStyle(
-                fontFamily: 'PlusJakartaSans',
+                fontFamily: ClayTokens.fontFamily,
                 fontSize: 12.5,
                 height: 1.45,
                 fontWeight: FontWeight.w600,
@@ -1620,7 +1620,7 @@ class _PenilaianTersimpan extends StatelessWidget {
             Text(
               rating.comment!,
               style: TextStyle(
-                fontFamily: 'PlusJakartaSans',
+                fontFamily: ClayTokens.fontFamily,
                 fontSize: 12,
                 height: 1.45,
                 fontStyle: FontStyle.italic,
@@ -1664,7 +1664,7 @@ class _LencanaKecil extends StatelessWidget {
       child: Text(
         teks,
         style: TextStyle(
-          fontFamily: 'PlusJakartaSans',
+          fontFamily: ClayTokens.fontFamily,
           fontSize: 10.5,
           fontWeight: FontWeight.w700,
           letterSpacing: 0.2,

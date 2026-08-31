@@ -169,7 +169,14 @@ class _WalletScreenState extends State<WalletScreen> {
           onRefresh: () => _muat(awal: true),
           onLoad: _muatLagi,
           child: ListView.builder(
-            padding: const EdgeInsets.all(ClayTokens.space5),
+            // Ruang tambahan di akhir guliran supaya kartu terakhir tidak
+            // berhenti di belakang bilah navigasi Android — lihat ClayInsets.
+            padding: EdgeInsets.fromLTRB(
+              ClayTokens.space5,
+              ClayTokens.space5,
+              ClayTokens.space5,
+              ClayTokens.space5 + context.ruangBawah,
+            ),
             itemCount: _mutasi.length + 2,
             itemBuilder: (BuildContext context, int i) {
               if (i == 0) {
@@ -194,7 +201,7 @@ class _WalletScreenState extends State<WalletScreen> {
                           'Belum ada mutasi.',
                           textAlign: TextAlign.center,
                           style: TextStyle(
-                            fontFamily: 'PlusJakartaSans',
+                            fontFamily: ClayTokens.fontFamily,
                             fontSize: 12.5,
                             color: gelap
                                 ? ClayTokens.textTertiaryDark
@@ -299,7 +306,7 @@ class _KartuSaldo extends StatelessWidget {
                               Text(
                                 'Saldo tersedia'.toUpperCase(),
                                 style: TextStyle(
-                                  fontFamily: 'PlusJakartaSans',
+                                  fontFamily: ClayTokens.fontFamily,
                                   fontSize: 10.5,
                                   fontWeight: FontWeight.w700,
                                   letterSpacing: 1.2,
@@ -350,7 +357,7 @@ class _KartuSaldo extends StatelessWidget {
                               '${saldo.held.formatted} ditahan untuk pesanan '
                               'berjalan',
                               style: TextStyle(
-                                fontFamily: 'PlusJakartaSans',
+                                fontFamily: ClayTokens.fontFamily,
                                 fontSize: 11.5,
                                 color: Colors.white.withValues(alpha: 0.85),
                               ),
@@ -396,7 +403,7 @@ class _KartuSaldo extends StatelessWidget {
                                     'Dompet Anda sedang dibekukan. Hubungi '
                                         'bantuan Antaride.',
                                 style: const TextStyle(
-                                  fontFamily: 'PlusJakartaSans',
+                                  fontFamily: ClayTokens.fontFamily,
                                   fontSize: 12,
                                   height: 1.45,
                                   color: Colors.white,
@@ -417,7 +424,7 @@ class _KartuSaldo extends StatelessWidget {
                       'Saldo bertambah dari promo dan cashback. Top up lewat '
                       'aplikasi belum tersedia.',
                       style: TextStyle(
-                        fontFamily: 'PlusJakartaSans',
+                        fontFamily: ClayTokens.fontFamily,
                         fontSize: 11,
                         height: 1.5,
                         color: Colors.white.withValues(alpha: 0.75),
@@ -475,7 +482,7 @@ class _BarisMutasi extends StatelessWidget {
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                   style: const TextStyle(
-                    fontFamily: 'PlusJakartaSans',
+                    fontFamily: ClayTokens.fontFamily,
                     fontSize: 13,
                     fontWeight: FontWeight.w600,
                   ),
@@ -486,7 +493,7 @@ class _BarisMutasi extends StatelessWidget {
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                     style: TextStyle(
-                      fontFamily: 'PlusJakartaSans',
+                      fontFamily: ClayTokens.fontFamily,
                       fontSize: 11,
                       color: gelap
                           ? ClayTokens.textTertiaryDark

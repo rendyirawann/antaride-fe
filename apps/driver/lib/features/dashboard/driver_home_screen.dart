@@ -913,7 +913,7 @@ class _SakelarKerja extends StatelessWidget {
                         Text(
                           online ? 'Berhenti bekerja' : 'Mulai bekerja',
                           style: TextStyle(
-                            fontFamily: 'PlusJakartaSans',
+                            fontFamily: ClayTokens.fontFamily,
                             fontSize: 16,
                             fontWeight: FontWeight.w800,
                             letterSpacing: -0.2,
@@ -958,7 +958,7 @@ class _PilKaca extends StatelessWidget {
           Text(
             teks,
             style: const TextStyle(
-              fontFamily: 'PlusJakartaSans',
+              fontFamily: ClayTokens.fontFamily,
               fontSize: 12.5,
               fontWeight: FontWeight.w800,
               height: 1.0,
@@ -1016,7 +1016,7 @@ class _RingkasanHariIni extends StatelessWidget {
                     Text(
                       'Pendapatan hari ini',
                       style: TextStyle(
-                        fontFamily: 'PlusJakartaSans',
+                        fontFamily: ClayTokens.fontFamily,
                         fontSize: 10.5,
                         fontWeight: FontWeight.w700,
                         letterSpacing: 0.2,
@@ -1116,7 +1116,7 @@ class _StatKecil extends StatelessWidget {
           maxLines: 1,
           overflow: TextOverflow.ellipsis,
           style: TextStyle(
-            fontFamily: 'PlusJakartaSans',
+            fontFamily: ClayTokens.fontFamily,
             fontSize: 10.5,
             fontWeight: FontWeight.w600,
             color: gelap
@@ -1143,7 +1143,7 @@ class _Nilai extends StatelessWidget {
     return Text(
       teks,
       style: TextStyle(
-        fontFamily: 'PlusJakartaSans',
+        fontFamily: ClayTokens.fontFamily,
         fontSize: 13,
         fontWeight: FontWeight.w700,
         height: 1.2,
@@ -1173,7 +1173,7 @@ class _PilAngka extends StatelessWidget {
       child: Text(
         teks,
         style: const TextStyle(
-          fontFamily: 'PlusJakartaSans',
+          fontFamily: ClayTokens.fontFamily,
           fontSize: 12,
           fontWeight: FontWeight.w800,
           height: 1.0,
@@ -1204,7 +1204,7 @@ class _PilHitung extends StatelessWidget {
       child: Text(
         '$jumlah menunggu',
         style: const TextStyle(
-          fontFamily: 'PlusJakartaSans',
+          fontFamily: ClayTokens.fontFamily,
           fontSize: 11,
           fontWeight: FontWeight.w800,
           letterSpacing: 0.3,
@@ -1268,7 +1268,7 @@ class _MenungguTawaran extends StatelessWidget {
                 : 'Anda sedang offline. Nyalakan untuk mulai menerima tawaran.',
             textAlign: TextAlign.center,
             style: TextStyle(
-              fontFamily: 'PlusJakartaSans',
+              fontFamily: ClayTokens.fontFamily,
               fontSize: 12.5,
               height: 1.5,
               color: gelap
@@ -1349,7 +1349,7 @@ class _PitaOrderBerjalan extends StatelessWidget {
                       child: Text(
                         order.statusLabel,
                         style: const TextStyle(
-                          fontFamily: 'PlusJakartaSans',
+                          fontFamily: ClayTokens.fontFamily,
                           fontSize: 10.5,
                           fontWeight: FontWeight.w700,
                           letterSpacing: 0.4,
@@ -1364,7 +1364,7 @@ class _PitaOrderBerjalan extends StatelessWidget {
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                       style: const TextStyle(
-                        fontFamily: 'PlusJakartaSans',
+                        fontFamily: ClayTokens.fontFamily,
                         fontSize: 13.5,
                         fontWeight: FontWeight.w700,
                         color: Colors.white,
@@ -1431,7 +1431,7 @@ class _Peringatan extends StatelessWidget {
                 Text(
                   judul,
                   style: TextStyle(
-                    fontFamily: 'PlusJakartaSans',
+                    fontFamily: ClayTokens.fontFamily,
                     fontSize: 13.5,
                     fontWeight: FontWeight.w800,
                     letterSpacing: -0.2,
@@ -1442,7 +1442,7 @@ class _Peringatan extends StatelessWidget {
                 Text(
                   isi,
                   style: TextStyle(
-                    fontFamily: 'PlusJakartaSans',
+                    fontFamily: ClayTokens.fontFamily,
                     fontSize: 11.5,
                     height: 1.5,
                     color: gelap

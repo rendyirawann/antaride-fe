@@ -1,5 +1,6 @@
 import 'package:antaride_auth/antaride_auth.dart';
 import 'package:antaride_notifications/antaride_notifications.dart';
+import 'package:antaride_onboarding/antaride_onboarding.dart';
 import 'package:antaride_ui/antaride_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -107,9 +108,9 @@ class _Gerbang extends StatelessWidget {
       (SessionController s) => s.stage,
     );
 
-    return switch (tahap) {
+    final Widget layar = switch (tahap) {
       SessionStage.unknown => const SplashScreen(),
-      SessionStage.signedOut => const CustomerWelcomeScreen(),
+      SessionStage.signedOut => const _PembukaPenumpang(),
 
       // `loadingProfile` memakai splash yang sama, bukan layar kosong: pengguna
       // sudah punya token, jadi menampilkan layar masuk sesaat di sini akan
@@ -121,5 +122,68 @@ class _Gerbang extends StatelessWidget {
       // alasannya di docblock `NotificationSync`.
       SessionStage.signedIn => const NotificationSync(child: AppShell()),
     };
+
+    /*
+     * ========================================================================
+     *  PERGANTIAN TAHAP MEMUDAR, TIDAK MELOMPAT
+     * ========================================================================
+     *  Tanpa ini, splash berganti ke beranda dalam SATU frame — dan pergantian
+     *  seketika dari bidang gradien hijau penuh ke permukaan clay pucat terbaca
+     *  sebagai kedipan, bukan sebagai perpindahan.
+     *
+     *  260 ms: cukup untuk terlihat sebagai peralihan, cukup singkat untuk
+     *  tidak menahan orang yang sesinya sudah siap.
+     *
+     *  `ValueKey` pada tahapnya, bukan pada tipe widgetnya: `unknown` dan
+     *  `loadingProfile` sama-sama SplashScreen, dan tanpa kunci yang membedakan
+     *  keduanya, AnimatedSwitcher akan memudarkan splash MENJADI splash saat
+     *  tahapnya bergeser di antara keduanya.
+     * ========================================================================
+     */
+    return AnimatedSwitcher(
+      duration: const Duration(milliseconds: 260),
+      switchInCurve: Curves.easeOut,
+      switchOutCurve: Curves.easeIn,
+      child: KeyedSubtree(key: ValueKey<SessionStage>(tahap), child: layar),
+    );
+  }
+}
+
+/// Perkenalan aplikasi, lalu layar sambutan penumpang.
+///
+/// Halaman perkenalannya ditulis di sini, bukan di paket bersama: isinya
+/// menjelaskan LAYANAN aplikasi ini, dan tiga aplikasi menjelaskan tiga hal
+/// yang berbeda. Yang dibagikan bentuk layarnya, bukan kalimatnya.
+class _PembukaPenumpang extends StatelessWidget {
+  const _PembukaPenumpang();
+
+  @override
+  Widget build(BuildContext context) {
+    return const IntroGate(
+      pages: <IntroPage>[
+        IntroPage(
+          icon: Icons.near_me_rounded,
+          title: 'Pesan dari mana saja',
+          body:
+              'Tentukan titik jemput dengan menggeser peta atau mencari '
+              'alamatnya. Driver terdekat yang menjemput Anda.',
+        ),
+        IntroPage(
+          icon: Icons.receipt_long_rounded,
+          title: 'Harga pasti di depan',
+          body:
+              'Ongkosnya dihitung sebelum Anda menekan pesan — bukan setelah '
+              'sampai tujuan.',
+        ),
+        IntroPage(
+          icon: Icons.verified_user_rounded,
+          title: 'Driver terverifikasi',
+          body:
+              'Setiap driver Antaride diperiksa dokumennya sebelum boleh '
+              'bekerja. Perjalanan Anda bisa dipantau di peta.',
+        ),
+      ],
+      child: CustomerWelcomeScreen(),
+    );
   }
 }

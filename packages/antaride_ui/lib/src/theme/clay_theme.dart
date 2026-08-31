@@ -65,7 +65,7 @@ class ClayTheme {
        *     runtime berarti layar pertama menampilkan font pengganti lalu
        *     berkedip, dan pada jaringan lambat kedipannya terlihat jelas.
        */
-      fontFamily: 'PlusJakartaSans',
+      fontFamily: ClayTokens.fontFamily,
 
       textTheme: _teks(teksUtama, teksKedua),
 
@@ -83,7 +83,7 @@ class ClayTheme {
           color: teksUtama,
           fontSize: 20,
           fontWeight: FontWeight.w800,
-          fontFamily: 'PlusJakartaSans',
+          fontFamily: ClayTokens.fontFamily,
         ),
 
         systemOverlayStyle: gelap
@@ -195,7 +195,7 @@ class ClayTheme {
           textStyle: const TextStyle(
             fontSize: 15,
             fontWeight: FontWeight.w700,
-            fontFamily: 'PlusJakartaSans',
+            fontFamily: ClayTokens.fontFamily,
           ),
         ),
       ),
@@ -207,7 +207,7 @@ class ClayTheme {
         contentTextStyle: TextStyle(
           color: gelap ? ClayTokens.textPrimary : Colors.white,
           fontWeight: FontWeight.w600,
-          fontFamily: 'PlusJakartaSans',
+          fontFamily: ClayTokens.fontFamily,
         ),
         behavior: SnackBarBehavior.floating,
         shape: RoundedRectangleBorder(

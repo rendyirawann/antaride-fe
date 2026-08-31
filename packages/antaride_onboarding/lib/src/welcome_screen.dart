@@ -178,7 +178,7 @@ class WelcomeScreen extends StatelessWidget {
                                 footer!,
                                 textAlign: TextAlign.center,
                                 style: TextStyle(
-                                  fontFamily: 'PlusJakartaSans',
+                                  fontFamily: ClayTokens.fontFamily,
                                   fontSize: 11.5,
                                   height: 1.5,
                                   color: gelap
@@ -259,7 +259,7 @@ class _LogoMark extends StatelessWidget {
           const Text(
             'A',
             style: TextStyle(
-              fontFamily: 'PlusJakartaSans',
+              fontFamily: ClayTokens.fontFamily,
               fontSize: 34,
               fontWeight: FontWeight.w800,
               height: 1,
@@ -307,7 +307,7 @@ class _KartuPoin extends StatelessWidget {
                 Text(
                   poin.title,
                   style: TextStyle(
-                    fontFamily: 'PlusJakartaSans',
+                    fontFamily: ClayTokens.fontFamily,
                     fontSize: 14,
                     fontWeight: FontWeight.w700,
                     color: gelap
@@ -319,7 +319,7 @@ class _KartuPoin extends StatelessWidget {
                 Text(
                   poin.body,
                   style: TextStyle(
-                    fontFamily: 'PlusJakartaSans',
+                    fontFamily: ClayTokens.fontFamily,
                     fontSize: 12.5,
                     height: 1.45,
                     color: gelap

@@ -164,11 +164,13 @@ class _DriverServicesScreenState extends State<DriverServicesScreen> {
       body: ClayRefresh(
         onRefresh: _muat,
         child: ListView(
-          padding: const EdgeInsets.fromLTRB(
+          // Ruang akhir guliran menambahkan tinggi bilah navigasi Android,
+          // supaya kartu terakhir tidak berhenti di belakangnya.
+          padding: EdgeInsets.fromLTRB(
             ClayTokens.space5,
             ClayTokens.space4,
             ClayTokens.space5,
-            ClayTokens.space8,
+            ClayTokens.space8 + context.ruangBawah,
           ),
           children: <Widget>[
             ClayEntrance(
@@ -290,7 +292,7 @@ class _PanelLayanan extends StatelessWidget {
                     Text(
                       'LAYANAN SAYA',
                       style: TextStyle(
-                        fontFamily: 'PlusJakartaSans',
+                        fontFamily: ClayTokens.fontFamily,
                         fontSize: 10.5,
                         fontWeight: FontWeight.w700,
                         letterSpacing: 1.2,
@@ -303,7 +305,7 @@ class _PanelLayanan extends StatelessWidget {
                     Text(
                       '$menyala dari $total layanan menyala',
                       style: const TextStyle(
-                        fontFamily: 'PlusJakartaSans',
+                        fontFamily: ClayTokens.fontFamily,
                         fontSize: 19,
                         fontWeight: FontWeight.w800,
                         letterSpacing: -0.4,
@@ -324,7 +326,7 @@ class _PanelLayanan extends StatelessWidget {
             'Mematikan satu layanan langsung berlaku — Anda tidak akan lagi '
             'menerima tawaran untuk layanan itu.',
             style: TextStyle(
-              fontFamily: 'PlusJakartaSans',
+              fontFamily: ClayTokens.fontFamily,
               fontSize: 12,
               height: 1.5,
 
@@ -359,7 +361,7 @@ class _PanelLayanan extends StatelessWidget {
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                       style: const TextStyle(
-                        fontFamily: 'PlusJakartaSans',
+                        fontFamily: ClayTokens.fontFamily,
                         fontSize: 11,
                         fontWeight: FontWeight.w700,
                         height: 1.2,
@@ -483,7 +485,7 @@ class _KartuLayanan extends StatelessWidget {
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                       style: TextStyle(
-                        fontFamily: 'PlusJakartaSans',
+                        fontFamily: ClayTokens.fontFamily,
                         fontSize: 15,
                         fontWeight: FontWeight.w800,
                         letterSpacing: -0.2,
@@ -607,7 +609,7 @@ class _LencanaKeadaan extends StatelessWidget {
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
               style: TextStyle(
-                fontFamily: 'PlusJakartaSans',
+                fontFamily: ClayTokens.fontFamily,
                 fontSize: 11,
                 fontWeight: FontWeight.w700,
                 height: 1.2,
@@ -755,7 +757,7 @@ class _PanelCatatan extends StatelessWidget {
                         child: Text(
                           teks,
                           style: TextStyle(
-                            fontFamily: 'PlusJakartaSans',
+                            fontFamily: ClayTokens.fontFamily,
                             fontSize: 11.5,
                             height: 1.45,
                             color: gelap

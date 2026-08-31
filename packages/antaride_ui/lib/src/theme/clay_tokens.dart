@@ -146,4 +146,44 @@ class ClayTokens {
 
   /// Tombol utama pada layar driver. Lebih besar lagi, dengan alasan yang sama.
   static const double driverPrimaryButtonHeight = 56;
+
+  // ---------------------------------------------------------------------------
+  //  Tipografi
+  // ---------------------------------------------------------------------------
+
+  /// Nama keluarga font aplikasi.
+  ///
+  /// ==========================================================================
+  ///  SATU KONSTANTA, KARENA SEBELUMNYA ADA 183 SALINAN
+  /// ==========================================================================
+  ///  Nama font ini pernah ditulis sebagai string mentah di 183 tempat di tiga
+  ///  aplikasi. Akibatnya bukan sekadar berulang: mengganti font menuntut
+  ///  menyunting 183 baris, dan satu yang terlewat menghasilkan satu label yang
+  ///  memakai font berbeda — perbedaan yang terlihat tapi hampir tidak mungkin
+  ///  ditemukan lewat pembacaan kode.
+  ///
+  ///  Sekarang menggantinya satu baris di sini, plus daftar aset di
+  ///  `pubspec.yaml` paket ini.
+  /// ==========================================================================
+  ///
+  /// ==========================================================================
+  ///  KENAPA PLUS JAKARTA SANS
+  /// ==========================================================================
+  ///  Font Gojek dan Grab keduanya MILIK SENDIRI dan tidak dilisensikan keluar
+  ///  — "GoJek Sans" dan "Grab Community" tidak bisa dipakai proyek lain, dan
+  ///  memakainya tanpa izin adalah pelanggaran lisensi, bukan sekadar
+  ///  ketidaksopanan.
+  ///
+  ///  Yang bisa dipakai adalah font dengan RASA yang sama: geometris, sudut
+  ///  membulat, tinggi-x besar supaya terbaca di layar kecil dan di bawah
+  ///  matahari. Plus Jakarta Sans memenuhi ketiganya, lisensinya SIL OFL
+  ///  (bebas dipakai komersial), dan dibuat Tokotype — foundry Indonesia, untuk
+  ///  identitas kota Jakarta.
+  ///
+  ///  Alternatif yang setara dan sama-sama bebas: Poppins (lebih bulat, lebih
+  ///  mirip Gojek) dan Inter (lebih netral). Mengganti ke salah satunya berarti
+  ///  menukar berkas di `assets/fonts/`, memperbarui `pubspec.yaml`, dan
+  ///  mengubah satu baris di bawah ini.
+  /// ==========================================================================
+  static const String fontFamily = 'PlusJakartaSans';
 }
