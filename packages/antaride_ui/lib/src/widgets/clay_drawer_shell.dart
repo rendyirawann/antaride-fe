@@ -304,8 +304,27 @@ class _Sidebar extends StatelessWidget {
   Widget build(BuildContext context) {
     final bool gelap = Theme.of(context).brightness == Brightness.dark;
 
-    return Container(
-      /*
+    /*
+     * ==========================================================================
+     *  MATERIAL DI SINI WAJIB, DAN KETIADAANNYA TERLIHAT SEBAGAI GARIS KUNING
+     * ==========================================================================
+     *  `menuScreen` milik ZoomDrawer TIDAK berada di bawah Scaffold mana pun —
+     *  hanya halaman utamanya yang punya. Tanpa Material di atasnya, setiap
+     *  `Text` di sidebar dirender dengan gaya darurat Flutter: huruf MERAH
+     *  dengan GARIS BAWAH KUNING ganda.
+     *
+     *  Itu bukan hiasan yang bisa diabaikan — itu cara framework berteriak
+     *  bahwa teksnya tidak punya gaya bawaan. `InkWell` di tiap butir menu juga
+     *  membutuhkannya untuk menggambar riak.
+     *
+     *  `type: transparency` supaya Material tidak melukis warnanya sendiri di
+     *  atas gradien di bawah ini.
+     * ==========================================================================
+     */
+    return Material(
+      type: MaterialType.transparency,
+      child: Container(
+        /*
        * Gradien, bukan warna rata.
        *
        * Sidebar adalah satu-satunya permukaan di aplikasi ini yang mengisi
@@ -316,142 +335,143 @@ class _Sidebar extends StatelessWidget {
        * kiri atas, lebih gelap di kanan bawah. Gradien yang arahnya berbeda dari
        * bayangan komponen di atasnya akan terbaca sebagai dua sumber cahaya.
        */
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: gelap
-              ? <Color>[
-                  ClayTokens.surfaceRaisedDark,
-                  ClayTokens.surfaceSunkenDark,
-                ]
-              // Aturan gradien v2 yang sama dengan hero: satu warna di-lerp ke
-              // hitam, bukan dua warna yang dipilih terpisah. Itu yang membuat
-              // sidebar dan hero di aplikasi mana pun terbaca satu keluarga.
-              : <Color>[accent, ClayGradients.gelapkan(accent)],
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            colors: gelap
+                ? <Color>[
+                    ClayTokens.surfaceRaisedDark,
+                    ClayTokens.surfaceSunkenDark,
+                  ]
+                // Aturan gradien v2 yang sama dengan hero: satu warna di-lerp ke
+                // hitam, bukan dua warna yang dipilih terpisah. Itu yang membuat
+                // sidebar dan hero di aplikasi mana pun terbaca satu keluarga.
+                : <Color>[accent, ClayGradients.gelapkan(accent)],
+          ),
         ),
-      ),
-      child: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(vertical: ClayTokens.space6),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: <Widget>[
-              Padding(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: ClayTokens.space6,
-                ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: <Widget>[
-                    Container(
-                      width: 66,
-                      height: 66,
-                      decoration: BoxDecoration(
-                        color: Colors.white.withValues(alpha: 0.22),
-                        shape: BoxShape.circle,
-                        border: Border.all(
-                          color: Colors.white.withValues(alpha: 0.4),
-                          width: 2,
-                        ),
-                      ),
-                      child: Center(
-                        child: Text(
-                          avatarLabel ?? '?',
-                          style: const TextStyle(
-                            fontFamily: 'PlusJakartaSans',
-                            fontSize: 22,
-                            fontWeight: FontWeight.w800,
-                            color: Colors.white,
-                          ),
-                        ),
-                      ),
-                    ),
-
-                    const SizedBox(height: ClayTokens.space4),
-
-                    Text(
-                      title,
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      style: const TextStyle(
-                        fontFamily: 'PlusJakartaSans',
-                        fontSize: 19,
-                        fontWeight: FontWeight.w800,
-                        letterSpacing: -0.3,
-                        color: Colors.white,
-                      ),
-                    ),
-
-                    if (subtitle != null) ...<Widget>[
-                      const SizedBox(height: 2),
-                      Text(
-                        subtitle!,
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                        style: TextStyle(
-                          fontFamily: 'PlusJakartaSans',
-                          fontSize: 12.5,
-                          color: Colors.white.withValues(alpha: 0.75),
-                        ),
-                      ),
-                    ],
-                  ],
-                ),
-              ),
-
-              const SizedBox(height: ClayTokens.space6),
-
-              Expanded(
-                child: ListView(
-                  padding: EdgeInsets.zero,
-                  children: <Widget>[
-                    for (int i = 0; i < items.length; i++)
-                      _ButirMenu(
-                        accent: accent,
-                        item: items[i],
-                        selected: i == selectedIndex,
-                        onTap: () => onSelect(i),
-                      ),
-                  ],
-                ),
-              ),
-
-              if (footerLabel != null)
+        child: SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.symmetric(vertical: ClayTokens.space6),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: <Widget>[
                 Padding(
                   padding: const EdgeInsets.symmetric(
                     horizontal: ClayTokens.space6,
-                    vertical: ClayTokens.space3,
                   ),
-                  child: OutlinedButton(
-                    onPressed: onFooterTap,
-                    style: OutlinedButton.styleFrom(
-                      foregroundColor: Colors.white,
-                      side: BorderSide(
-                        color: Colors.white.withValues(alpha: 0.55),
-                        width: 1.6,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: <Widget>[
+                      Container(
+                        width: 66,
+                        height: 66,
+                        decoration: BoxDecoration(
+                          color: Colors.white.withValues(alpha: 0.22),
+                          shape: BoxShape.circle,
+                          border: Border.all(
+                            color: Colors.white.withValues(alpha: 0.4),
+                            width: 2,
+                          ),
+                        ),
+                        child: Center(
+                          child: Text(
+                            avatarLabel ?? '?',
+                            style: const TextStyle(
+                              fontFamily: 'PlusJakartaSans',
+                              fontSize: 22,
+                              fontWeight: FontWeight.w800,
+                              color: Colors.white,
+                            ),
+                          ),
+                        ),
                       ),
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: ClayTokens.space6,
-                        vertical: ClayTokens.space3,
+
+                      const SizedBox(height: ClayTokens.space4),
+
+                      Text(
+                        title,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: const TextStyle(
+                          fontFamily: 'PlusJakartaSans',
+                          fontSize: 19,
+                          fontWeight: FontWeight.w800,
+                          letterSpacing: -0.3,
+                          color: Colors.white,
+                        ),
                       ),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(
-                          ClayTokens.radiusPill,
+
+                      if (subtitle != null) ...<Widget>[
+                        const SizedBox(height: 2),
+                        Text(
+                          subtitle!,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: TextStyle(
+                            fontFamily: 'PlusJakartaSans',
+                            fontSize: 12.5,
+                            color: Colors.white.withValues(alpha: 0.75),
+                          ),
+                        ),
+                      ],
+                    ],
+                  ),
+                ),
+
+                const SizedBox(height: ClayTokens.space6),
+
+                Expanded(
+                  child: ListView(
+                    padding: EdgeInsets.zero,
+                    children: <Widget>[
+                      for (int i = 0; i < items.length; i++)
+                        _ButirMenu(
+                          accent: accent,
+                          item: items[i],
+                          selected: i == selectedIndex,
+                          onTap: () => onSelect(i),
+                        ),
+                    ],
+                  ),
+                ),
+
+                if (footerLabel != null)
+                  Padding(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: ClayTokens.space6,
+                      vertical: ClayTokens.space3,
+                    ),
+                    child: OutlinedButton(
+                      onPressed: onFooterTap,
+                      style: OutlinedButton.styleFrom(
+                        foregroundColor: Colors.white,
+                        side: BorderSide(
+                          color: Colors.white.withValues(alpha: 0.55),
+                          width: 1.6,
+                        ),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: ClayTokens.space6,
+                          vertical: ClayTokens.space3,
+                        ),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(
+                            ClayTokens.radiusPill,
+                          ),
+                        ),
+                      ),
+                      child: Text(
+                        footerLabel!,
+                        style: const TextStyle(
+                          fontFamily: 'PlusJakartaSans',
+                          fontSize: 14,
+                          fontWeight: FontWeight.w700,
                         ),
                       ),
                     ),
-                    child: Text(
-                      footerLabel!,
-                      style: const TextStyle(
-                        fontFamily: 'PlusJakartaSans',
-                        fontSize: 14,
-                        fontWeight: FontWeight.w700,
-                      ),
-                    ),
                   ),
-                ),
-            ],
+              ],
+            ),
           ),
         ),
       ),

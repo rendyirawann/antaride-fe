@@ -44,6 +44,7 @@ class AntarideServices {
     required this.wallet,
     required this.driver,
     required this.notifications,
+    required this.places,
   });
 
   final TokenStore tokenStore;
@@ -54,6 +55,9 @@ class AntarideServices {
   final QuoteRepository quotes;
   final WalletRepository wallet;
   final DriverRepository driver;
+
+  /// Konfigurasi server dan pencarian alamat.
+  final PlaceRepository places;
 
   /// Notifikasi in-app.
   ///
@@ -120,6 +124,7 @@ class AntarideServices {
       quotes: QuoteRepository(client),
       wallet: WalletRepository(client),
       driver: DriverRepository(client),
+      places: PlaceRepository(client),
       notifications: NotificationRepository(client, role: notificationRole),
     );
 

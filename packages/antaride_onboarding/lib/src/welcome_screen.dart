@@ -121,11 +121,29 @@ class WelcomeScreen extends StatelessWidget {
                     const Spacer(),
 
                     Padding(
-                      padding: const EdgeInsets.fromLTRB(
+                      /*
+                       * ==========================================================
+                       *  RUANG BAWAH IKUT BILAH NAVIGASI ANDROID
+                       * ==========================================================
+                       *  Layar ini SENGAJA tidak dibungkus SafeArea: hero-nya
+                       *  harus menembus status bar. Tapi tepi BAWAH tetap perlu
+                       *  dihormati — di HP dengan bilah navigasi tiga tombol
+                       *  (kembali/home/aplikasi), tombol Daftar dan Masuk berada
+                       *  PERSIS di belakangnya dan tidak bisa ditekan.
+                       *
+                       *  `MediaQuery.viewPaddingOf`, bukan `paddingOf`:
+                       *  `paddingOf` menjadi nol ketika ada sesuatu yang sudah
+                       *  mengonsumsinya (mis. SafeArea di atas), sementara
+                       *  viewPadding selalu melaporkan tinggi bilah yang
+                       *  sebenarnya.
+                       * ==========================================================
+                       */
+                      padding: EdgeInsets.fromLTRB(
                         ClayTokens.space6,
                         0,
                         ClayTokens.space6,
-                        ClayTokens.space5,
+                        ClayTokens.space5 +
+                            MediaQuery.viewPaddingOf(context).bottom,
                       ),
                       child: ClayEntrance(
                         // Giliran terakhir, setelah semua kartu poin.

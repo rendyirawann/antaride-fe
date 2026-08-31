@@ -7,4 +7,5 @@ library;
 export 'src/antaride_services.dart';
 export 'src/device_identity.dart';
 export 'src/phone_field_formatter.dart';
+export 'src/server_config_controller.dart';
 export 'src/session_controller.dart';

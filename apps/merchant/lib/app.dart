@@ -19,6 +19,18 @@ class AntarideMerchantApp extends StatelessWidget {
     return MultiProvider(
       providers: <SingleChildWidget>[
         Provider<AntarideServices>.value(value: services),
+
+        /*
+         * Konfigurasi dari server: area layanan dan sakelar pencarian alamat.
+         *
+         * `..muat()` langsung di sini, bukan ditunggu layar mana pun: nilainya
+         * dibutuhkan peta pada frame pertama, dan controller ini SELALU punya
+         * nilai bawaan yang bisa dipakai sementara jawabannya datang. Tidak ada
+         * keadaan "belum dimuat" yang harus ditangani pembacanya.
+         */
+        ChangeNotifierProvider<ServerConfigController>(
+          create: (_) => ServerConfigController(services.places)..muat(),
+        ),
         ChangeNotifierProvider<SessionController>.value(
           value: services.session,
         ),

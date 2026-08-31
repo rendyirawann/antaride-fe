@@ -105,6 +105,31 @@ class AntarideMap extends StatefulWidget {
   State<AntarideMap> createState() => _AntarideMapState();
 }
 
+/// Seam untuk widget test.
+///
+/// ============================================================================
+///  KENAPA ADA JALAN MASUK KHUSUS TEST DI KODE PRODUKSI
+/// ============================================================================
+///  `FlutterMap` meminta belasan tile lewat HTTP begitu tergambar. Di widget
+///  test semuanya ditolak, dan tiap penolakan menjadi exception yang
+///  menggagalkan test — walaupun yang sedang diuji posisi kamera, bukan
+///  gambarnya.
+///
+///  Memalsukan seluruh HttpClient sempat dicoba dan ditinggalkan: `TileLayer`
+///  memanggil belasan metode di sepanjang rantai HttpClient, dan tiruan yang
+///  melewatkan satu saja gagal dengan pesan yang tidak menunjuk ke mana pun.
+///
+///  Seam ini menyebut dirinya untuk test secara terbuka, dan bawaannya null —
+///  jadi jalur produksinya tidak punya satu pun cabang tambahan.
+/// ============================================================================
+class AntarideMapTestHooks {
+  const AntarideMapTestHooks._();
+
+  /// Penyedia tile pengganti. Null berarti perilaku produksi.
+  @visibleForTesting
+  static TileProvider? penyediaTile;
+}
+
 class _AntarideMapState extends State<AntarideMap> {
   final MapController _controller = MapController();
 
@@ -121,6 +146,48 @@ class _AntarideMapState extends State<AntarideMap> {
     if (oldWidget.route.length != widget.route.length ||
         oldWidget.pins.length != widget.pins.length) {
       _sudahMenyesuaikan = false;
+    }
+
+    /*
+     * ========================================================================
+     *  [center] YANG BERUBAH HARUS MENGGERAKKAN PETA
+     * ========================================================================
+     *  `initialCenter` dibaca `FlutterMap` SEKALI, saat peta dibuat. Sesuai
+     *  namanya — tapi akibatnya tidak terlihat sampai ada yang mengubah
+     *  `center` belakangan.
+     *
+     *  Dan itu persis yang dilakukan layar pemilih rute: peta dibangun lebih
+     *  dulu dengan titik tengah bawaan, lalu GPS menjawab beberapa detik
+     *  kemudian dan `center` diperbarui. Tanpa blok ini, jawaban GPS itu tidak
+     *  melakukan apa pun.
+     *
+     *  Yang dilihat pengguna: "titik penjemputan tidak mendeteksi lokasi saya",
+     *  dan peta yang membuka kota bawaan walaupun izin lokasinya sudah
+     *  diberikan. Tidak ada galat di mana pun — nilainya memang sampai, hanya
+     *  tidak ada yang membacanya lagi.
+     * ========================================================================
+     */
+    final LatLng? baru = widget.center;
+
+    if (baru != null && baru != oldWidget.center) {
+      /*
+       * Ditunda ke akhir frame.
+       *
+       * `didUpdateWidget` berjalan DI TENGAH fase build. `MapController.move`
+       * menyentuh state internal peta dan menjadwalkan frame baru — memanggilnya
+       * di sini melempar galat framework, dan galat itu muncul sebagai layar
+       * merah, bukan sebagai peta yang tidak bergerak.
+       */
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (!mounted) {
+          return;
+        }
+
+        // Zoom dipertahankan apa adanya: pengguna mungkin sudah memperbesar
+        // peta sebelum GPS menjawab, dan mengembalikannya ke zoom awal akan
+        // membuang penyesuaian yang baru saja dia lakukan.
+        _controller.move(baru, _controller.camera.zoom);
+      });
     }
   }
 
@@ -180,6 +247,7 @@ class _AntarideMapState extends State<AntarideMap> {
          * ====================================================================
          */
         TileLayer(
+          tileProvider: AntarideMapTestHooks.penyediaTile,
           urlTemplate: AppConfig.hasMapboxToken
               ? 'https://api.mapbox.com/styles/v1/${AppConfig.mapboxStyle}'
                     '/tiles/512/{z}/{x}/{y}@2x'

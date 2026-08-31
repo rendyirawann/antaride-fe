@@ -1,6 +1,6 @@
 {
-    "quote_id": "01a04e33-9bee-7132-bc2b-f37800bde05c",
-    "expires_at": "2026-08-29T15:51:40+00:00",
+    "quote_id": "01a055f7-a759-7166-a1c4-b2684cd67990",
+    "expires_at": "2026-08-31T04:03:08+00:00",
     "expires_in_seconds": 299,
     "zone": "Medan Kota",
     "route": {
@@ -13,7 +13,7 @@
     "services": [
         {
             "service_code": "ride_bike",
-            "service_name": "Antar Motor",
+            "service_name": "Antaride",
             "fare": {
                 "base_fare": 4000,
                 "distance_fare": 9100,

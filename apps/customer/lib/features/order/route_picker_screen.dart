@@ -1,10 +1,12 @@
 import 'package:antaride_api/antaride_api.dart';
+import 'package:antaride_auth/antaride_auth.dart';
 import 'package:antaride_maps/antaride_maps.dart';
 import 'package:antaride_ui/antaride_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import 'order_flow_controller.dart';
+import 'place_search_field.dart';
 import 'quote_screen.dart';
 
 /// Pilih titik jemput dan tujuan.
@@ -51,14 +53,53 @@ class _RoutePickerScreenState extends State<RoutePickerScreen> {
   final LocationService _lokasi = const LocationService();
 
   _Tahap _tahap = _Tahap.jemput;
-  LatLng _tengah = medanCenter;
+
+  /*
+   * ==========================================================================
+   *  TITIK AWAL DARI KONFIGURASI SERVER, BUKAN KONSTANTA MEDAN
+   * ==========================================================================
+   *  Sebelumnya nilainya `medanCenter` yang tertanam di kode. Saat area layanan
+   *  di server dipersempit — misalnya OSRM hanya memuat sekitar Lubuk Pakam —
+   *  peta tetap membuka Medan, lalu menolak menghitung ongkos untuk titik yang
+   *  dipilih di sana.
+   *
+   *  Yang dilihat pengguna bukan pesan galat, melainkan aplikasi yang membuka
+   *  kota yang salah dan gagal memesan tanpa alasan yang bisa dia mengerti.
+   *
+   *  Diisi di `didChangeDependencies` karena membaca provider, dan itu tidak
+   *  boleh dilakukan di `initState`.
+   * ==========================================================================
+   */
+  LatLng? _tengah;
+
   bool _mencariPosisi = true;
+
+  /// Sedang mengambil alamat untuk titik yang sekarang.
+  bool _mencariAlamat = false;
+
+  /// Alamat terakhir yang diisi OTOMATIS oleh reverse geocoding.
+  ///
+  /// Dipakai membedakan "kolom masih berisi tebakan kami" dari "pengguna sudah
+  /// mengetik sendiri" — lihat `_isiAlamatOtomatis`.
+  String _alamatOtomatis = '';
 
   @override
   void initState() {
     super.initState();
 
     _posisiAwal();
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+
+    // Sekali saja: sesudah GPS menjawab, `_tengah` sudah berisi posisi
+    // pengguna dan tidak boleh ditarik kembali ke titik tengah area.
+    _tengah ??= LatLng(
+      context.read<ServerConfigController>().config.areaLat,
+      context.read<ServerConfigController>().config.areaLng,
+    );
   }
 
   @override
@@ -82,10 +123,60 @@ class _RoutePickerScreenState extends State<RoutePickerScreen> {
         _tengah = hasil.position;
       }
 
-      // Kalau lokasi tidak tersedia, peta tetap terbuka di pusat Medan dan
-      // pengguna menggeser sendiri. Yang TIDAK dilakukan: menolak melanjutkan.
-      // Izin lokasi memudahkan, bukan mensyaratkan — dan orang yang menolaknya
-      // tetap harus bisa memesan.
+      // Kalau lokasi tidak tersedia, peta tetap terbuka di tengah area layanan
+      // dan pengguna menggeser sendiri. Yang TIDAK dilakukan: menolak
+      // melanjutkan. Izin lokasi memudahkan, bukan mensyaratkan — dan orang
+      // yang menolaknya tetap harus bisa memesan.
+    });
+
+    if (hasil is LocationReady) {
+      await _isiAlamatOtomatis(hasil.position);
+    }
+  }
+
+  /// Mengisi kolom alamat dari koordinat.
+  ///
+  /// ==========================================================================
+  ///  HANYA MENIMPA TEBAKAN KAMI SENDIRI
+  /// ==========================================================================
+  ///  Dipanggil dua kali: saat GPS menjawab, dan setiap kali pengguna berhenti
+  ///  menggeser peta. Yang kedua itulah yang berbahaya — kalau dia menimpa
+  ///  apa pun, alamat yang SUDAH DIKETIK pengguna akan terhapus begitu dia
+  ///  menggeser peta sedikit untuk memperbaiki titiknya.
+  ///
+  ///  Karena itu isian otomatis hanya menimpa kolom yang kosong atau yang masih
+  ///  berisi isian otomatis sebelumnya.
+  /// ==========================================================================
+  Future<void> _isiAlamatOtomatis(LatLng titik) async {
+    final String sekarang = _alamat.text.trim();
+
+    if (sekarang.isNotEmpty && sekarang != _alamatOtomatis) {
+      return;
+    }
+
+    setState(() => _mencariAlamat = true);
+
+    final AntarideServices services = context.read<AntarideServices>();
+
+    final Place? tempat = await services.places.reverse(
+      titik.latitude,
+      titik.longitude,
+    );
+
+    if (!mounted) {
+      return;
+    }
+
+    setState(() {
+      _mencariAlamat = false;
+
+      // Diperiksa ULANG: pengguna bisa mengetik selama request berjalan.
+      final String kini = _alamat.text.trim();
+
+      if (tempat != null && (kini.isEmpty || kini == _alamatOtomatis)) {
+        _alamat.text = tempat.address;
+        _alamatOtomatis = tempat.address;
+      }
     });
   }
 
@@ -103,6 +194,7 @@ class _RoutePickerScreenState extends State<RoutePickerScreen> {
         _alamat.text = alur.pickup?.address ?? '';
         _catatan.text = alur.pickup?.note ?? '';
         _tengah = alur.pickup?.position ?? _tengah;
+        _alamatOtomatis = '';
       });
 
       return;
@@ -117,7 +209,7 @@ class _RoutePickerScreenState extends State<RoutePickerScreen> {
     final String alamat = _alamat.text.trim();
 
     final ChosenPlace tempat = ChosenPlace(
-      position: _tengah,
+      position: _titik,
       address: alamat.isEmpty ? _alamatCadangan() : alamat,
       note: _catatan.text.trim().isEmpty ? null : _catatan.text.trim(),
     );
@@ -129,8 +221,12 @@ class _RoutePickerScreenState extends State<RoutePickerScreen> {
         _tahap = _Tahap.tujuan;
         _alamat.clear();
         _catatan.clear();
+        _alamatOtomatis = '';
       });
 
+      // Tujuan biasanya BUKAN tempat pengguna berdiri, jadi kolomnya sengaja
+      // dibiarkan kosong untuk diisi lewat pencarian — bukan diisi otomatis
+      // dengan alamat titik jemput yang baru saja dia tinggalkan.
       return;
     }
 
@@ -165,11 +261,18 @@ class _RoutePickerScreenState extends State<RoutePickerScreen> {
   /// driver menemukannya lewat navigasi. Lebih baik daripada string kosong,
   /// yang di layar driver terbaca sebagai order tanpa alamat.
   String _alamatCadangan() {
-    final String lat = _tengah.latitude.toStringAsFixed(5);
-    final String lng = _tengah.longitude.toStringAsFixed(5);
+    final String lat = _titik.latitude.toStringAsFixed(5);
+    final String lng = _titik.longitude.toStringAsFixed(5);
 
     return 'Titik $lat, $lng';
   }
+
+  /// Titik yang sedang dipilih.
+  ///
+  /// `_tengah` nullable hanya selama frame pertama sebelum
+  /// `didChangeDependencies` mengisinya; getter ini membuat pemakaiannya di
+  /// seluruh berkas tidak perlu memeriksa null berulang kali.
+  LatLng get _titik => _tengah ?? const LatLng(3.5697, 98.7748);
 
   @override
   Widget build(BuildContext context) {
@@ -189,12 +292,16 @@ class _RoutePickerScreenState extends State<RoutePickerScreen> {
               alignment: Alignment.center,
               children: <Widget>[
                 AntarideMap(
-                  center: _tengah,
+                  center: _titik,
                   fitToContent: false,
                   onCenterChanged: (LatLng titik) {
-                    // Hanya menyimpan, TIDAK memanggil quote. Quote diminta
-                    // sekali di layar berikutnya, setelah kedua titik pasti.
+                    // TIDAK memanggil quote — itu diminta sekali di layar
+                    // berikutnya, setelah kedua titik pasti. Yang dipanggil di
+                    // sini hanya reverse geocoding, dan hanya setelah geseran
+                    // BERHENTI (lihat docblock `onCenterChanged`).
                     _tengah = titik;
+
+                    _isiAlamatOtomatis(titik);
                   },
                   pins: <MapPin>[
                     if (!jemput && alur.pickup != null)
@@ -351,17 +458,53 @@ class _RoutePickerScreenState extends State<RoutePickerScreen> {
 
                       const SizedBox(height: ClayTokens.space5),
 
-                      ClayInput(
+                      PlaceSearchField(
                         controller: _alamat,
                         label: jemput ? 'Alamat penjemputan' : 'Alamat tujuan',
                         hint: jemput
-                            ? 'Jl. Gatot Subroto No. 12'
-                            : 'Jl. Iskandar Muda No. 4',
-                        prefixIcon: jemput
+                            ? 'Cari alamat penjemputan'
+                            : 'Cari alamat tujuan',
+                        icon: jemput
                             ? Icons.trip_origin_rounded
                             : Icons.place_rounded,
-                        maxLength: 200,
+
+                        // Hasil diurutkan dari yang terdekat dengan titik yang
+                        // sedang dilihat, bukan dari tengah area: orang yang
+                        // sudah menggeser peta ke satu kecamatan mencari alamat
+                        // DI SANA.
+                        dekatLat: _titik.latitude,
+                        dekatLng: _titik.longitude,
+
+                        // Memilih saran MEMINDAHKAN peta ke koordinatnya, jadi
+                        // alamat dan titik order selalu berasal dari satu
+                        // sumber — lihat docblock PlaceSearchField.
+                        onPilih: (Place tempat) {
+                          setState(() {
+                            _tengah = LatLng(tempat.lat, tempat.lng);
+                            _alamatOtomatis = tempat.address;
+                          });
+                        },
                       ),
+
+                      if (_mencariAlamat) ...<Widget>[
+                        const SizedBox(height: ClayTokens.space2),
+                        Row(
+                          children: <Widget>[
+                            const ClayInlineLoader(size: 12),
+                            const SizedBox(width: ClayTokens.space2),
+                            Text(
+                              'Mencari alamat titik ini...',
+                              style: TextStyle(
+                                fontFamily: 'PlusJakartaSans',
+                                fontSize: 11,
+                                color: gelap
+                                    ? ClayTokens.textTertiaryDark
+                                    : ClayTokens.textTertiary,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
 
                       if (jemput) ...<Widget>[
                         const SizedBox(height: ClayTokens.space3),

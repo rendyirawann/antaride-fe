@@ -23,7 +23,14 @@ import 'package:provider/provider.dart';
 ///  di CI".
 /// ============================================================================
 void main() {
-  Future<void> pasang(WidgetTester tester) async {
+  Future<void> pasang(WidgetTester tester, {double lebar = 320}) async {
+    // 320 dp — HP kelas entry yang masih umum. Kalau kartunya utuh di sini, dia
+    // utuh di mana saja. Ukuran dikembalikan lewat addTearDown supaya test lain
+    // tidak mewarisi layar sempit ini.
+    tester.view.physicalSize = Size(lebar * 3, 720 * 3);
+    tester.view.devicePixelRatio = 3;
+    addTearDown(tester.view.reset);
+
     await tester.pumpWidget(
       ChangeNotifierProvider<SessionController>.value(
         value: _SesiDenganAkun(),
@@ -73,7 +80,7 @@ void main() {
   ) async {
     await pasang(tester);
 
-    final Rect nama = tester.getRect(find.text('Sutrisno (Demo)'));
+    final Rect nama = tester.getRect(find.text('Sutrisno Driver (Demo)'));
 
     expect(
       nama.width > nama.height,
@@ -110,10 +117,12 @@ class _SesiDenganAkun extends SessionController {
       accounts: <DemoAccount>[
         DemoAccount(
           uuid: '11111111-1111-1111-1111-111111111111',
-          name: 'Sutrisno (Demo)',
+          name: 'Sutrisno Driver (Demo)',
           phone: '0899000000002',
           role: 'driver',
-          note: 'Dokumen lengkap, saldo Rp 100.000.',
+          note:
+              'Terverifikasi, dokumen lengkap, saldo Rp 100.000, layanan ojek '
+              'aktif.',
         ),
         DemoAccount(
           uuid: '22222222-2222-2222-2222-222222222222',
